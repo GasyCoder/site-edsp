@@ -1,0 +1,118 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+.fi-simple-layout {
+    background-color: #f5f7fa;
+    background-image:
+        linear-gradient(118deg, rgb(11 31 85 / 0.98) 0 32%, transparent 32%),
+        radial-gradient(circle at 82% 18%, rgb(7 139 62 / 0.1), transparent 30%),
+        linear-gradient(145deg, #ffffff 0%, #f5f7fa 70%);
+}
+
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 1;
+    padding: 1.5rem;
+}
+
+.fi-simple-main {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(203 213 225 / 0.9);
+    border-radius: 1.5rem;
+    background: rgb(255 255 255 / 0.97);
+    padding: 2rem;
+    box-shadow: 0 24px 70px rgb(11 31 85 / 0.16);
+    backdrop-filter: blur(12px);
+}
+
+.fi-simple-main::before {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    left: 2rem;
+    height: 3px;
+    border-radius: 0 0 999px 999px;
+    background: linear-gradient(90deg, #078b3e 0 70%, #f4b942 70% 100%);
+    content: '';
+}
+
+.fi-simple-header {
+    gap: 0.75rem;
+}
+
+.fi-simple-header .fi-logo {
+    margin-bottom: 0.5rem;
+}
+
+.fi-simple-header .fi-logo img {
+    object-fit: contain;
+}
+
+.fi-simple-header-heading {
+    color: #0b1f55;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.fi-simple-header-subheading {
+    max-width: 28rem;
+    color: #64748b;
+    line-height: 1.65;
+}
+
+.fi-simple-main .fi-input-wrp {
+    border-radius: 0.75rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.fi-simple-main .fi-input-wrp:focus-within {
+    border-color: #078b3e;
+    box-shadow: 0 0 0 3px rgb(7 139 62 / 0.12);
+}
+
+.fi-simple-main .fi-btn {
+    min-height: 2.9rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+}
+
+.fi-simple-main .fi-btn.fi-color-primary {
+    box-shadow: 0 8px 20px rgb(7 139 62 / 0.2);
+}
+
+.dark .fi-simple-layout {
+    background-image:
+        linear-gradient(118deg, rgb(4 15 45 / 0.98) 0 32%, transparent 32%),
+        radial-gradient(circle at 82% 18%, rgb(7 139 62 / 0.16), transparent 30%),
+        linear-gradient(145deg, #111827 0%, #020617 70%);
+}
+
+.dark .fi-simple-main {
+    border-color: rgb(71 85 105 / 0.75);
+    background: rgb(15 23 42 / 0.96);
+}
+
+.dark .fi-simple-header-heading {
+    color: #f8fafc;
+}
+
+.dark .fi-simple-header-subheading {
+    color: #cbd5e1;
+}
+
+@media (max-width: 767px) {
+    .fi-simple-layout {
+        background-image:
+            linear-gradient(180deg, rgb(11 31 85 / 0.98) 0 11rem, transparent 11rem),
+            linear-gradient(145deg, #ffffff 0%, #f5f7fa 70%);
+    }
+
+    .fi-simple-main {
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+    }
+}
