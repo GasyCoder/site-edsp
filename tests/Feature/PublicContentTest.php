@@ -1,0 +1,109 @@
+<?php
+
+use App\Models\News;
+use App\Models\Page;
+use App\Models\Program;
+use Database\Seeders\PagesSeeder;
+use Inertia\Testing\AssertableInertia as Assert;
+
+test('a visitor sees published home content but not hidden sections', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+    $page->sections()->create([
+        'section_key' => 'hero',
+        'section_type' => 'hero',
+        'title' => 'Bienvenue à l’EDSP',
+        'position' => 1,
+        'is_visible' => true,
+    ]);
+    $page->sections()->create([
+        'section_key' => 'draft-section',
+        'section_type' => 'content',
+        'title' => 'Section masquée',
+        'position' => 2,
+        'is_visible' => false,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->component('Home')
+            ->where('canEdit', false)
+            ->where('page.slug', 'accueil')
+            ->has('page.sections', 1)
+            ->where('page.sections.0.section_key', 'hero'));
+});
+
+test('an editor receives hidden sections so they can be re-enabled', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+    foreach ([true, false] as $index => $visible) {
+        $page->sections()->create([
+            'section_key' => 'section-'.$index,
+            'section_type' => 'content',
+            'title' => 'Section '.$index,
+            'position' => $index,
+            'is_visible' => $visible,
+        ]);
+    }
+
+    $editor = userWithPermissions(['edit pages']);
+
+    $this->actingAs($editor)->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('canEdit', true)
+            ->has('page.sections', 2));
+});
+
+test('every home block including statistics is an editable page section', function (): void {
+    $this->seed(PagesSeeder::class);
+    $editor = userWithPermissions(['edit pages']);
+
+    $this->actingAs($editor)->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->component('Home')
+            ->where('canEdit', true)
+            ->has('page.sections', 12)
+            ->where('page.sections.3.section_key', 'stats')
+            ->where('page.sections.3.section_type', 'stats'));
+});
+
+test('draft and future content is not publicly accessible', function (): void {
+    Page::query()->create([
+        'title' => 'Historique',
+        'slug' => 'historique',
+        'status' => 'draft',
+        'template' => 'default',
+    ]);
+    $program = Program::query()->create([
+        'title' => 'Programme brouillon',
+        'slug' => 'programme-brouillon',
+        'level' => 'Licence',
+        'description' => 'Non publié',
+        'status' => 'draft',
+    ]);
+    $news = News::query()->create([
+        'title' => 'Actualité programmée',
+        'slug' => 'actualite-programmee',
+        'excerpt' => 'À venir',
+        'content' => '<p>À venir</p>',
+        'status' => 'published',
+        'published_at' => now()->addDay(),
+    ]);
+
+    $this->get('/historique')->assertNotFound();
+    $this->get(route('programs.show', $program))->assertNotFound();
+    $this->get(route('news.show', $news))->assertNotFound();
+});
