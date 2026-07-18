@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Open Sans', sans-serif; color: #1F2937; background: #FFFFFF; -webkit-font-smoothing: antialiased; }
+  a { color: #153A8A; text-decoration: none; }
+  a:hover { color: #078B3E; }
+  * { box-sizing: border-box; }
+</style>
+</helmet>
+
+<!-- ===== BARRE SUPÉRIEURE ===== -->
+<div style="background:#0B1F55; color:#C9D4EE; font-size:13px;">
+  <div style="max-width:1280px; margin:0 auto; padding:8px 24px; display:flex; flex-wrap:wrap; gap:8px 24px; align-items:center; justify-content:space-between;">
+    <div style="display:flex; flex-wrap:wrap; gap:6px 20px; align-items:center;">
+      <span style="color:#FFFFFF; font-weight:600;">Université de Mahajanga</span>
+      <span style="display:flex; align-items:center; gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Ambondrona, Mahajanga</span>
+      <span style="display:flex; align-items:center; gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>+261 32 05 579 90</span>
+      <a href="mailto:edsp.mahajanga@gmail.com" style="color:#C9D4EE; display:flex; align-items:center; gap:6px;" style-hover="color:#FFFFFF;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg>edsp.mahajanga@gmail.com</a>
+    </div>
+    <a href="#contact" aria-label="Facebook — École de Droit et Science Politique-EDSP" style="color:#C9D4EE; display:flex; align-items:center; gap:6px;" style-hover="color:#FFFFFF;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5H16.6V5a20 20 0 0 0-2.1-.1c-2.1 0-3.5 1.3-3.5 3.6V11H8.6v3H11v7z"></path></svg>Facebook</a>
+  </div>
+</div>
+
+<!-- ===== HEADER PRINCIPAL (sticky) ===== -->
+<header style="position:sticky; top:0; z-index:50; background:#FFFFFF; box-shadow:0 1px 0 #E5E9F2, 0 4px 14px rgba(11,31,85,0.06);">
+  <div style="max-width:1280px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+    <a href="#accueil" style="display:flex; align-items:center; gap:12px; min-width:0;">
+      <img src="assets/logo-edsp.png" alt="Logo de l'École de Droit et Science Politique" style="height:62px; width:auto; flex:none;">
+      <span style="display:flex; flex-direction:column; min-width:0;">
+        <span style="font-family:'Poppins',sans-serif; font-weight:700; font-size:13.5px; color:#0B1F55; line-height:1.3;">École de Droit et Science Politique</span>
+        <span style="font-size:11px; color:#078B3E; font-weight:600;">Université de Mahajanga</span>
+      </span>
+    </a>
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Navigation principale" style="display:flex; align-items:center; gap:26px;">
+        <a href="#accueil" style="font-size:14.5px; font-weight:600; color:#0B1F55;" style-hover="color:#078B3E;">Accueil</a>
+        <div style="position:relative;" onMouseEnter="{{ openEcole }}" onMouseLeave="{{ closeDrops }}">
+          <button onClick="{{ toggleEcole }}" aria-expanded="{{ dropEcole }}" style="background:none; border:none; cursor:pointer; font-family:inherit; font-size:14.5px; font-weight:600; color:#0B1F55; padding:10px 0; display:flex; align-items:center; gap:5px;" style-hover="color:#078B3E;">L'École<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <sc-if value="{{ dropEcole }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; top:100%; left:-14px; background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; box-shadow:0 12px 28px rgba(11,31,85,0.12); padding:8px; min-width:220px; display:flex; flex-direction:column; z-index:60;">
+              <a href="#ecole" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Présentation</a>
+              <a href="#vie-etudiante" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Vie étudiante</a>
+              <a href="#equipe" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Direction et équipe</a>
+              <a href="#bibliotheque" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Bibliothèque</a>
+            </div>
+          </sc-if>
+        </div>
+        <div style="position:relative;" onMouseEnter="{{ openFormations }}" onMouseLeave="{{ closeDrops }}">
+          <button onClick="{{ toggleFormations }}" aria-expanded="{{ dropFormations }}" style="background:none; border:none; cursor:pointer; font-family:inherit; font-size:14.5px; font-weight:600; color:#0B1F55; padding:10px 0; display:flex; align-items:center; gap:5px;" style-hover="color:#078B3E;">Formations<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <sc-if value="{{ dropFormations }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; top:100%; left:-14px; background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; box-shadow:0 12px 28px rgba(11,31,85,0.12); padding:8px; min-width:220px; display:flex; flex-direction:column; z-index:60;">
+              <a href="#formations" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Nos parcours</a>
+              <a href="#formations" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Droit Privé</a>
+              <a href="#formations" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Science Politique</a>
+              <a href="#admissions" onClick="{{ closeDrops }}" style="padding:9px 14px; border-radius:6px; font-size:14px; font-weight:600; color:#0B1F55;" style-hover="background:#F5F7FA; color:#078B3E;">Admissions</a>
+            </div>
+          </sc-if>
+        </div>
+        <a href="#actualites" style="font-size:14.5px; font-weight:600; color:#0B1F55;" style-hover="color:#078B3E;">Actualités</a>
+        <a href="#contact" style="font-size:14.5px; font-weight:600; color:#0B1F55;" style-hover="color:#078B3E;">Contact</a>
+        <a href="#admissions" style="background:{{ ctaBg }}; color:{{ ctaFg }}; font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; padding:10px 20px; border-radius:6px; transition:filter .15s;" style-hover="filter:brightness(1.08); color:{{ ctaFg }};">Préinscription</a>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ toggleMenu }}" aria-label="Ouvrir le menu" aria-expanded="{{ menuOpen }}" style="background:none; border:1px solid #D6DDEB; border-radius:6px; padding:8px 10px; cursor:pointer; color:#0B1F55; display:flex;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+      </button>
+    </sc-if>
+  </div>
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="Menu mobile" style="background:#FFFFFF; border-top:1px solid #E5E9F2; padding:12px 24px 20px; display:flex; flex-direction:column; gap:4px;">
+      <a href="#accueil" onClick="{{ closeMenu }}" style="padding:10px 8px; font-weight:600; color:#0B1F55; border-radius:6px;" style-hover="background:#F5F7FA;">Accueil</a>
+      <p style="margin:10px 0 2px; padding:0 8px; font-size:11.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6B7280;">L'École</p>
+      <a href="#ecole" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Présentation</a>
+      <a href="#vie-etudiante" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Vie étudiante</a>
+      <a href="#equipe" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Direction et équipe</a>
+      <a href="#bibliotheque" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Bibliothèque</a>
+      <p style="margin:10px 0 2px; padding:0 8px; font-size:11.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6B7280;">Formations</p>
+      <a href="#formations" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Nos parcours</a>
+      <a href="#admissions" onClick="{{ closeMenu }}" style="padding:9px 8px 9px 20px; font-weight:600; color:#0B1F55; border-radius:6px; font-size:14.5px;" style-hover="background:#F5F7FA;">Admissions</a>
+      <a href="#actualites" onClick="{{ closeMenu }}" style="padding:10px 8px; font-weight:600; color:#0B1F55; border-radius:6px; margin-top:8px;" style-hover="background:#F5F7FA;">Actualités</a>
+      <a href="#contact" onClick="{{ closeMenu }}" style="padding:10px 8px; font-weight:600; color:#0B1F55; border-radius:6px;" style-hover="background:#F5F7FA;">Contact</a>
+      <a href="#admissions" onClick="{{ closeMenu }}" style="margin-top:8px; background:{{ ctaBg }}; color:{{ ctaFg }}; font-family:'Poppins',sans-serif; font-weight:600; padding:12px; border-radius:6px; text-align:center;">Préinscription</a>
+    </nav>
+  </sc-if>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="accueil" data-screen-label="Hero" style="background:#F5F7FA; position:relative; overflow:hidden;">
+  <div style="max-width:1280px; margin:0 auto; padding:64px 24px 72px; display:flex; flex-wrap:wrap; gap:48px; align-items:center; position:relative;">
+    <div style="flex:1 1 480px; min-width:300px;">
+      <span style="display:inline-block; background:rgba(7,139,62,0.1); color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.04em; padding:6px 14px; border-radius:4px; text-transform:uppercase;">École de Droit et Science Politique</span>
+      <h1 style="font-family:'Poppins',sans-serif; font-weight:800; font-size:clamp(32px, 4.5vw, 52px); line-height:1.15; color:#0B1F55; margin:20px 0 18px; text-wrap:balance;">Construisez votre avenir dans le droit et la science politique</h1>
+      <p style="font-size:18px; line-height:1.65; color:#4B5563; margin:0 0 30px; max-width:560px; text-wrap:pretty;">Une formation universitaire exigeante, ouverte sur les enjeux juridiques, institutionnels et politiques contemporains.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:14px;">
+        <a href="#formations" style="background:#0B1F55; color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:14px 26px; border-radius:6px; transition:background .15s;" style-hover="background:#153A8A; color:#FFFFFF;">Découvrir nos formations</a>
+        <a href="#admissions" style="background:{{ ctaBg }}; color:{{ ctaFg }}; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:14px 26px; border-radius:6px; transition:filter .15s;" style-hover="filter:brightness(1.08); color:{{ ctaFg }};">Faire une préinscription</a>
+      </div>
+      <p style="margin:26px 0 0; font-size:13.5px; color:#6B7280; display:flex; align-items:center; gap:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Université de Mahajanga – Ambondrona</p>
+    </div>
+    <div style="flex:1 1 420px; min-width:300px; position:relative;">
+      <div style="position:absolute; inset:24px -16px -16px 24px; border-radius:12px; background:#0B1F55;"></div>
+      <div style="position:relative; height:420px; border-radius:12px; overflow:hidden; box-shadow:0 20px 40px rgba(11,31,85,0.18);">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hero-photo" shape="rect" placeholder="Photo institutionnelle — étudiants ou façade de l'EDSP" hint-size="100%,420px"></x-import>
+      </div>
+      <div style="position:absolute; bottom:-18px; left:24px; background:#FFFFFF; border-radius:8px; box-shadow:0 10px 30px rgba(11,31,85,0.15); padding:14px 18px; display:flex; align-items:center; gap:12px;">
+        <span style="width:40px; height:40px; border-radius:8px; background:rgba(244,185,66,0.18); display:flex; align-items:center; justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 7l-4 7a4.5 4.5 0 0 0 8 0zM18 7l-4 7a4.5 4.5 0 0 0 8 0zM4 7h16M9 21h6"></path></svg></span>
+        <span style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#0B1F55;">Droit Privé · Science Politique</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRÉSENTATION ===== -->
+<section id="ecole" data-screen-label="Présentation" style="padding:80px 24px;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="display:flex; flex-wrap:wrap; gap:48px; align-items:center;">
+      <div style="flex:1 1 400px; min-width:300px;">
+        <div style="height:360px; border-radius:10px; overflow:hidden; box-shadow:0 12px 30px rgba(11,31,85,0.12);">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="presentation-photo" shape="rect" placeholder="Photo de l'établissement ou des étudiants" hint-size="100%,360px"></x-import>
+        </div>
+      </div>
+      <div style="flex:1 1 480px; min-width:300px;">
+        <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">L'établissement</p>
+        <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 18px;">Bienvenue à l'EDSP</h2>
+        <p style="font-size:16.5px; line-height:1.75; color:#4B5563; margin:0; text-wrap:pretty;">L'École de Droit et Science Politique de l'Université de Mahajanga forme des étudiants capables de comprendre, d'analyser et d'accompagner les transformations juridiques, administratives, sociales et politiques de Madagascar.</p>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; margin-top:56px;">
+      <div style="background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; padding:28px; transition:box-shadow .2s;" style-hover="box-shadow:0 10px 26px rgba(11,31,85,0.08);">
+        <span style="width:48px; height:48px; border-radius:8px; background:rgba(7,139,62,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"></path></svg></span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:19px; color:#0B1F55; margin:0 0 8px;">Excellence académique</h3>
+        <p style="font-size:14.5px; line-height:1.65; color:#4B5563; margin:0;">Des enseignements rigoureux, ancrés dans le droit positif malagasy et ouverts sur les débats juridiques et politiques contemporains.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; padding:28px; transition:box-shadow .2s;" style-hover="box-shadow:0 10px 26px rgba(11,31,85,0.08);">
+        <span style="width:48px; height:48px; border-radius:8px; background:rgba(21,58,138,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#153A8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:19px; color:#0B1F55; margin:0 0 8px;">Encadrement de proximité</h3>
+        <p style="font-size:14.5px; line-height:1.65; color:#4B5563; margin:0;">Une équipe pédagogique disponible qui accompagne chaque étudiant tout au long de son parcours universitaire.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; padding:28px; transition:box-shadow .2s;" style-hover="box-shadow:0 10px 26px rgba(11,31,85,0.08);">
+        <span style="width:48px; height:48px; border-radius:8px; background:rgba(244,185,66,0.16); display:flex; align-items:center; justify-content:center; margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"></path></svg></span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:19px; color:#0B1F55; margin:0 0 8px;">Ouverture professionnelle</h3>
+        <p style="font-size:14.5px; line-height:1.65; color:#4B5563; margin:0;">Des liens avec les institutions publiques, les juridictions et le monde professionnel pour préparer l'insertion des diplômés.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FORMATIONS ===== -->
+<section id="formations" data-screen-label="Formations" style="padding:80px 24px; background:#F5F7FA;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="text-align:center; max-width:680px; margin:0 auto 48px;">
+      <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">Formations</p>
+      <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 14px;">Nos parcours de formation</h2>
+      <p style="font-size:16px; line-height:1.65; color:#4B5563; margin:0;">Deux parcours complémentaires pour comprendre le droit et l'action publique à Madagascar et dans le monde.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:28px;">
+      <article style="background:#FFFFFF; border-radius:10px; border:1px solid #E5E9F2; padding:36px; transition:box-shadow .2s;" style-hover="box-shadow:0 12px 30px rgba(11,31,85,0.1);">
+        <span style="width:54px; height:54px; border-radius:10px; background:rgba(21,58,138,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:20px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#153A8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 7l-4 7a4.5 4.5 0 0 0 8 0zM18 7l-4 7a4.5 4.5 0 0 0 8 0zM4 7h16M9 21h6"></path></svg></span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:24px; color:#0B1F55; margin:0 0 12px;">Droit Privé</h3>
+        <p style="font-size:15px; line-height:1.7; color:#4B5563; margin:0 0 20px;">Une formation consacrée aux relations entre les personnes, les entreprises et les institutions privées : droit civil, droit des affaires, droit social et procédures judiciaires.</p>
+        <ul style="list-style:none; margin:0 0 26px; padding:0; display:flex; flex-direction:column; gap:10px;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Raisonnement et rédaction juridiques</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Analyse des contrats et des contentieux</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Maîtrise des procédures judiciaires</li>
+        </ul>
+        <a href="#admissions" style="display:inline-flex; align-items:center; gap:8px; color:#153A8A; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px;" style-hover="color:#078B3E;">Découvrir le parcours<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </article>
+      <article style="background:#FFFFFF; border-radius:10px; border:1px solid #E5E9F2; padding:36px; transition:box-shadow .2s;" style-hover="box-shadow:0 12px 30px rgba(11,31,85,0.1);">
+        <span style="width:54px; height:54px; border-radius:10px; background:rgba(7,139,62,0.1); display:flex; align-items:center; justify-content:center; margin-bottom:20px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg></span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:24px; color:#0B1F55; margin:0 0 12px;">Science Politique</h3>
+        <p style="font-size:15px; line-height:1.7; color:#4B5563; margin:0 0 20px;">Une formation orientée vers l'analyse des institutions, de l'action publique, des relations de pouvoir, de la gouvernance et des transformations politiques.</p>
+        <ul style="list-style:none; margin:0 0 26px; padding:0; display:flex; flex-direction:column; gap:10px;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Analyse des institutions et de la gouvernance</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Méthodes des sciences sociales</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:14.5px; color:#1F2937;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M20 6 9 17l-5-5"></path></svg>Compréhension de l'action publique</li>
+        </ul>
+        <a href="#admissions" style="display:inline-flex; align-items:center; gap:8px; color:#078B3E; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px;" style-hover="color:#153A8A;">Découvrir le parcours<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+      </article>
+    </div>
+    <div style="margin-top:32px; background:#FFFFFF; border:1px solid #E5E9F2; border-radius:8px; padding:22px 28px; display:flex; flex-wrap:wrap; align-items:center; gap:14px 28px;">
+      <span style="font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; color:#0B1F55;">Diplômes et niveaux proposés :</span>
+      <span style="background:rgba(21,58,138,0.08); color:#153A8A; font-weight:600; font-size:13.5px; padding:6px 16px; border-radius:4px;">Licence</span>
+      <span style="background:rgba(7,139,62,0.08); color:#078B3E; font-weight:600; font-size:13.5px; padding:6px 16px; border-radius:4px;">Master</span>
+      <span style="background:rgba(244,185,66,0.16); color:#8A6410; font-weight:600; font-size:13.5px; padding:6px 16px; border-radius:4px;">Formation continue</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHIFFRES CLÉS ===== -->
+<section data-screen-label="Chiffres clés" style="background:#0B1F55; padding:56px 24px;">
+  <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:32px; text-align:center;">
+    <div style="transition:transform .2s;" style-hover="transform:translateY(-4px);">
+      <p style="font-family:'Poppins',sans-serif; font-weight:800; font-size:44px; color:#F4B942; margin:0;">2</p>
+      <p style="color:#C9D4EE; font-size:15px; margin:6px 0 0;">Parcours de formation</p>
+    </div>
+    <div style="transition:transform .2s;" style-hover="transform:translateY(-4px);">
+      <p style="font-family:'Poppins',sans-serif; font-weight:800; font-size:44px; color:#F4B942; margin:0;">L · M</p>
+      <p style="color:#C9D4EE; font-size:15px; margin:6px 0 0;">Licence et Master</p>
+    </div>
+    <div style="transition:transform .2s;" style-hover="transform:translateY(-4px);">
+      <div style="height:56px; display:flex; align-items:center; justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+      <p style="color:#C9D4EE; font-size:15px; margin:6px 0 0;">Une communauté universitaire dynamique</p>
+    </div>
+    <div style="transition:transform .2s;" style-hover="transform:translateY(-4px);">
+      <div style="height:56px; display:flex; align-items:center; justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"></path></svg></div>
+      <p style="color:#C9D4EE; font-size:15px; margin:6px 0 0;">Université publique de Mahajanga</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADMISSIONS ===== -->
+<section id="admissions" data-screen-label="Admissions" style="padding:80px 24px;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="text-align:center; max-width:680px; margin:0 auto 48px;">
+      <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">Rejoindre l'EDSP</p>
+      <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 14px;">Admissions et préinscriptions</h2>
+      <p style="font-size:16px; line-height:1.65; color:#4B5563; margin:0;">Un processus simple, en quatre étapes, encadré par la Scolarité centrale de l'Université de Mahajanga.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:24px;">
+      <div style="background:#F5F7FA; border-radius:8px; padding:26px;">
+        <span style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#0B1F55; color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:700; align-items:center; justify-content:center; margin-bottom:14px;">1</span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:17px; color:#0B1F55; margin:0 0 6px;">Consulter les conditions</h3>
+        <p style="font-size:14px; line-height:1.6; color:#4B5563; margin:0;">Vérifiez les conditions d'accès au parcours visé dans l'avis officiel en vigueur.</p>
+      </div>
+      <div style="background:#F5F7FA; border-radius:8px; padding:26px;">
+        <span style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#153A8A; color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:700; align-items:center; justify-content:center; margin-bottom:14px;">2</span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:17px; color:#0B1F55; margin:0 0 6px;">Préparer les pièces demandées</h3>
+        <p style="font-size:14px; line-height:1.6; color:#4B5563; margin:0;">Rassemblez les documents indiqués : fiche de préinscription, actes et relevés.</p>
+      </div>
+      <div style="background:#F5F7FA; border-radius:8px; padding:26px;">
+        <span style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#078B3E; color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:700; align-items:center; justify-content:center; margin-bottom:14px;">3</span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:17px; color:#0B1F55; margin:0 0 6px;">Déposer le dossier</h3>
+        <p style="font-size:14px; line-height:1.6; color:#4B5563; margin:0;">Déposez le dossier complet auprès de la Scolarité centrale ou envoyez-le à l'adresse indiquée.</p>
+      </div>
+      <div style="background:#F5F7FA; border-radius:8px; padding:26px;">
+        <span style="display:inline-flex; width:38px; height:38px; border-radius:50%; background:#F4B942; color:#0B1F55; font-family:'Poppins',sans-serif; font-weight:700; align-items:center; justify-content:center; margin-bottom:14px;">4</span>
+        <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:17px; color:#0B1F55; margin:0 0 6px;">Recevoir la confirmation</h3>
+        <p style="font-size:14px; line-height:1.6; color:#4B5563; margin:0;">Recevez la confirmation de votre préinscription et suivez les étapes d'inscription.</p>
+      </div>
+    </div>
+    <div style="margin-top:36px; background:#F5F7FA; border-radius:8px; padding:22px 28px; display:flex; gap:14px; align-items:flex-start;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#078B3E" stroke-width="2" stroke-linecap="round" style="flex:none; margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+      <p style="margin:0; font-size:15px; line-height:1.65; color:#1F2937;">Les informations relatives aux inscriptions, calendriers et pièces à fournir sont publiées régulièrement sur le site.</p>
+    </div>
+    <div style="margin-top:20px; background:#0B1F55; border-radius:8px; padding:22px 28px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span style="width:10px; height:10px; border-radius:50%; background:{{ campagneDotColor }}; flex:none; box-shadow:0 0 0 4px {{ campagneDotHalo }};"></span>
+        <p style="margin:0; color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:600; font-size:16px;">{{ campagneMessage }}</p>
+      </div>
+      <a href="#actualites" style="color:#F4B942; font-weight:600; font-size:14.5px; display:inline-flex; align-items:center; gap:8px;" style-hover="color:#FFFFFF;">Consulter l'avis officiel en cours<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+    </div>
+    <div style="margin-top:32px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center;">
+      <a href="#actualites" style="border:2px solid #0B1F55; color:#0B1F55; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:12px 24px; border-radius:6px; transition:background .15s;" style-hover="background:#0B1F55; color:#FFFFFF;">Voir les conditions d'admission</a>
+      <a href="#contact" style="background:{{ ctaBg }}; color:{{ ctaFg }}; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:12px 24px; border-radius:6px; transition:filter .15s;" style-hover="filter:brightness(1.08); color:{{ ctaFg }};">Commencer la préinscription</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ACTUALITÉS ===== -->
+<section id="actualites" data-screen-label="Actualités" style="padding:80px 24px; background:#F5F7FA;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:40px;">
+      <div>
+        <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">À la une</p>
+        <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0;">Actualités et communiqués</h2>
+      </div>
+      <a href="#actualites" style="border:2px solid #153A8A; color:#153A8A; font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; padding:10px 20px; border-radius:6px; transition:background .15s;" style-hover="background:#153A8A; color:#FFFFFF;">Voir toutes les actualités</a>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:26px;">
+      <sc-for list="{{ actualites }}" as="actu" hint-placeholder-count="3">
+        <article style="background:#FFFFFF; border-radius:8px; overflow:hidden; box-shadow:0 3px 12px rgba(11,31,85,0.07); display:flex; flex-direction:column; transition:box-shadow .2s;" style-hover="box-shadow:0 14px 32px rgba(11,31,85,0.14);">
+          <div style="height:190px;">
+            <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ actu.imgId }}" shape="rect" placeholder="{{ actu.imgPlaceholder }}" hint-size="100%,190px"></x-import>
+          </div>
+          <div style="padding:24px 26px 28px; display:flex; flex-direction:column; gap:10px; flex:1;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="background:{{ actu.catBg }}; color:{{ actu.catColor }}; font-weight:700; font-size:12px; letter-spacing:0.03em; text-transform:uppercase; padding:4px 10px; border-radius:4px;">{{ actu.categorie }}</span>
+              <span style="font-size:13px; color:#6B7280;">{{ actu.date }}</span>
+            </div>
+            <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:19px; line-height:1.35; color:#0B1F55; margin:0;">{{ actu.titre }}</h3>
+            <p style="font-size:14.5px; line-height:1.6; color:#4B5563; margin:0; flex:1;">{{ actu.resume }}</p>
+            <a href="#actualites" style="color:#078B3E; font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:6px; margin-top:4px;" style-hover="color:#153A8A;">Lire la suite<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VIE ÉTUDIANTE ===== -->
+<section id="vie-etudiante" data-screen-label="Vie étudiante" style="padding:80px 24px;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="display:flex; flex-wrap:wrap; gap:48px;">
+      <div style="flex:1 1 380px; min-width:300px;">
+        <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">Vie étudiante</p>
+        <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 18px;">Une expérience universitaire enrichissante</h2>
+        <p style="font-size:16px; line-height:1.7; color:#4B5563; margin:0 0 24px;">Au-delà des cours, l'EDSP offre un cadre vivant où les étudiants apprennent, débattent et s'engagent.</p>
+        <ul style="list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px 20px;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#078B3E; flex:none;"></span>Activités académiques</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#153A8A; flex:none;"></span>Conférences</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#F4B942; flex:none;"></span>Associations étudiantes</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#078B3E; flex:none;"></span>Événements culturels</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#153A8A; flex:none;"></span>Accompagnement pédagogique</li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:15px; color:#1F2937;"><span style="width:8px; height:8px; border-radius:50%; background:#F4B942; flex:none;"></span>Insertion professionnelle</li>
+        </ul>
+      </div>
+      <div style="flex:1 1 480px; min-width:300px; display:grid; grid-template-columns:2fr 1fr; grid-template-rows:200px 200px; gap:14px;">
+        <div style="grid-row:span 2; border-radius:10px; overflow:hidden;">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="vie-grande" shape="rect" placeholder="Grande photo — vie étudiante" hint-size="100%,100%"></x-import>
+        </div>
+        <div style="border-radius:10px; overflow:hidden;">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="vie-petite-1" shape="rect" placeholder="Conférence" hint-size="100%,100%"></x-import>
+        </div>
+        <div style="border-radius:10px; overflow:hidden;">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="vie-petite-2" shape="rect" placeholder="Événement étudiant" hint-size="100%,100%"></x-import>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BIBLIOTHÈQUE ===== -->
+<section id="bibliotheque" data-screen-label="Bibliothèque" style="padding:0 24px 80px;">
+  <div style="max-width:1280px; margin:0 auto; background:#0B1F55; border-radius:12px; padding:52px 48px; display:flex; flex-wrap:wrap; align-items:center; gap:32px; position:relative;">
+    <span style="width:64px; height:64px; border-radius:12px; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; flex:none;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-2.5"></path></svg></span>
+    <div style="flex:1 1 380px; min-width:280px; position:relative;">
+      <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:28px; color:#FFFFFF; margin:0 0 10px;">Bibliothèque et ressources documentaires</h2>
+      <p style="font-size:15.5px; line-height:1.7; color:#C9D4EE; margin:0;">La bibliothèque de l'EDSP met à la disposition des étudiants des ouvrages juridiques, politiques et académiques pour soutenir leur formation et leurs travaux de recherche.</p>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:14px; position:relative;">
+      <a href="https://bibliotheque.edsp.mg" target="_blank" rel="noopener" style="background:#FFFFFF; color:#0B1F55; font-family:'Poppins',sans-serif; font-weight:600; font-size:14.5px; padding:12px 22px; border-radius:6px; transition:background .15s;" style-hover="background:#F4B942; color:#0B1F55;">Consulter le catalogue</a>
+      <a href="https://bibliotheque.edsp.mg" target="_blank" rel="noopener" style="border:2px solid rgba(255,255,255,0.5); color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:600; font-size:14.5px; padding:10px 22px; border-radius:6px; transition:border-color .15s;" style-hover="border-color:#F4B942; color:#F4B942;">Accéder à l'espace bibliothèque</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIRECTION ET ÉQUIPE ===== -->
+<section id="equipe" data-screen-label="Équipe" style="padding:80px 24px; background:#F5F7FA;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="text-align:center; max-width:680px; margin:0 auto 16px;">
+      <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">L'équipe</p>
+      <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 10px;">Direction et équipe pédagogique</h2>
+      <p style="font-size:14px; color:#8A6410; background:rgba(244,185,66,0.14); display:inline-block; padding:6px 14px; border-radius:4px; margin:0;">Contenus de démonstration — à remplacer par les informations officielles.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:26px; margin-top:40px;">
+      <sc-for list="{{ equipe }}" as="membre" hint-placeholder-count="4">
+        <article style="background:#FFFFFF; border-radius:8px; padding:30px 26px; text-align:center; box-shadow:0 3px 12px rgba(11,31,85,0.06); transition:box-shadow .2s;" style-hover="box-shadow:0 12px 28px rgba(11,31,85,0.12);">
+          <div style="width:110px; height:110px; margin:0 auto 18px;">
+            <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ membre.imgId }}" shape="circle" placeholder="Photo" hint-size="110px,110px" style="width:110px; height:110px;"></x-import>
+          </div>
+          <span style="display:inline-block; background:{{ membre.catBg }}; color:{{ membre.catColor }}; font-weight:700; font-size:11.5px; letter-spacing:0.05em; text-transform:uppercase; padding:4px 10px; border-radius:4px; margin-bottom:10px;">{{ membre.categorie }}</span>
+          <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:18px; color:#0B1F55; margin:0 0 4px;">{{ membre.nom }}</h3>
+          <p style="font-size:13.5px; font-weight:600; color:#078B3E; margin:0 0 10px;">{{ membre.fonction }}</p>
+          <p style="font-size:13.5px; line-height:1.6; color:#4B5563; margin:0;">{{ membre.bio }}</p>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TÉMOIGNAGES ===== -->
+<section data-screen-label="Témoignages" style="padding:80px 24px;">
+  <div style="max-width:1280px; margin:0 auto;">
+    <div style="text-align:center; max-width:680px; margin:0 auto 44px;">
+      <p style="color:#078B3E; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px;">Ils en parlent</p>
+      <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:34px; color:#0B1F55; margin:0 0 10px;">Paroles d'étudiants</h2>
+      <p style="font-size:14px; color:#8A6410; background:rgba(244,185,66,0.14); display:inline-block; padding:6px 14px; border-radius:4px; margin:0;">Témoignages fictifs de démonstration — à remplacer.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:26px;">
+      <sc-for list="{{ temoignages }}" as="temoin" hint-placeholder-count="3">
+        <figure style="background:#F5F7FA; border-radius:8px; padding:30px; margin:0; display:flex; flex-direction:column; gap:18px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#F4B942"><path d="M10 8c-3 0-5 2.2-5 5.2 0 2.5 1.8 4.3 4 4.3.4 0 .8 0 1.1-.2-.5 1.6-1.8 2.9-3.6 3.5l.7 1.7c3.9-1.1 6.3-4.4 6.3-8.6C13.5 10.4 12 8 10 8zm10 0c-3 0-5 2.2-5 5.2 0 2.5 1.8 4.3 4 4.3.4 0 .8 0 1.1-.2-.5 1.6-1.8 2.9-3.6 3.5l.7 1.7c3.9-1.1 6.3-4.4 6.3-8.6C23.5 10.4 22 8 20 8z"></path></svg>
+          <blockquote style="margin:0; font-size:15px; line-height:1.7; color:#1F2937; font-style:italic; flex:1;">{{ temoin.citation }}</blockquote>
+          <figcaption style="display:flex; align-items:center; gap:14px;">
+            <div style="width:52px; height:52px; flex:none;">
+              <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ temoin.imgId }}" shape="circle" placeholder="•" hint-size="52px,52px" style="width:52px; height:52px;"></x-import>
+            </div>
+            <div>
+              <p style="margin:0; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; color:#0B1F55;">{{ temoin.nom }}</p>
+              <p style="margin:0; font-size:13px; color:#6B7280;">{{ temoin.parcours }}</p>
+            </div>
+          </figcaption>
+        </figure>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- ===== APPEL À L'ACTION ===== -->
+<section data-screen-label="CTA" style="background:#0B1F55; border-top:4px solid #078B3E; padding:76px 24px; text-align:center;">
+  <div style="max-width:760px; margin:0 auto;">
+    <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:38px; color:#FFFFFF; margin:0 0 16px;">Prêt à rejoindre l'EDSP ?</h2>
+    <p style="font-size:17px; line-height:1.7; color:#C9D4EE; margin:0 0 32px;">Découvrez nos formations et préparez votre inscription à l'École de Droit et Science Politique de l'Université de Mahajanga.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:14px; justify-content:center;">
+      <a href="#formations" style="background:{{ ctaBg }}; color:{{ ctaFg }}; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:14px 28px; border-radius:6px; transition:filter .15s;" style-hover="filter:brightness(1.08); color:{{ ctaFg }};">Voir les formations</a>
+      <a href="#contact" style="border:2px solid rgba(255,255,255,0.6); color:#FFFFFF; font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; padding:12px 28px; border-radius:6px; transition:border-color .15s;" style-hover="border-color:#F4B942; color:#F4B942;">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer id="contact" style="background:#0B1F55; color:#C9D4EE; padding:64px 24px 0;">
+  <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:40px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <span style="background:#FFFFFF; border-radius:8px; padding:6px; display:flex;"><img src="assets/logo-edsp.png" alt="Logo EDSP" style="height:52px; width:auto;"></span>
+        <span style="font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF; line-height:1.3;">EDSP</span>
+      </div>
+      <p style="font-size:14px; line-height:1.7; margin:0;">L'École de Droit et Science Politique forme les juristes et analystes politiques de demain, au sein de l'Université de Mahajanga.</p>
+    </div>
+    <nav aria-label="Liens du site">
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; color:#FFFFFF; margin:0 0 16px;">Le site</h3>
+      <ul style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;">
+        <li><a href="#accueil" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Accueil</a></li>
+        <li><a href="#ecole" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Présentation</a></li>
+        <li><a href="#formations" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Formations</a></li>
+        <li><a href="#admissions" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Admissions</a></li>
+        <li><a href="#actualites" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Actualités</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Liens utiles">
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; color:#FFFFFF; margin:0 0 16px;">Liens utiles</h3>
+      <ul style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;">
+        <li><a href="#vie-etudiante" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Vie étudiante</a></li>
+        <li><a href="https://bibliotheque.edsp.mg" target="_blank" rel="noopener" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Bibliothèque</a></li>
+        <li><a href="#vie-etudiante" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Galerie</a></li>
+        <li><a href="#contact" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Contact</a></li>
+        <li><a href="#contact" style="color:#C9D4EE; font-size:14px;" style-hover="color:#F4B942;">Mentions légales</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:15px; color:#FFFFFF; margin:0 0 16px;">Contact</h3>
+      <ul style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; font-size:14px;">
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2" style="flex:none; margin-top:2px;"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Ambondrona, Mahajanga</li>
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2" style="flex:none; margin-top:2px;"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg><span>+261 32 05 579 90<br>+261 32 98 091 18</span></li>
+        <li style="display:flex; gap:10px; align-items:flex-start;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2" style="flex:none; margin-top:2px;"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg><a href="mailto:edsp.mahajanga@gmail.com" style="color:#C9D4EE;" style-hover="color:#F4B942;">edsp.mahajanga@gmail.com</a></li>
+        <li style="display:flex; gap:10px; align-items:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="#F4B942"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5H16.6V5a20 20 0 0 0-2.1-.1c-2.1 0-3.5 1.3-3.5 3.6V11H8.6v3H11v7z"></path></svg><a href="#contact" style="color:#C9D4EE;" style-hover="color:#F4B942;">École de Droit et Science Politique-EDSP</a></li>
+      </ul>
+    </div>
+  </div>
+  <div style="max-width:1280px; margin:48px auto 0; border-top:1px solid rgba(255,255,255,0.12); padding:20px 0; display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; font-size:13px; color:#8FA0C9;">
+    <p style="margin:0;">© 2026 École de Droit et Science Politique – Université de Mahajanga. Tous droits réservés.</p>
+    <p style="margin:0;">Conception : Gasy Coder</p>
+  </div>
+</footer>
+
+<!-- ===== BOUTON RETOUR EN HAUT ===== -->
+<sc-if value="{{ showTop }}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{ scrollTop }}" aria-label="Revenir en haut de page" style="position:fixed; bottom:26px; right:26px; z-index:60; width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; background:#078B3E; color:#FFFFFF; box-shadow:0 8px 20px rgba(7,139,62,0.4); display:flex; align-items:center; justify-content:center; transition:background .15s;" style-hover="background:#0B1F55;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+  </button>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;campagneOuverte&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Admissions&quot; },
+  &quot;accentPreinscription&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;vert&quot;, &quot;or&quot;], &quot;default&quot;: &quot;vert&quot;, &quot;tsType&quot;: &quot;'vert' | 'or'&quot;, &quot;section&quot;: &quot;Boutons&quot; }
+}">
+class Component extends DCLogic {
+  state = { menuOpen: false, showTop: false, drop: null, width: typeof window !== 'undefined' ? window.innerWidth : 1280 };
+  componentDidMount() {
+    this._onScroll = () => {
+      const show = window.scrollY > 500;
+      if (show !== this.state.showTop) this.setState({ showTop: show });
+    };
+    this._onResize = () => {
+      const w = window.innerWidth;
+      if ((w < 1120) !== (this.state.width < 1120)) this.setState({ width: w, menuOpen: false });
+      else this.setState({ width: w });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    window.addEventListener('resize', this._onResize);
+    this._onResize();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onResize);
+  }
+  renderVals() {
+    const isDesktop = this.state.width >= 1120;
+    const campagneOuverte = this.props.campagneOuverte ?? false;
+    const accent = this.props.accentPreinscription ?? 'vert';
+    const cats = {
+      Admissions: { bg: 'rgba(7,139,62,0.1)', fg: '#078B3E' },
+      'Vie académique': { bg: 'rgba(21,58,138,0.1)', fg: '#153A8A' },
+      'Recherche': { bg: 'rgba(244,185,66,0.18)', fg: '#8A6410' },
+    };
+    return {
+      isDesktop, isMobile: !isDesktop,
+      menuOpen: this.state.menuOpen && !isDesktop,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      dropEcole: this.state.drop === 'ecole',
+      dropFormations: this.state.drop === 'formations',
+      openEcole: () => this.setState({ drop: 'ecole' }),
+      openFormations: () => this.setState({ drop: 'formations' }),
+      toggleEcole: () => this.setState(s => ({ drop: s.drop === 'ecole' ? null : 'ecole' })),
+      toggleFormations: () => this.setState(s => ({ drop: s.drop === 'formations' ? null : 'formations' })),
+      closeDrops: () => this.setState({ drop: null }),
+      showTop: this.state.showTop,
+      scrollTop: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+      ctaBg: accent === 'or' ? '#F4B942' : '#078B3E',
+      ctaFg: accent === 'or' ? '#0B1F55' : '#FFFFFF',
+      campagneMessage: campagneOuverte
+        ? 'Campagne de préinscription en cours — consultez l\u2019avis officiel.'
+        : 'Campagne de préinscription : consultez l\u2019avis officiel en cours.',
+      campagneDotColor: campagneOuverte ? '#22A447' : '#F4B942',
+      campagneDotHalo: campagneOuverte ? 'rgba(34,164,71,0.25)' : 'rgba(244,185,66,0.25)',
+      actualites: [
+        { imgId: 'actu-1', imgPlaceholder: 'Photo — préinscriptions', categorie: 'Admissions', catBg: cats.Admissions.bg, catColor: cats.Admissions.fg, date: 'Date à publier', titre: 'Ouverture des préinscriptions', resume: 'L\u2019avis officiel précisant le calendrier, les pièces à fournir et les modalités de dépôt des dossiers sera publié dans cette rubrique.' },
+        { imgId: 'actu-2', imgPlaceholder: 'Photo — calendrier académique', categorie: 'Vie académique', catBg: cats['Vie académique'].bg, catColor: cats['Vie académique'].fg, date: 'Date à publier', titre: 'Calendrier académique', resume: 'Retrouvez les dates clés de l\u2019année universitaire : rentrée, sessions d\u2019examens, soutenances et périodes de congés.' },
+        { imgId: 'actu-3', imgPlaceholder: 'Photo — conférence', categorie: 'Recherche', catBg: cats.Recherche.bg, catColor: cats.Recherche.fg, date: 'Date à publier', titre: 'Activités scientifiques et conférences', resume: 'Conférences, journées d\u2019étude et rencontres académiques organisées par l\u2019EDSP et ses partenaires institutionnels.' },
+      ],
+      equipe: [
+        { imgId: 'eq-1', categorie: 'Direction', catBg: 'rgba(11,31,85,0.08)', catColor: '#0B1F55', nom: '[Nom du directeur]', fonction: 'Directeur de l\u2019EDSP', bio: 'Présentation à compléter avec les informations officielles de la direction.' },
+        { imgId: 'eq-2', categorie: 'Administration', catBg: 'rgba(21,58,138,0.1)', catColor: '#153A8A', nom: '[Nom du responsable]', fonction: 'Responsable administratif', bio: 'Présentation à compléter — accueil, scolarité et suivi administratif des étudiants.' },
+        { imgId: 'eq-3', categorie: 'Enseignants', catBg: 'rgba(7,139,62,0.1)', catColor: '#078B3E', nom: '[Nom de l\u2019enseignant]', fonction: 'Enseignant-chercheur en droit privé', bio: 'Présentation à compléter — domaines d\u2019enseignement et de recherche.' },
+        { imgId: 'eq-4', categorie: 'Responsables pédagogiques', catBg: 'rgba(244,185,66,0.16)', catColor: '#8A6410', nom: '[Nom du responsable]', fonction: 'Responsable du parcours Science Politique', bio: 'Présentation à compléter — coordination pédagogique du parcours.' },
+      ],
+      temoignages: [
+        { imgId: 'tem-1', nom: 'Miora R. (exemple)', parcours: 'Licence 3 — Droit Privé', citation: 'Les enseignants nous poussent à raisonner comme de vrais juristes dès la première année. On se sent réellement accompagnés.' },
+        { imgId: 'tem-2', nom: 'Tojo A. (exemple)', parcours: 'Master 1 — Science Politique', citation: 'Les débats et les conférences m\u2019ont ouvert les yeux sur les enjeux de gouvernance à Madagascar. C\u2019est une formation vivante.' },
+        { imgId: 'tem-3', nom: 'Fanja H. (exemple)', parcours: 'Licence 2 — Droit Privé', citation: 'J\u2019ai choisi l\u2019EDSP pour la proximité avec les enseignants et la qualité de l\u2019encadrement. Je ne le regrette pas.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
