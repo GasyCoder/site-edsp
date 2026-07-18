@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Semester extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'semestres';
+
+    protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return ['is_active' => 'boolean'];
+    }
+
+    public function teachingUnits(): HasMany
+    {
+        return $this->hasMany(TeachingUnit::class, 'semestre_id');
+    }
+}
