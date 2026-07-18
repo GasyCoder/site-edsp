@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --color-navy: #0b1f55;
+    --color-institutional: #153a8a;
+    --color-edsp-green: #078b3e;
+    --color-gold: #f4b942;
+    --color-soft: #f5f7fa;
+    --font-heading: "Poppins", sans-serif;
+    --font-body: "Open Sans", sans-serif;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply m-0 bg-white font-body text-slate-800 antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-heading;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font: inherit;
+    }
+
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    [tabindex]:not([tabindex='-1']) {
+        @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-edsp-green;
+    }
+
+    ::selection {
+        @apply bg-edsp-green/20 text-navy;
+    }
+}
+
+@layer components {
+    .desktop-nav-link {
+        @apply rounded-sm py-2 font-heading text-sm font-semibold text-navy transition hover:text-edsp-green;
+    }
+
+    .nav-dropdown {
+        @apply absolute top-full z-50 flex min-w-56 flex-col rounded-lg border border-slate-200 bg-white p-2 shadow-[0_14px_34px_rgba(11,31,85,0.14)];
+    }
+
+    .nav-dropdown-link {
+        @apply rounded-md px-3.5 py-2.5 text-sm font-semibold text-navy transition hover:bg-soft hover:text-edsp-green;
+    }
+
+    .mobile-nav-link {
+        @apply rounded-md px-3 py-2.5 font-semibold text-navy transition hover:bg-soft hover:text-edsp-green;
+    }
+
+    .mobile-nav-sublink {
+        @apply rounded-md py-2.5 pl-7 pr-3 text-sm font-semibold text-navy transition hover:bg-soft hover:text-edsp-green;
+    }
+
+    .nav-group-label {
+        @apply mb-1 mt-3 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500;
+    }
+
+    .footer-link {
+        @apply text-[#C9D4EE] transition hover:text-gold;
+    }
+
+    .button-primary,
+    .button-dark,
+    .button-light,
+    .button-outline,
+    .button-secondary {
+        @apply inline-flex items-center gap-2 rounded-md px-5 py-3 font-heading text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .button-primary {
+        @apply bg-edsp-green text-white shadow-sm hover:bg-[#067735];
+    }
+
+    .button-dark {
+        @apply bg-navy text-white shadow-sm hover:bg-institutional;
+    }
+
+    .button-light {
+        @apply bg-white text-navy shadow-sm hover:bg-gold;
+    }
+
+    .button-outline {
+        @apply border-2 border-institutional bg-transparent text-institutional hover:bg-institutional hover:text-white;
+    }
+
+    .button-secondary {
+        @apply border border-slate-300 bg-white text-navy hover:border-navy hover:bg-soft;
+    }
+
+    .form-control {
+        @apply block w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-edsp-green focus:ring-2 focus:ring-edsp-green/15 focus:outline-none;
+    }
+
+    .institution-card {
+        @apply rounded-xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(11,31,85,0.08)] sm:p-7;
+    }
+
+    .feature-icon {
+        @apply grid size-12 place-items-center rounded-lg;
+    }
+
+    .admission-step {
+        @apply rounded-xl bg-soft p-6;
+    }
+
+    .admission-step-number {
+        @apply grid size-10 place-items-center rounded-full font-heading text-sm font-bold;
+    }
+
+    .life-item {
+        @apply flex items-center gap-2.5 text-sm text-slate-700;
+    }
+
+    .life-item > span {
+        @apply size-2 flex-none rounded-full;
+    }
+
+    .rich-text {
+        @apply leading-8;
+    }
+
+    .rich-text > * + * {
+        @apply mt-4;
+    }
+
+    .rich-text h2,
+    .rich-text h3,
+    .rich-text h4 {
+        @apply mt-8 font-bold text-navy;
+    }
+
+    .rich-text h2 {
+        @apply text-2xl;
+    }
+
+    .rich-text h3 {
+        @apply text-xl;
+    }
+
+    .rich-text ul {
+        @apply list-disc space-y-2 pl-6;
+    }
+
+    .rich-text ol {
+        @apply list-decimal space-y-2 pl-6;
+    }
+
+    .rich-text a {
+        @apply font-semibold text-institutional underline decoration-institutional/30 underline-offset-4 hover:text-edsp-green;
+    }
+
+    .rich-text blockquote {
+        @apply border-l-4 border-gold bg-soft px-5 py-3 italic text-slate-700;
+    }
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+    transition:
+        opacity 150ms ease,
+        transform 150ms ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+@media print {
+    header,
+    footer,
+    button,
+    nav {
+        display: none !important;
+    }
+}
