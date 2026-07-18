@@ -1,0 +1,126 @@
+<script setup lang="ts">
+import { ArrowRight, CheckCircle2, Info } from 'lucide-vue-next';
+import { computed } from 'vue';
+import type { AdmissionCampaign, Section } from '../../types';
+import { formatPublicDate } from '../../lib/public-content';
+import SectionHeading from './SectionHeading.vue';
+import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
+import SmartLink from './SmartLink.vue';
+
+const props = withDefaults(
+    defineProps<{
+        campaign?: AdmissionCampaign | null;
+        section?: Section | null;
+    }>(),
+    {
+        campaign: null,
+        section: null,
+    },
+);
+
+const title = computed(() => props.section?.title || 'Admissions et préinscriptions');
+const eyebrow = computed(() => props.section?.subtitle || "Rejoindre l'EDSP");
+const content = computed(
+    () =>
+        props.section?.content ||
+        "Un processus simple, en quatre étapes, encadré par la Scolarité centrale de l'Université de Mahajanga.",
+);
+const closeDate = computed(() => formatPublicDate(props.campaign?.closes_at));
+const background = computed(() => sectionBackgroundClass(props.section, 'white'));
+const container = computed(() => sectionContainerClass(props.section));
+const alignment = computed(() => sectionAlignment(props.section, 'center'));
+const dark = computed(() => isDarkSection(props.section));
+const steps = computed(() => [
+    {
+        description: sectionSetting(props.section, 'step_1_description', "Vérifiez les conditions d'accès au parcours visé dans l'avis officiel en vigueur."),
+        title: sectionSetting(props.section, 'step_1_title', 'Consulter les conditions'),
+    },
+    {
+        description: sectionSetting(props.section, 'step_2_description', 'Rassemblez les documents indiqués pour la campagne et la formation choisies.'),
+        title: sectionSetting(props.section, 'step_2_title', 'Préparer les pièces demandées'),
+    },
+    {
+        description: sectionSetting(props.section, 'step_3_description', 'Complétez soigneusement le formulaire de préinscription et vérifiez vos informations.'),
+        title: sectionSetting(props.section, 'step_3_title', 'Déposer le dossier'),
+    },
+    {
+        description: sectionSetting(props.section, 'step_4_description', 'Conservez votre numéro de dossier et suivez les prochaines étapes communiquées.'),
+        title: sectionSetting(props.section, 'step_4_title', 'Recevoir la confirmation'),
+    },
+]);
+const infoText = computed(() => sectionSetting(props.section, 'info_text', 'Les informations relatives aux inscriptions, calendriers et pièces à fournir sont publiées régulièrement sur le site.'));
+const campaignFallback = computed(() => sectionSetting(props.section, 'campaign_fallback_text', "Consultez l'avis officiel de préinscription en cours."));
+const campaignLinkText = computed(() => sectionSetting(props.section, 'campaign_link_text', 'Consulter les avis'));
+const campaignLinkUrl = computed(() => sectionSetting(props.section, 'campaign_link_url', '/admissions'));
+const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', "Voir les conditions d'admission"));
+const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/admissions'));
+</script>
+
+<template>
+    <section id="admissions" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+        <div :class="container" class="mx-auto">
+            <SectionHeading :eyebrow="eyebrow" :title="title" :description="content" :align="alignment" :dark="dark" />
+
+            <ol class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <li v-for="(step, index) in steps" :key="index" class="admission-step">
+                    <template v-if="index === 0">
+                    <span class="admission-step-number bg-navy text-white">1</span>
+                    </template>
+                    <template v-else-if="index === 1">
+                    <span class="admission-step-number bg-institutional text-white">2</span>
+                    </template>
+                    <template v-else-if="index === 2">
+                    <span class="admission-step-number bg-edsp-green text-white">3</span>
+                    </template>
+                    <template v-else>
+                    <span class="admission-step-number bg-gold text-navy">4</span>
+                    </template>
+                    <h3 class="mt-4 font-semibold text-navy">{{ step.title }}</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ step.description }}</p>
+                </li>
+            </ol>
+
+            <div class="mt-8 flex items-start gap-3 rounded-lg bg-soft px-5 py-4 text-sm leading-6 text-slate-700">
+                <Info :size="18" class="mt-0.5 flex-none text-edsp-green" aria-hidden="true" />
+                <p>{{ infoText }}</p>
+            </div>
+
+            <div
+                class="mt-5 flex flex-col gap-4 rounded-lg bg-navy px-5 py-5 text-white sm:flex-row sm:items-center sm:justify-between sm:px-7"
+            >
+                <div class="flex items-start gap-3">
+                    <span
+                        :class="[
+                            'mt-1.5 size-2.5 flex-none rounded-full ring-4',
+                            campaign ? 'bg-edsp-green ring-edsp-green/20' : 'bg-gold ring-gold/20',
+                        ]"
+                        aria-hidden="true"
+                    />
+                    <div>
+                        <p class="font-heading text-sm font-semibold sm:text-base">
+                            {{ campaign ? campaign.title : campaignFallback }}
+                        </p>
+                        <p v-if="closeDate" class="mt-1 text-xs text-[#C9D4EE]">
+                            Clôture prévue le {{ closeDate }}.
+                        </p>
+                    </div>
+                </div>
+                <SmartLink
+                    :href="campaignLinkUrl"
+                    class="inline-flex w-fit items-center gap-2 text-sm font-semibold text-gold transition hover:text-white"
+                >
+                    {{ campaignLinkText }}
+                    <ArrowRight :size="16" aria-hidden="true" />
+                </SmartLink>
+            </div>
+
+            <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
+                <SmartLink :href="secondaryButtonUrl" class="button-secondary justify-center">{{ secondaryButtonText }}</SmartLink>
+                <SmartLink :href="section?.button_url || '/preinscription'" class="button-primary justify-center">
+                    <CheckCircle2 :size="18" aria-hidden="true" />
+                    {{ section?.button_text || 'Commencer la préinscription' }}
+                </SmartLink>
+            </div>
+        </div>
+    </section>
+</template>
