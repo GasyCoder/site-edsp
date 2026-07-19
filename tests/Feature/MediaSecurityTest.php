@@ -5,8 +5,11 @@ use App\Models\Application;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\Program;
+use App\Models\Setting;
+use App\Services\MediaService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 test('authorized users upload only validated public media with required alt text', function (): void {
     Storage::fake('public');
@@ -73,6 +76,56 @@ test('a referenced medium cannot be deleted and an unused file is removed', func
 
     $this->assertDatabaseMissing('media', ['id' => $media->id]);
     Storage::disk('public')->assertMissing('media/test.jpg');
+});
+
+test('a super administrator can force delete a referenced medium', function (): void {
+    Storage::fake('public');
+    $user = userWithPermissions(['delete media']);
+    Role::findOrCreate('superadmin', 'web');
+    $user->assignRole('superadmin');
+
+    $media = Media::query()->create([
+        'disk' => 'public',
+        'path' => 'media/logo.png',
+        'filename' => 'logo.png',
+        'original_name' => 'logo.png',
+        'mime_type' => 'image/png',
+        'extension' => 'png',
+        'size' => 10,
+        'alt_text' => 'Logo',
+    ]);
+    Storage::disk('public')->put($media->path, 'image');
+
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+        'og_image_id' => $media->id,
+    ]);
+    $section = $page->sections()->create([
+        'section_key' => 'hero',
+        'section_type' => 'hero',
+        'image_id' => $media->id,
+        'position' => 1,
+        'is_visible' => true,
+    ]);
+    Setting::query()->create([
+        'key' => 'site_logo',
+        'value' => $media->url,
+        'group' => 'branding',
+        'type' => 'string',
+        'is_public' => true,
+    ]);
+
+    app(MediaService::class)->delete($media, $user->id, force: true);
+
+    $this->assertDatabaseMissing('media', ['id' => $media->id]);
+    expect($page->fresh()->og_image_id)->toBeNull()
+        ->and($section->fresh()->image_id)->toBeNull()
+        ->and(Setting::query()->where('key', 'site_logo')->value('value'))->toBeNull();
+    Storage::disk('public')->assertMissing('media/logo.png');
 });
 
 test('candidate documents remain private and require permission to download', function (): void {

@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Media;
 use App\Filament\Resources\Media\Pages\ManageMedia;
 use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
+use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Services\MediaService;
 use BackedEnum;
 use Closure;
 use Filament\Actions\BulkActionGroup;
@@ -17,6 +19,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -29,6 +32,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
@@ -205,18 +209,65 @@ class MediaResource extends Resource
                 ViewAction::make(),
                 self::editAction(),
                 DeleteAction::make()
-                    ->before(fn (Media $record) => app(ActivityLogger::class)->record(
-                        'media.deleted',
-                        $record,
-                        auth()->id(),
-                        ['filename' => $record->filename],
-                    ))
-                    ->requiresConfirmation(),
+                    ->requiresConfirmation()
+                    ->modalDescription(fn (): string => self::isSuperAdmin()
+                        ? 'En tant que super administrateur, ce média sera aussi retiré de tous les contenus qui l’utilisent (pages, actualités, galeries, réglages…).'
+                        : 'Êtes-vous sûr de vouloir faire cela ?')
+                    ->using(function (Media $record, DeleteAction $action): bool {
+                        try {
+                            app(MediaService::class)->delete($record, auth()->id(), force: self::isSuperAdmin());
+
+                            return true;
+                        } catch (ValidationException $exception) {
+                            $action->failureNotificationTitle(
+                                collect($exception->errors())->flatten()->first()
+                                    ?? 'Ce média ne peut pas être supprimé.',
+                            );
+
+                            return false;
+                        }
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->requiresConfirmation(),
+                        ->requiresConfirmation()
+                        ->modalDescription(fn (): string => self::isSuperAdmin()
+                            ? 'En tant que super administrateur, ces médias seront aussi retirés de tous les contenus qui les utilisent (pages, actualités, galeries, réglages…).'
+                            : 'Êtes-vous sûr de vouloir faire cela ?')
+                        ->action(function (EloquentCollection $records, DeleteBulkAction $action): void {
+                            $service = app(MediaService::class);
+                            $force = self::isSuperAdmin();
+                            $deleted = 0;
+                            $blocked = [];
+
+                            foreach ($records as $record) {
+                                try {
+                                    $service->delete($record, auth()->id(), force: $force);
+                                    $deleted++;
+                                } catch (ValidationException) {
+                                    $blocked[] = $record->original_name;
+                                }
+                            }
+
+                            if ($deleted > 0) {
+                                Notification::make()
+                                    ->success()
+                                    ->title($deleted === 1 ? 'Un média supprimé' : "{$deleted} médias supprimés")
+                                    ->send();
+                            }
+
+                            if ($blocked !== []) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Médias encore utilisés')
+                                    ->body('Impossible de supprimer : '.implode(', ', $blocked).'. Retirez-les d’abord des contenus qui les utilisent.')
+                                    ->persistent()
+                                    ->send();
+                            }
+
+                            $action->deselectRecordsAfterCompletion();
+                        }),
                 ]),
             ]);
     }
@@ -282,6 +333,13 @@ class MediaResource extends Resource
         }
 
         return $data;
+    }
+
+    public static function isSuperAdmin(): bool
+    {
+        $user = auth()->user();
+
+        return $user instanceof User && $user->hasRole('superadmin');
     }
 
     /** @return list<string> */
