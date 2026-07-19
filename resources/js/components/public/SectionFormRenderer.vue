@@ -26,7 +26,7 @@ const emit = defineEmits<{
     'update:modelValue': [value: EditableSectionPayload];
 }>();
 
-const fields = computed(() => fieldsForSection(props.section.section_type));
+const fields = computed(() => fieldsForSection(`${props.section.section_key} ${props.section.section_type}`));
 const fieldGroups: Array<{ description: string; key: SectionFieldGroup; label: string }> = [
     { key: 'content', label: 'Contenu principal', description: 'Textes, boutons et image principale de la section.' },
     { key: 'details', label: 'Contenus complémentaires', description: 'Libellés propres au design de cette section.' },

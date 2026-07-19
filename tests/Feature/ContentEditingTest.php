@@ -35,6 +35,14 @@ test('an authorized editor updates a controlled section and creates a revision',
             'alignment' => 'center',
             'container' => 'wide',
             'visual_title' => 'Un nouveau message dans le visuel',
+            'kicker_text' => 'Choisissez votre orientation :',
+            'rotating_item_1' => 'Droit des affaires',
+            'rotating_item_2' => 'Administration publique',
+            'location_text' => 'Campus Ambondrona',
+            'degree_text' => 'L1 à M2',
+            'visual_program_1' => 'Droit privé',
+            'visual_program_2' => 'Science politique',
+            'visual_footer' => 'Deux parcours, une même exigence',
             'secondary_button_text' => 'Candidater maintenant',
             'secondary_button_url' => '/inscription',
         ],
@@ -45,6 +53,11 @@ test('an authorized editor updates a controlled section and creates a revision',
         ->and($section->content)->not->toContain('<script>')
         ->and($section->settings['background'])->toBe('blue')
         ->and($section->settings['visual_title'])->toBe('Un nouveau message dans le visuel')
+        ->and($section->settings['kicker_text'])->toBe('Choisissez votre orientation :')
+        ->and($section->settings['rotating_item_1'])->toBe('Droit des affaires')
+        ->and($section->settings['location_text'])->toBe('Campus Ambondrona')
+        ->and($section->settings['degree_text'])->toBe('L1 à M2')
+        ->and($section->settings['visual_footer'])->toBe('Deux parcours, une même exigence')
         ->and($section->settings['secondary_button_url'])->toBe('/inscription');
 
     $revision = ContentRevision::query()

@@ -52,6 +52,10 @@ const programs = computed(() => [
     sectionSetting(props.section, 'rotating_item_1', tr('Droit privé', 'Private Law')),
     sectionSetting(props.section, 'rotating_item_2', tr('Science politique', 'Political Science')),
 ]);
+const visualPrograms = computed(() => [
+    sectionSetting(props.section, 'visual_program_1', programs.value[0]),
+    sectionSetting(props.section, 'visual_program_2', programs.value[1]),
+]);
 const displayedProgram = ref(programs.value[0]);
 let programIndex = 0;
 let characterIndex = programs.value[0].length;
@@ -186,11 +190,11 @@ onBeforeUnmount(() => {
                             <div class="mt-7 grid gap-3 sm:grid-cols-2">
                                 <div class="flex items-center gap-3 rounded-xl border border-white/15 bg-white/8 px-4 py-4">
                                     <Scale :size="20" class="flex-none text-gold" aria-hidden="true" />
-                                    <span class="font-heading text-sm font-semibold">{{ programs[0] }}</span>
+                                    <span class="font-heading text-sm font-semibold">{{ visualPrograms[0] }}</span>
                                 </div>
                                 <div class="flex items-center gap-3 rounded-xl border border-white/15 bg-white/8 px-4 py-4">
                                     <Landmark :size="20" class="flex-none text-gold" aria-hidden="true" />
-                                    <span class="font-heading text-sm font-semibold">{{ programs[1] }}</span>
+                                    <span class="font-heading text-sm font-semibold">{{ visualPrograms[1] }}</span>
                                 </div>
                             </div>
                         </div>
