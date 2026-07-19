@@ -30,7 +30,7 @@ const { tr } = useI18n();
             <Link
                 href="/"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="isCurrent('/') ? 'bg-edsp-green/10 text-edsp-green' : 'text-slate-500 hover:bg-soft hover:text-navy'"
+                :class="isCurrent('/') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
                 :aria-current="isCurrent('/') ? 'page' : undefined"
                 @click="emit('close')"
             >
@@ -41,7 +41,7 @@ const { tr } = useI18n();
             <Link
                 href="/formations"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="isCurrent('/formations') ? 'bg-edsp-green/10 text-edsp-green' : 'text-slate-500 hover:bg-soft hover:text-navy'"
+                :class="isCurrent('/formations') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
                 :aria-current="isCurrent('/formations') ? 'page' : undefined"
                 @click="emit('close')"
             >
@@ -52,7 +52,7 @@ const { tr } = useI18n();
             <Link
                 href="/vie-etudiante"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="isCurrent('/vie-etudiante') ? 'bg-edsp-green/10 text-edsp-green' : 'text-slate-500 hover:bg-soft hover:text-navy'"
+                :class="isCurrent('/vie-etudiante') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
                 :aria-current="isCurrent('/vie-etudiante') ? 'page' : undefined"
                 @click="emit('close')"
             >
@@ -63,7 +63,7 @@ const { tr } = useI18n();
             <Link
                 href="/bibliotheque"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="isCurrent('/bibliotheque') ? 'bg-edsp-green/10 text-edsp-green' : 'text-slate-500 hover:bg-soft hover:text-navy'"
+                :class="isCurrent('/bibliotheque') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
                 :aria-current="isCurrent('/bibliotheque') ? 'page' : undefined"
                 @click="emit('close')"
             >
@@ -74,7 +74,7 @@ const { tr } = useI18n();
             <button
                 type="button"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="menuOpen ? 'bg-navy text-white' : 'text-slate-500 hover:bg-soft hover:text-navy'"
+                :class="menuOpen ? 'bg-navy text-white dark:bg-institutional' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
                 :aria-expanded="menuOpen"
                 aria-controls="mobile-navigation"
                 :aria-label="menuOpen ? tr('Fermer le menu principal', 'Close main menu') : tr('Ouvrir le menu principal', 'Open main menu')"

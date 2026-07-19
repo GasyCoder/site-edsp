@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
             @keydown.esc.prevent="close"
             @keydown="trapFocus"
         >
-            <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3.5 sm:px-6">
+            <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3.5 sm:px-6 dark:border-slate-800">
                 <div>
                     <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-edsp-green">EDSP</p>
                     <h2 id="mobile-navigation-title" class="mt-0.5 font-heading text-lg font-bold text-navy">{{ tr('Menu principal', 'Main menu') }}</h2>
@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
                 <button
                     ref="closeButton"
                     type="button"
-                    class="grid size-11 place-items-center rounded-xl border border-slate-200 text-navy transition hover:border-edsp-green hover:bg-soft hover:text-edsp-green"
+                    class="grid size-11 place-items-center rounded-xl border border-slate-200 text-navy transition hover:border-edsp-green hover:bg-soft hover:text-edsp-green dark:border-slate-700 dark:text-slate-100 dark:hover:border-edsp-green dark:hover:bg-slate-800 dark:hover:text-emerald-300"
                     :aria-label="tr('Fermer le menu principal', 'Close main menu')"
                     @click="close"
                 >
@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
                         <ArrowRight :size="16" aria-hidden="true" />
                     </Link>
 
-                    <div class="mt-4 rounded-2xl border border-slate-200 bg-soft/70 p-2">
+                    <div class="mt-4 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
                         <p class="nav-group-label mt-1">{{ tr("L'École", 'The School') }}</p>
                         <Link href="/presentation" class="mobile-nav-sublink block" @click="close">{{ tr('Présentation', 'About us') }}</Link>
                         <Link href="/historique" class="mobile-nav-sublink block" @click="close">{{ tr('Historique', 'History') }}</Link>
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
                         <Link href="/equipe" class="mobile-nav-sublink block" @click="close">{{ tr('Direction et équipe', 'Leadership and team') }}</Link>
                     </div>
 
-                    <div class="mt-3 rounded-2xl border border-slate-200 bg-soft/70 p-2">
+                    <div class="mt-3 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
                         <p class="nav-group-label mt-1">{{ tr('Formations', 'Programmes') }}</p>
                         <Link href="/formations" class="mobile-nav-sublink block" @click="close">{{ tr('Nos parcours', 'Our programmes') }}</Link>
                         <Link href="/admissions" class="mobile-nav-sublink block" @click="close">{{ tr('Admissions', 'Admissions') }}</Link>
@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
                     <div class="mt-4 grid grid-cols-2 gap-2">
                         <Link
                             href="/vie-etudiante"
-                            class="mobile-nav-link border border-slate-200 text-center"
+                            class="mobile-nav-link border border-slate-200 text-center dark:border-slate-700"
                             :class="isCurrent('/vie-etudiante') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
                         </Link>
                         <Link
                             href="/bibliotheque"
-                            class="mobile-nav-link border border-slate-200 text-center"
+                            class="mobile-nav-link border border-slate-200 text-center dark:border-slate-700"
                             :class="isCurrent('/bibliotheque') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
                         </Link>
                         <Link
                             href="/actualites"
-                            class="mobile-nav-link border border-slate-200 text-center"
+                            class="mobile-nav-link border border-slate-200 text-center dark:border-slate-700"
                             :class="isCurrent('/actualites') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
                         </Link>
                         <Link
                             href="/contact"
-                            class="mobile-nav-link border border-slate-200 text-center"
+                            class="mobile-nav-link border border-slate-200 text-center dark:border-slate-700"
                             :class="isCurrent('/contact') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
                     <a
                         v-if="canAccessAdmin"
                         href="/admin"
-                        class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-navy/15 bg-navy px-5 py-3.5 text-center font-heading text-sm font-bold text-white transition hover:bg-institutional"
+                        class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-navy/15 bg-navy px-5 py-3.5 text-center font-heading text-sm font-bold text-white transition hover:bg-institutional dark:border-institutional dark:bg-institutional/80 dark:hover:bg-institutional"
                         @click="close"
                     >
                         <LayoutDashboard :size="18" aria-hidden="true" />
