@@ -1,13 +1,14 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h, type DefineComponent } from 'vue';
+import { initializeNavigationLoading, startInitialPageLoading } from './lib/navigation-loading';
 
 const pages = import.meta.glob<{ default: DefineComponent }>('./pages/**/*.vue');
 
 createInertiaApp({
     progress: {
         color: '#078B3E',
-        showSpinner: true,
+        showSpinner: false,
     },
     resolve: (name) => {
         const page = pages[`./pages/${name}.vue`];
@@ -19,6 +20,8 @@ createInertiaApp({
         return page().then((module) => module.default);
     },
     setup({ App, el, plugin, props }) {
+        initializeNavigationLoading();
+        startInitialPageLoading(window.location.pathname);
         createApp({ render: () => h(App, props) }).use(plugin).mount(el);
     },
 });

@@ -5,8 +5,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../types';
 import BackToTopButton from '../components/public/BackToTopButton.vue';
 import MainHeader from '../components/public/MainHeader.vue';
+import PageLoadingSkeleton from '../components/public/PageLoadingSkeleton.vue';
 import PublicFooter from '../components/public/PublicFooter.vue';
 import TopBar from '../components/public/TopBar.vue';
+import { loadingSkeletonVariant, navigationLoading } from '../lib/navigation-loading';
 
 const props = withDefaults(
     defineProps<{
@@ -53,7 +55,9 @@ onMounted(() => {
     if (successMessage.value) scheduleDismiss();
 });
 
-onBeforeUnmount(clearDismissTimer);
+onBeforeUnmount(() => {
+    clearDismissTimer();
+});
 </script>
 
 <template>
@@ -97,8 +101,21 @@ onBeforeUnmount(clearDismissTimer);
             </div>
         </Transition>
 
-        <main id="main-content" tabindex="-1">
-            <slot />
+        <main id="main-content" tabindex="-1" :aria-busy="navigationLoading">
+            <Transition
+                mode="out-in"
+                enter-active-class="transition-opacity duration-200"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition-opacity duration-100"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
+                <PageLoadingSkeleton v-if="navigationLoading" key="loading" :variant="loadingSkeletonVariant" />
+                <div v-else key="content">
+                    <slot />
+                </div>
+            </Transition>
         </main>
 
         <PublicFooter :settings="resolvedSettings" />
