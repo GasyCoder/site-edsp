@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ArrowRight, UserPlus, X } from 'lucide-vue-next';
+import { ArrowRight, LayoutDashboard, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import type { SharedPageProps } from '../../types';
 
 const props = defineProps<{
     open: boolean;
@@ -12,6 +13,8 @@ const emit = defineEmits<{
 }>();
 
 const page = usePage();
+const shared = computed(() => page.props as SharedPageProps);
+const canAccessAdmin = computed(() => shared.value.auth?.canAccessAdmin === true);
 const panel = ref<HTMLElement | null>(null);
 const closeButton = ref<HTMLButtonElement | null>(null);
 const currentPath = computed(() => page.url.split('?')[0]);
@@ -176,6 +179,16 @@ onBeforeUnmount(() => {
                         <UserPlus :size="18" aria-hidden="true" />
                         Faire une inscription
                     </Link>
+
+                    <a
+                        v-if="canAccessAdmin"
+                        href="/admin"
+                        class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-navy/15 bg-navy px-5 py-3.5 text-center font-heading text-sm font-bold text-white transition hover:bg-institutional"
+                        @click="close"
+                    >
+                        <LayoutDashboard :size="18" aria-hidden="true" />
+                        Accéder à l’administration
+                    </a>
                 </div>
             </nav>
         </div>

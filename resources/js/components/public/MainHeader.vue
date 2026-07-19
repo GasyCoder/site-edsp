@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronDown, Menu, UserPlus, X } from 'lucide-vue-next';
+import { ChevronDown, LayoutDashboard, Menu, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import type { SiteSettings } from '../../types';
+import type { SharedPageProps, SiteSettings } from '../../types';
 import { setting } from '../../lib/public-content';
 import MobileBottomNavigation from './MobileBottomNavigation.vue';
 import MobileMenu from './MobileMenu.vue';
@@ -12,6 +12,8 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
+const shared = computed(() => page.props as SharedPageProps);
+const canAccessAdmin = computed(() => shared.value.auth?.canAccessAdmin === true);
 const header = ref<HTMLElement | null>(null);
 const menuButton = ref<HTMLButtonElement | null>(null);
 const menuOpen = ref(false);
@@ -201,6 +203,15 @@ onBeforeUnmount(() => {
                 >
                     Contact
                 </Link>
+                <a
+                    v-if="canAccessAdmin"
+                    href="/admin"
+                    class="grid size-10 flex-none place-items-center rounded-md border border-navy/20 text-navy transition hover:border-edsp-green hover:bg-edsp-green/5 hover:text-edsp-green"
+                    title="Accéder au back-office"
+                    aria-label="Accéder au back-office d’administration"
+                >
+                    <LayoutDashboard :size="18" aria-hidden="true" />
+                </a>
                 <Link
                     href="/inscription"
                     class="inline-flex items-center gap-2 rounded-md bg-edsp-green px-5 py-2.5 font-heading text-sm font-semibold text-white transition hover:bg-[#067735]"

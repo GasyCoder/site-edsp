@@ -230,6 +230,8 @@ export interface Paginated<T> {
 export interface SharedPageProps {
     auth?: {
         user: Nullable<{ id: number; name: string; email: string }>;
+        canAccessAdmin?: boolean;
+        canEdit?: boolean;
     };
     flash?: {
         newsletter?: Nullable<{

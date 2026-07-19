@@ -19,6 +19,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user?->only('id', 'name', 'email'),
                 'canEdit' => $user?->can('edit pages') ?? false,
+                'canAccessAdmin' => $user?->can('access admin') ?? false,
             ],
             'settings' => fn () => app(SettingService::class)->public(),
             'flash' => [

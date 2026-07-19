@@ -66,6 +66,30 @@ test('an editor receives hidden sections so they can be re-enabled', function ()
             ->has('page.sections', 2));
 });
 
+test('only an authenticated administrator receives the public back office access flag', function (): void {
+    Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+    $administrator = userWithPermissions(['access admin']);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('auth.user', null)
+            ->where('auth.canAccessAdmin', false));
+
+    $this->actingAs($administrator)
+        ->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('auth.user.id', $administrator->id)
+            ->where('auth.canAccessAdmin', true));
+});
+
 test('every home block including statistics is an editable page section', function (): void {
     $this->seed(PagesSeeder::class);
     $editor = userWithPermissions(['edit pages']);
