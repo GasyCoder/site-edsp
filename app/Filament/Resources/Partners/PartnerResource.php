@@ -75,6 +75,12 @@ class PartnerResource extends Resource
                             ->default(true),
                     ])
                     ->columns(2),
+                Section::make('Version anglaise')
+                    ->description('Nom affiché lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.name')->label('Nom en anglais')->maxLength(255),
+                    ])
+                    ->collapsed(),
             ]);
     }
 

@@ -11,6 +11,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -142,6 +143,25 @@ class PageSectionResource extends Resource
                                     'wide' => 'Large',
                                 ]),
                         ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
+                Section::make('Version anglaise')
+                    ->description('Traduisez le contenu visible de cette section. Les liens et médias restent communs aux deux langues.')
+                    ->icon(Heroicon::OutlinedLanguage)
+                    ->schema([
+                        TextInput::make('translations.en.title')->label('Title')->maxLength(180),
+                        TextInput::make('translations.en.subtitle')->label('Eyebrow / subtitle')->maxLength(255),
+                        Textarea::make('translations.en.content')->label('Content')->rows(6),
+                        TextInput::make('translations.en.button_text')->label('Button label')->maxLength(80),
+                        KeyValue::make('translations.en.settings')
+                            ->label('Advanced English labels')
+                            ->helperText('Optional: use the same technical keys as in the section settings for secondary labels.')
+                            ->keyLabel('Technical key')
+                            ->valueLabel('English text')
+                            ->addActionLabel('Add a label')
+                            ->reorderable(false)
+                            ->columnSpanFull(),
                     ])
                     ->collapsible()
                     ->collapsed(),

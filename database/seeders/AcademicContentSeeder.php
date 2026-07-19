@@ -12,6 +12,8 @@ class AcademicContentSeeder extends Seeder
     {
         $law = Department::query()->updateOrCreate(['slug' => 'droit'], ['name' => 'Droit', 'description' => 'Enseignements et recherche en droit.']);
         $politics = Department::query()->updateOrCreate(['slug' => 'science-politique'], ['name' => 'Science politique', 'description' => 'Enseignements et recherche en science politique.']);
+        $law->update(['translations' => ['en' => ['name' => 'Law', 'description' => 'Teaching and research in law.']]]);
+        $politics->update(['translations' => ['en' => ['name' => 'Political Science', 'description' => 'Teaching and research in political science.']]]);
 
         Program::query()->updateOrCreate(['slug' => 'droit-prive'], [
             'department_id' => $law->id,
@@ -40,5 +42,31 @@ class AcademicContentSeeder extends Seeder
             'meta_description' => 'Découvrez le parcours de formation en science politique proposé par l’EDSP.',
             'robots_index' => true, 'robots_follow' => true, 'published_at' => now(),
         ]);
+
+        $translations = [
+            'droit-prive' => [
+                'title' => 'Private Law', 'level' => 'Bachelor’s · Master’s', 'domain' => 'Law', 'mention' => 'Private law',
+                'description' => 'A programme focused on relationships between individuals, businesses and private institutions.',
+                'objectives' => '<ul><li>Build a strong foundation in law.</li><li>Master legal analysis and drafting.</li><li>Understand legal procedures and institutions.</li></ul>',
+                'admission_requirements' => 'Requirements are specified for each admission round.',
+                'skills' => '<ul><li>Legal reasoning</li><li>Documentary research</li><li>Legal argument and drafting</li></ul>',
+                'careers' => 'Legal professions, public administration, business and further study.', 'duration' => 'Bachelor’s and Master’s degrees',
+                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Private Law programme — EDSP',
+                'meta_description' => 'Discover EDSP’s Private Law degree programme.',
+            ],
+            'science-politique' => [
+                'title' => 'Political Science', 'level' => 'Bachelor’s · Master’s', 'domain' => 'Political science', 'mention' => 'Political science',
+                'description' => 'A programme focused on institutions, public action, public policy and governance.',
+                'objectives' => '<ul><li>Analyse institutions and political systems.</li><li>Understand public action.</li><li>Develop a critical perspective on contemporary transformations.</li></ul>',
+                'admission_requirements' => 'Requirements are specified for each admission round.',
+                'skills' => '<ul><li>Institutional analysis</li><li>Public policy design and evaluation</li><li>Social science research</li></ul>',
+                'careers' => 'Public administration, local authorities, organisations, research and further study.', 'duration' => 'Bachelor’s and Master’s degrees',
+                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Political Science programme — EDSP',
+                'meta_description' => 'Discover EDSP’s Political Science degree programme.',
+            ],
+        ];
+        foreach ($translations as $slug => $fields) {
+            Program::query()->where('slug', $slug)->first()?->update(['translations' => ['en' => $fields]]);
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\SanitizedHtml;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,11 +11,14 @@ use Illuminate\Support\Str;
 
 class AdmissionCampaign extends Model
 {
+    use HasLocalizedContent;
+
+    protected array $translatable = ['title', 'instructions', 'required_documents'];
     protected $guarded = [];
 
     protected function casts(): array
     {
-        return ['opens_at' => 'datetime', 'closes_at' => 'datetime', 'required_documents' => 'array', 'is_visible' => 'boolean', 'instructions' => SanitizedHtml::class];
+        return ['opens_at' => 'datetime', 'closes_at' => 'datetime', 'required_documents' => 'array', 'is_visible' => 'boolean', 'instructions' => SanitizedHtml::class, 'translations' => 'array'];
     }
 
     public function programs(): BelongsToMany

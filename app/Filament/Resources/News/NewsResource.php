@@ -253,6 +253,33 @@ class NewsResource extends Resource
                             ->collapsible()
                             ->collapsed()
                             ->columnSpanFull(),
+                        Section::make('Version anglaise')
+                            ->description('Traduction complète publiée sur la version English de l’actualité.')
+                            ->icon(Heroicon::OutlinedLanguage)
+                            ->schema([
+                                TextInput::make('translations.en.title')
+                                    ->label('Article title')
+                                    ->maxLength(180),
+                                Textarea::make('translations.en.excerpt')
+                                    ->label('Summary')
+                                    ->rows(4)
+                                    ->maxLength(1000),
+                                RichEditor::make('translations.en.content')
+                                    ->label('Article content')
+                                    ->extraInputAttributes(['style' => 'min-height:24rem'])
+                                    ->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? ''))
+                                    ->columnSpanFull(),
+                                Grid::make(2)->schema([
+                                    TextInput::make('translations.en.meta_title')->label('SEO title')->maxLength(70),
+                                    Textarea::make('translations.en.meta_description')->label('SEO description')->rows(3)->maxLength(180),
+                                    TextInput::make('translations.en.meta_keywords')->label('Keywords'),
+                                    TextInput::make('translations.en.og_title')->label('Social title')->maxLength(95),
+                                ]),
+                                Textarea::make('translations.en.og_description')->label('Social description')->rows(3)->maxLength(200),
+                            ])
+                            ->collapsible()
+                            ->collapsed()
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);

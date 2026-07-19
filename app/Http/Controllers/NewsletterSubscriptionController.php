@@ -18,7 +18,9 @@ class NewsletterSubscriptionController extends Controller
         if ($subscriber->exists && $subscriber->verified_at !== null && $subscriber->unsubscribed_at === null) {
             return back()->with('newsletter', [
                 'status' => 'verified',
-                'message' => 'Cette adresse e-mail est déjà confirmée et inscrite à la newsletter.',
+                'message' => app()->isLocale('en')
+                    ? 'This email address is already confirmed and subscribed to the newsletter.'
+                    : 'Cette adresse e-mail est déjà confirmée et inscrite à la newsletter.',
             ]);
         }
 
@@ -33,7 +35,9 @@ class NewsletterSubscriptionController extends Controller
 
         return back()->with('newsletter', [
             'status' => 'pending',
-            'message' => 'Un e-mail de confirmation vient de vous être envoyé. Cliquez sur le lien reçu pour valider votre inscription.',
+            'message' => app()->isLocale('en')
+                ? 'A confirmation email has just been sent. Follow the link in the message to confirm your subscription.'
+                : 'Un e-mail de confirmation vient de vous être envoyé. Cliquez sur le lien reçu pour valider votre inscription.',
         ]);
     }
 
@@ -42,7 +46,9 @@ class NewsletterSubscriptionController extends Controller
         if (! $request->hasValidSignature()) {
             return redirect('/#newsletter')->with('newsletter', [
                 'status' => 'error',
-                'message' => 'Ce lien de confirmation est invalide ou a expiré. Saisissez de nouveau votre adresse pour recevoir un nouveau lien.',
+                'message' => app()->isLocale('en')
+                    ? 'This confirmation link is invalid or has expired. Enter your address again to receive a new link.'
+                    : 'Ce lien de confirmation est invalide ou a expiré. Saisissez de nouveau votre adresse pour recevoir un nouveau lien.',
             ]);
         }
 
@@ -53,7 +59,9 @@ class NewsletterSubscriptionController extends Controller
 
         return redirect('/#newsletter')->with('newsletter', [
             'status' => 'verified',
-            'message' => 'Votre adresse e-mail est confirmée. Vous êtes maintenant inscrit(e) à la newsletter de l’EDSP.',
+            'message' => app()->isLocale('en')
+                ? 'Your email address is confirmed. You are now subscribed to the EDSP newsletter.'
+                : 'Votre adresse e-mail est confirmée. Vous êtes maintenant inscrit(e) à la newsletter de l’EDSP.',
         ]);
     }
 
@@ -62,7 +70,9 @@ class NewsletterSubscriptionController extends Controller
         if (! $request->hasValidSignature()) {
             return redirect('/#newsletter')->with('newsletter', [
                 'status' => 'error',
-                'message' => 'Ce lien de désinscription est invalide ou a expiré.',
+                'message' => app()->isLocale('en')
+                    ? 'This unsubscribe link is invalid or has expired.'
+                    : 'Ce lien de désinscription est invalide ou a expiré.',
             ]);
         }
 
@@ -70,7 +80,9 @@ class NewsletterSubscriptionController extends Controller
 
         return redirect('/#newsletter')->with('newsletter', [
             'status' => 'verified',
-            'message' => 'Votre adresse a bien été désinscrite de la newsletter de l’EDSP.',
+            'message' => app()->isLocale('en')
+                ? 'Your address has been unsubscribed from the EDSP newsletter.'
+                : 'Votre adresse a bien été désinscrite de la newsletter de l’EDSP.',
         ]);
     }
 }

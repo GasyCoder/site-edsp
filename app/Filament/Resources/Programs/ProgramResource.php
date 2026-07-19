@@ -199,6 +199,32 @@ class ProgramResource extends Resource
                             ->preload(),
                     ])
                     ->collapsible(),
+                Section::make('Version anglaise')
+                    ->description('Traduction professionnelle affichée sur la version English du site.')
+                    ->icon(Heroicon::OutlinedLanguage)
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextInput::make('translations.en.title')->label('Programme title')->maxLength(180),
+                            TextInput::make('translations.en.level')->label('Level')->maxLength(100),
+                            TextInput::make('translations.en.domain')->label('Field'),
+                            TextInput::make('translations.en.mention')->label('Specialisation'),
+                            TextInput::make('translations.en.track')->label('Pathway'),
+                            TextInput::make('translations.en.duration')->label('Duration'),
+                            TextInput::make('translations.en.manager')->label('Programme leader'),
+                        ]),
+                        Textarea::make('translations.en.description')->label('Description')->rows(4),
+                        RichEditor::make('translations.en.objectives')->label('Objectives')->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? '')),
+                        RichEditor::make('translations.en.admission_requirements')->label('Entry requirements')->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? '')),
+                        RichEditor::make('translations.en.skills')->label('Skills')->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? '')),
+                        RichEditor::make('translations.en.careers')->label('Career opportunities')->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? '')),
+                        RichEditor::make('translations.en.curriculum')->label('Curriculum')->dehydrateStateUsing(fn (?string $state): string => Purifier::clean($state ?? '')),
+                        Grid::make(2)->schema([
+                            TextInput::make('translations.en.meta_title')->label('SEO title')->maxLength(70),
+                            Textarea::make('translations.en.meta_description')->label('SEO description')->rows(3)->maxLength(180),
+                        ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 

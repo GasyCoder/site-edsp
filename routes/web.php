@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentRevisionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NewsletterCampaignAttachmentController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PageSectionController;
@@ -19,6 +20,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicSiteController::class, 'home'])->name('home');
+Route::post('/langue/{locale}', LocaleController::class)
+    ->whereIn('locale', ['fr', 'en'])
+    ->middleware('throttle:30,1')
+    ->name('locale.update');
 Route::get('/formations', [PublicSiteController::class, 'programs'])->name('programs.index');
 Route::get('/formations/{program:slug}', [PublicSiteController::class, 'program'])
     ->missing(fn (Request $request) => app(RedirectController::class)($request))

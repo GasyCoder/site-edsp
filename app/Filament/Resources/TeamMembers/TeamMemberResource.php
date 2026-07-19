@@ -111,6 +111,13 @@ class TeamMemberResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
+                Section::make('Version anglaise')
+                    ->description('Fonction et biographie affichées lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.position')->label('Fonction en anglais')->maxLength(255),
+                        Textarea::make('translations.en.biography')->label('Biographie en anglais')->rows(6)->maxLength(5000),
+                    ])
+                    ->collapsed(),
                 Section::make('Publication')
                     ->schema([
                         Select::make('status')

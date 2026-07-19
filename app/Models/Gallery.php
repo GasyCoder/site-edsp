@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Gallery extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['title', 'description'];
 
     protected $guarded = [];
 
@@ -18,7 +21,7 @@ class Gallery extends Model
 
     protected function casts(): array
     {
-        return ['is_visible' => 'boolean', 'published_at' => 'datetime'];
+        return ['is_visible' => 'boolean', 'published_at' => 'datetime', 'translations' => 'array'];
     }
 
     public function coverImage(): BelongsTo

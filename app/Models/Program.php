@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\SanitizedHtml;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Program extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['title', 'level', 'domain', 'mention', 'track', 'description', 'objectives', 'admission_requirements', 'skills', 'careers', 'duration', 'curriculum', 'manager', 'meta_title', 'meta_description', 'meta_keywords', 'og_title', 'og_description'];
 
     protected $guarded = [];
 
@@ -30,6 +33,7 @@ class Program extends Model
             'skills' => SanitizedHtml::class,
             'careers' => SanitizedHtml::class,
             'curriculum' => SanitizedHtml::class,
+            'translations' => 'array',
         ];
     }
 

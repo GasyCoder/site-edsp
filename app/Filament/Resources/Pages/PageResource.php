@@ -130,6 +130,19 @@ class PageResource extends Resource
                         ...SeoPreview::components(),
                     ])
                     ->collapsible(),
+                Section::make('Version anglaise')
+                    ->description('Contenu affiché lorsque le visiteur choisit English. Un champ vide utilise temporairement la version française.')
+                    ->icon(Heroicon::OutlinedLanguage)
+                    ->schema([
+                        TextInput::make('translations.en.title')->label('Title')->maxLength(180),
+                        TextInput::make('translations.en.meta_title')->label('SEO title')->maxLength(70),
+                        Textarea::make('translations.en.meta_description')->label('SEO description')->rows(3)->maxLength(180),
+                        TextInput::make('translations.en.meta_keywords')->label('Keywords'),
+                        TextInput::make('translations.en.og_title')->label('Open Graph title')->maxLength(95),
+                        Textarea::make('translations.en.og_description')->label('Open Graph description')->rows(2)->maxLength(200),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 

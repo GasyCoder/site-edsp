@@ -47,6 +47,10 @@ class ParcoursResource extends Resource
                 ]),
                 Textarea::make('description')->label('Description')->rows(4)->columnSpanFull(),
             ]),
+            Section::make('Version anglaise')->description('Contenu affiché lorsque le visiteur choisit English.')->schema([
+                TextInput::make('translations.en.nom')->label('Nom du parcours en anglais')->maxLength(255),
+                Textarea::make('translations.en.description')->label('Description en anglais')->rows(4),
+            ])->collapsed(),
         ]);
     }
 

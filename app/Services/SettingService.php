@@ -9,7 +9,7 @@ final class SettingService
 {
     public function public(): array
     {
-        return Cache::rememberForever('settings.public', function (): array {
+        $settings = Cache::rememberForever('settings.public', function (): array {
             $settings = DB::table('settings')->where('is_public', true)->get(['key', 'value', 'type'])
                 ->mapWithKeys(fn ($setting) => [$setting->key => $this->cast($setting->value, $setting->type)])
                 ->all();
@@ -28,6 +28,16 @@ final class SettingService
 
             return $settings;
         });
+
+        if (app()->isLocale('en')) {
+            foreach (['institution_name', 'site_description', 'footer_text', 'default_meta_title', 'default_meta_description', 'default_meta_keywords'] as $key) {
+                if (filled($settings[$key.'_en'] ?? null)) {
+                    $settings[$key] = $settings[$key.'_en'];
+                }
+            }
+        }
+
+        return $settings;
     }
 
     public function forget(): void

@@ -111,6 +111,13 @@ class ManageSettings extends Page
                                     icon: Heroicon::OutlinedPhoto,
                                 ),
                                 self::imageSection(
+                                    prefix: 'logo_dark',
+                                    title: 'Logo pour le mode sombre',
+                                    description: 'Variante transparente utilisée sur les surfaces sombres. Si nécessaire, conservez une petite zone claire autour des détails noirs.',
+                                    recommendation: 'Format conseillé : PNG/WebP transparent, largeur minimale 500 px, 5 Mo maximum.',
+                                    icon: Heroicon::OutlinedMoon,
+                                ),
+                                self::imageSection(
                                     prefix: 'favicon',
                                     title: 'Favicon du navigateur',
                                     description: 'Petite image carrée affichée dans l’onglet du navigateur.',
@@ -152,6 +159,31 @@ class ManageSettings extends Page
                                             ->rows(3)
                                             ->maxLength(500)
                                             ->columnSpanFull(),
+                                    ]),
+                            ]),
+                        Tab::make('Version anglaise')
+                            ->icon(Heroicon::OutlinedLanguage)
+                            ->schema([
+                                Section::make('Identité et présentation en anglais')
+                                    ->description('Ces textes sont affichés lorsque le visiteur choisit English.')
+                                    ->schema([
+                                        TextInput::make('institution_name_en')
+                                            ->label('Official institution name')
+                                            ->maxLength(255),
+                                        Textarea::make('site_description_en')
+                                            ->label('General description')
+                                            ->rows(3)
+                                            ->maxLength(500),
+                                        Textarea::make('footer_text_en')
+                                            ->label('Footer introduction')
+                                            ->rows(2)
+                                            ->maxLength(500),
+                                    ]),
+                                Section::make('English SEO defaults')
+                                    ->schema([
+                                        TextInput::make('seo_title_en')->label('Default SEO title')->maxLength(70),
+                                        Textarea::make('seo_description_en')->label('Default meta description')->rows(3)->maxLength(180),
+                                        Textarea::make('seo_keywords_en')->label('Keywords')->rows(2)->maxLength(500),
                                     ]),
                             ]),
                         Tab::make('Réseaux sociaux')
@@ -294,6 +326,7 @@ class ManageSettings extends Page
 
         DB::transaction(function () use ($data): void {
             $logo = $this->resolveImageValue('logo', $data);
+            $darkLogo = $this->resolveImageValue('logo_dark', $data);
             $favicon = $this->resolveImageValue('favicon', $data);
             $openGraphImage = $this->resolveImageValue('og', $data);
 
@@ -303,6 +336,9 @@ class ManageSettings extends Page
                 'parent_institution' => $data['parent_institution'] ?? null,
                 'site_description' => $data['site_description'] ?? null,
                 'footer_text' => $data['footer_text'] ?? null,
+                'institution_name_en' => $data['institution_name_en'] ?? null,
+                'site_description_en' => $data['site_description_en'] ?? null,
+                'footer_text_en' => $data['footer_text_en'] ?? null,
                 'academic_year' => $data['academic_year'] ?? null,
                 'contact_email' => $data['contact_email'] ?? null,
                 'email' => $data['contact_email'] ?? null,
@@ -323,11 +359,15 @@ class ManageSettings extends Page
                 'seo_default_description' => $data['seo_description'] ?? null,
                 'default_meta_description' => $data['seo_description'] ?? null,
                 'default_meta_keywords' => $data['seo_keywords'] ?? null,
+                'default_meta_title_en' => $data['seo_title_en'] ?? null,
+                'default_meta_description_en' => $data['seo_description_en'] ?? null,
+                'default_meta_keywords_en' => $data['seo_keywords_en'] ?? null,
                 'robots_content' => $data['robots_content'] ?? null,
                 'library_url' => $data['library_url'] ?? null,
                 'legal_information' => $data['legal_information'] ?? null,
                 'maintenance_mode' => ($data['maintenance_mode'] ?? false) ? 'true' : 'false',
                 'logo_url' => $logo,
+                'logo_dark_url' => $darkLogo,
                 'favicon_url' => $favicon,
                 'seo_default_og_image' => $openGraphImage,
                 'default_og_image' => $openGraphImage,
@@ -357,6 +397,9 @@ class ManageSettings extends Page
             'parent_institution' => $settings->get('parent_institution'),
             'site_description' => $settings->get('site_description'),
             'footer_text' => $settings->get('footer_text'),
+            'institution_name_en' => $settings->get('institution_name_en'),
+            'site_description_en' => $settings->get('site_description_en'),
+            'footer_text_en' => $settings->get('footer_text_en'),
             'academic_year' => $settings->get('academic_year'),
             'contact_email' => $settings->get('contact_email') ?: $settings->get('email'),
             'contact_phone' => $settings->get('contact_phone') ?: $settings->get('phone'),
@@ -369,11 +412,15 @@ class ManageSettings extends Page
             'seo_title' => $settings->get('seo_default_title') ?: $settings->get('default_meta_title'),
             'seo_description' => $settings->get('seo_default_description') ?: $settings->get('default_meta_description'),
             'seo_keywords' => $settings->get('default_meta_keywords'),
+            'seo_title_en' => $settings->get('default_meta_title_en'),
+            'seo_description_en' => $settings->get('default_meta_description_en'),
+            'seo_keywords_en' => $settings->get('default_meta_keywords_en'),
             'robots_content' => $settings->get('robots_content'),
             'library_url' => $settings->get('library_url'),
             'legal_information' => $settings->get('legal_information'),
             'maintenance_mode' => filter_var($settings->get('maintenance_mode'), FILTER_VALIDATE_BOOL),
             ...$this->imageState('logo', $settings->get('logo_url')),
+            ...$this->imageState('logo_dark', $settings->get('logo_dark_url')),
             ...$this->imageState('favicon', $settings->get('favicon_url')),
             ...$this->imageState('og', $settings->get('seo_default_og_image') ?: $settings->get('default_og_image')),
         ]);
@@ -484,6 +531,7 @@ class ManageSettings extends Page
 
         return match ($prefix) {
             'logo' => "Logo de {$siteName}",
+            'logo_dark' => "Logo de {$siteName} pour fond sombre",
             'favicon' => "Icône de {$siteName}",
             default => "Image de partage de {$siteName}",
         };
@@ -593,6 +641,7 @@ class ManageSettings extends Page
             'site_description' => ['text', 'general', true],
             'footer_text' => ['text', 'general', true],
             'logo_url' => ['string', 'general', true],
+            'logo_dark_url' => ['string', 'general', true],
             'favicon_url' => ['string', 'general', true],
             'academic_year' => ['string', 'academic', true],
             'contact_email' => ['string', 'contact', true],

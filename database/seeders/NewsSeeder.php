@@ -29,5 +29,17 @@ class NewsSeeder extends Seeder
                 'published_at' => now()->subDays($index + 1),
             ]);
         }
+
+        $translations = [
+            'ouverture-des-inscriptions' => ['title' => 'Applications are open', 'excerpt' => 'Information about the current application round is available online.', 'content' => '<p>Check the dates, available programmes and required documents before submitting your application.</p>'],
+            'calendrier-academique' => ['title' => 'Academic calendar', 'excerpt' => 'Find the key dates in the academic calendar.', 'content' => '<p>Official dates and any updates are published in this section by the School.</p>'],
+            'activites-scientifiques-et-conferences' => ['title' => 'Academic events and conferences', 'excerpt' => 'Conferences, meetings and academic activities at EDSP.', 'content' => '<p>Follow announcements about academic events and conferences organised or hosted by EDSP.</p>'],
+        ];
+        foreach ($translations as $slug => $fields) {
+            News::query()->where('slug', $slug)->first()?->update(['translations' => ['en' => $fields + ['meta_title' => $fields['title'].' — EDSP', 'meta_description' => $fields['excerpt']]]]);
+        }
+        $announcement->update(['translations' => ['en' => ['name' => 'Announcements']]]);
+        $academic->update(['translations' => ['en' => ['name' => 'Academic life']]]);
+        $events->update(['translations' => ['en' => ['name' => 'Events']]]);
     }
 }

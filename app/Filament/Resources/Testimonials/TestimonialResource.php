@@ -77,6 +77,13 @@ class TestimonialResource extends Resource
                             ->maxLength(3000)
                             ->columnSpanFull(),
                     ]),
+                Section::make('Version anglaise')
+                    ->description('Témoignage affiché lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.author_role')->label('Fonction ou promotion en anglais')->maxLength(255),
+                        Textarea::make('translations.en.content')->label('Citation en anglais')->rows(7)->maxLength(3000),
+                    ])
+                    ->collapsed(),
             ]);
     }
 

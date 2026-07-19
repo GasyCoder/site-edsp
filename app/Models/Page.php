@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ContentStatus;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['title', 'meta_title', 'meta_description', 'meta_keywords', 'og_title', 'og_description'];
 
     protected $guarded = [];
 
@@ -19,7 +22,7 @@ class Page extends Model
 
     protected function casts(): array
     {
-        return ['status' => ContentStatus::class, 'published_at' => 'datetime', 'robots_index' => 'boolean', 'robots_follow' => 'boolean'];
+        return ['status' => ContentStatus::class, 'published_at' => 'datetime', 'robots_index' => 'boolean', 'robots_follow' => 'boolean', 'translations' => 'array'];
     }
 
     protected static function booted(): void

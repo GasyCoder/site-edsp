@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TeamMember extends Model
 {
+    use HasLocalizedContent;
+
+    protected array $translatable = ['position', 'biography'];
     protected $guarded = [];
 
     protected $appends = ['full_name', 'photo_url'];
 
     protected function casts(): array
     {
-        return ['social_links' => 'array', 'is_visible' => 'boolean'];
+        return ['social_links' => 'array', 'is_visible' => 'boolean', 'translations' => 'array'];
     }
 
     public function getFullNameAttribute(): string

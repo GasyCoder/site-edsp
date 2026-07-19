@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\SanitizedHtml;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class News extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['title', 'excerpt', 'content', 'meta_title', 'meta_description', 'meta_keywords', 'og_title', 'og_description'];
 
     protected $table = 'news';
 
@@ -22,7 +25,7 @@ class News extends Model
 
     protected function casts(): array
     {
-        return ['published_at' => 'datetime', 'is_featured' => 'boolean', 'robots_index' => 'boolean', 'robots_follow' => 'boolean', 'content' => SanitizedHtml::class];
+        return ['published_at' => 'datetime', 'is_featured' => 'boolean', 'robots_index' => 'boolean', 'robots_follow' => 'boolean', 'content' => SanitizedHtml::class, 'translations' => 'array'];
     }
 
     public function category(): BelongsTo

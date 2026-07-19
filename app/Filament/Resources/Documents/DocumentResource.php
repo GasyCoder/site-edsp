@@ -124,6 +124,15 @@ class DocumentResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
+                Section::make('Version anglaise')
+                    ->description('Métadonnées affichées lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.title')->label('Titre en anglais')->maxLength(255),
+                        TextInput::make('translations.en.category')->label('Catégorie en anglais')->maxLength(255),
+                        Textarea::make('translations.en.description')->label('Description en anglais')->rows(4)->maxLength(3000)->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->collapsed(),
                 Section::make('Publication')
                     ->schema([
                         Grid::make(2)->schema([

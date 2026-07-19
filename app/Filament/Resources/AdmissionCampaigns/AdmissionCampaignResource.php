@@ -102,6 +102,18 @@ class AdmissionCampaignResource extends Resource
                             ->label('Pièces demandées')
                             ->placeholder('Ajouter une pièce'),
                     ]),
+                Section::make('Version anglaise')
+                    ->description('Traduction affichée sur le formulaire d’inscription en anglais.')
+                    ->icon(Heroicon::OutlinedLanguage)
+                    ->schema([
+                        TextInput::make('translations.en.title')->label('Campaign title')->maxLength(180),
+                        Textarea::make('translations.en.instructions')->label('Instructions')->rows(5),
+                        TagsInput::make('translations.en.required_documents')
+                            ->label('Required documents')
+                            ->placeholder('Add a document'),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 

@@ -14,6 +14,7 @@ class ApplicationController extends Controller
 {
     public function create(SeoService $seo)
     {
+        $english = app()->isLocale('en');
         $campaign = AdmissionCampaign::open()->with('programs')->first();
 
         if ($campaign !== null) {
@@ -39,14 +40,17 @@ class ApplicationController extends Controller
                 ->map(fn (ParcoursLevel $link): array => [
                     'level_id' => $link->level_id,
                     'level_code' => $link->level->code,
-                    'level_name' => $link->level->nom,
+                    'level_name' => $english ? $this->academicLabel($link->level->nom) : $link->level->nom,
                     'mention_id' => $link->parcours->mention_id,
                     'mention_code' => $link->parcours->mention->code,
-                    'mention_name' => $link->parcours->mention->nom,
+                    'mention_name' => $english ? $this->academicLabel($link->parcours->mention->nom) : $link->parcours->mention->nom,
                     'parcours_id' => $link->parcours_id,
-                    'parcours_name' => $link->parcours->nom,
+                    'parcours_name' => $english ? $this->academicLabel($link->parcours->nom) : $link->parcours->nom,
                 ]),
-            'seo' => $seo->forListing('Inscription — EDSP', 'Déposez votre demande d’inscription auprès de l’École de Droit et Science Politique.'),
+            'seo' => $seo->forListing(
+                $english ? 'Application — EDSP' : 'Inscription — EDSP',
+                $english ? 'Submit your application to the School of Law and Political Science.' : 'Déposez votre demande d’inscription auprès de l’École de Droit et Science Politique.',
+            ),
         ]);
     }
 
@@ -58,7 +62,11 @@ class ApplicationController extends Controller
         $requiredDocuments = collect($campaign->normalizedRequiredDocuments());
         $missing = $requiredDocuments->filter(fn (array $document) => $document['required'] && ! isset($files[$document['key']]));
         if ($missing->isNotEmpty()) {
-            throw ValidationException::withMessages($missing->mapWithKeys(fn (array $document) => ['documents.'.($document['key'] ?? 'file') => 'Le document « '.($document['label'] ?? 'demandé').' » est requis.'])->all());
+            throw ValidationException::withMessages($missing->mapWithKeys(fn (array $document) => [
+                'documents.'.($document['key'] ?? 'file') => app()->isLocale('en')
+                    ? 'The document “'.($document['label'] ?? 'requested document').'” is required.'
+                    : 'Le document « '.($document['label'] ?? 'demandé').' » est requis.',
+            ])->all());
         }
         $data = $request->safe()->except('website');
         $data['academic_background'] = filled($data['academic_background'] ?? null)
@@ -66,9 +74,21 @@ class ApplicationController extends Controller
             : trim($data['last_diploma'].' — '.$data['previous_institution'].' ('.$data['graduation_year'].')');
         $application = $service->create($data);
 
-        return back()->with(
-            'success',
-            "Votre dossier {$application->application_number} a été enregistré. Un e-mail de confirmation va être envoyé à {$application->email}.",
-        );
+        $message = app()->isLocale('en')
+            ? "Your application {$application->application_number} has been received. A confirmation email will be sent to {$application->email}."
+            : "Votre dossier {$application->application_number} a été enregistré. Un e-mail de confirmation va être envoyé à {$application->email}.";
+
+        return back()->with('success', $message);
+    }
+
+    private function academicLabel(string $label): string
+    {
+        return match (mb_strtolower(trim($label))) {
+            'droit', 'droit privé' => 'Law',
+            'science politique' => 'Political Science',
+            'licence' => 'Bachelor’s degree',
+            'master' => 'Master’s degree',
+            default => $label,
+        };
     }
 }

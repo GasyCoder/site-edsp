@@ -14,6 +14,8 @@ class AcademicStructureSeeder extends Seeder
             $this->importInsert($table.'.sql', $table);
         }
 
+        $this->seedEnglishTranslations();
+
         $now = now();
         $links = [
             ['id' => 1, 'parcours_id' => 1, 'level_id' => 1],
@@ -62,5 +64,30 @@ class AcademicStructureSeeder extends Seeder
         }
 
         DB::unprepared($statement);
+    }
+
+    private function seedEnglishTranslations(): void
+    {
+        $translations = [
+            'levels' => [
+                'L1' => 'Bachelor 1', 'L2' => 'Bachelor 2', 'L3' => 'Bachelor 3',
+                'M1' => 'Master 1', 'M2' => 'Master 2',
+            ],
+            'mentions' => [
+                'DROIT' => 'Law', 'SP' => 'Political Science', 'SCIENCE-POLITIQUE' => 'Political Science',
+            ],
+            'parcours' => [
+                'DROIT-PRIVE' => 'Private Law', 'DP' => 'Private Law',
+                'SCIENCE-POLITIQUE' => 'Political Science', 'SP' => 'Political Science',
+            ],
+        ];
+
+        foreach ($translations as $table => $values) {
+            foreach ($values as $code => $name) {
+                DB::table($table)
+                    ->whereRaw('UPPER(code) = ?', [mb_strtoupper($code)])
+                    ->update(['translations' => json_encode(['en' => ['nom' => $name]], JSON_UNESCAPED_UNICODE)]);
+            }
+        }
     }
 }

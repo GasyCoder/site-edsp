@@ -2,17 +2,25 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademicLevel extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['nom'];
 
     protected $table = 'levels';
 
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return ['translations' => 'array'];
+    }
 
     public function parcoursLinks(): HasMany
     {

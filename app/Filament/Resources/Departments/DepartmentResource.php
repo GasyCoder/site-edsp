@@ -61,6 +61,13 @@ class DepartmentResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
+                Section::make('Version anglaise')
+                    ->description('Contenu affiché lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.name')->label('Nom en anglais')->maxLength(255),
+                        Textarea::make('translations.en.description')->label('Description en anglais')->rows(5)->maxLength(3000),
+                    ])
+                    ->collapsed(),
             ]);
     }
 

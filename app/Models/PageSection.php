@@ -4,19 +4,23 @@ namespace App\Models;
 
 use App\Casts\ControlledSectionSettings;
 use App\Casts\SanitizedHtml;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class PageSection extends Model
 {
+    use HasLocalizedContent;
+
+    protected array $translatable = ['title', 'subtitle', 'content', 'button_text', 'settings'];
     protected $guarded = [];
 
     protected $appends = ['image_url'];
 
     protected function casts(): array
     {
-        return ['settings' => ControlledSectionSettings::class, 'is_visible' => 'boolean', 'content' => SanitizedHtml::class];
+        return ['settings' => ControlledSectionSettings::class, 'is_visible' => 'boolean', 'content' => SanitizedHtml::class, 'translations' => 'array'];
     }
 
     protected static function booted(): void

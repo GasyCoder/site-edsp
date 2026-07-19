@@ -40,6 +40,23 @@ class PagesSeeder extends Seeder
             ]);
         }
 
+        $sectionTranslations = [
+            'hero' => ['title' => 'Understand the law. Shape society.', 'content' => 'EDSP equips you to analyse law, institutions and public policy, from Bachelor’s to Master’s level, in the heart of Mahajanga.', 'button_text' => 'Explore our programmes'],
+            'presentation' => ['title' => 'Welcome to EDSP', 'subtitle' => 'The School', 'content' => 'EDSP educates students to understand, analyse and support Madagascar’s legal, administrative, social and political transformations.', 'button_text' => 'Learn more'],
+            'programs' => ['title' => 'Our degree programmes', 'subtitle' => 'Programmes', 'content' => 'Two complementary pathways for understanding law and public affairs.', 'button_text' => 'View all programmes'],
+            'admissions' => ['title' => 'Admissions and applications', 'subtitle' => 'Join EDSP', 'content' => 'Review the requirements, prepare your documents and submit your application during an open admission round.', 'button_text' => 'Start your application'],
+            'news' => ['title' => 'News and announcements', 'subtitle' => 'Latest news', 'content' => 'Keep up with academic information and events at the School.', 'button_text' => 'All news'],
+            'student_life' => ['title' => 'A rewarding university experience', 'subtitle' => 'Student life', 'content' => 'Campus life combines learning, academic activities, conferences and student-led initiatives.', 'button_text' => 'Explore student life'],
+            'library' => ['title' => 'Library and learning resources', 'subtitle' => 'Resources', 'content' => 'Legal, political and academic resources supporting teaching and research.', 'button_text' => 'Explore the library'],
+            'team' => ['title' => 'Leadership and teaching team', 'subtitle' => 'Our team', 'content' => 'A committed team supporting students and academic excellence.', 'button_text' => 'Meet the team'],
+            'testimonials' => ['title' => 'Student voices', 'subtitle' => 'Their experience', 'content' => 'Student experiences managed through the CMS.'],
+            'partners' => ['title' => 'Our partners', 'subtitle' => 'Partnerships', 'content' => 'Institutional and academic partners are presented here.', 'button_text' => 'View our partners'],
+            'cta' => ['title' => 'Ready to join EDSP?', 'content' => 'Explore our programmes and prepare your application.', 'button_text' => 'View programmes'],
+        ];
+        foreach ($sectionTranslations as $key => $translation) {
+            $home->sections()->where('section_key', $key)->update(['translations' => json_encode(['en' => $translation], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+        }
+
         $pages = [
             ['presentation', 'Présentation de l’EDSP', 'L’EDSP accompagne la formation de juristes et de spécialistes de la science politique au sein de l’Université de Mahajanga.'],
             ['historique', 'Historique', 'Les repères historiques officiels de l’établissement peuvent être renseignés et mis à jour depuis le CMS.'],
@@ -62,6 +79,26 @@ class PagesSeeder extends Seeder
                 'settings' => ['background' => 'white', 'alignment' => 'left', 'container' => 'narrow'],
                 'position' => 1, 'is_visible' => true,
             ]);
+        }
+
+        $pageTranslations = [
+            'presentation' => ['About EDSP', 'EDSP provides education for legal professionals and political science specialists within the University of Mahajanga.'],
+            'historique' => ['History', 'The School’s official historical milestones can be managed and updated through the CMS.'],
+            'missions-et-valeurs' => ['Mission and values', 'Academic excellence, critical thinking, public service and openness to society shape EDSP’s educational vision.'],
+            'equipe' => ['Leadership and team', 'Meet EDSP’s leadership, programme coordinators and teaching staff.'],
+            'admissions' => ['Admissions', 'View the steps, requirements and timetable for current admission rounds.'],
+            'bibliotheque' => ['Library', 'The library provides documentary resources for study and research.'],
+            'vie-etudiante' => ['Student life', 'Academic activities, conferences and student initiatives enrich the university experience.'],
+            'galerie' => ['Gallery', 'Explore academic life and School events through photographs.'],
+            'partenaires' => ['Partners', 'Discover the School’s approved institutional and academic partnerships.'],
+            'contact' => ['Contact', 'Use the contact form to send your enquiry to EDSP.'],
+            'mentions-legales' => ['Legal notice', 'The School’s official legal information must be completed before the website goes live.'],
+            'politique-de-confidentialite' => ['Privacy policy', 'Submitted data is used solely to process enquiries and applications in accordance with applicable rules.'],
+        ];
+        foreach ($pageTranslations as $slug => [$title, $content]) {
+            $page = Page::query()->where('slug', $slug)->first();
+            $page?->update(['translations' => ['en' => ['title' => $title, 'meta_title' => $title.' — EDSP', 'meta_description' => $content]]]);
+            $page?->sections()->where('section_key', 'main')->update(['translations' => json_encode(['en' => ['title' => $title, 'content' => $content]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
         }
     }
 

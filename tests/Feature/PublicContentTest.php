@@ -90,6 +90,87 @@ test('only an authenticated administrator receives the public back office access
             ->where('auth.canAccessAdmin', true));
 });
 
+test('the public locale defaults to french and can be persisted in english', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+        'translations' => ['en' => ['title' => 'Home']],
+    ]);
+    $page->sections()->create([
+        'section_key' => 'hero',
+        'section_type' => 'hero',
+        'title' => 'Comprendre le droit',
+        'settings' => ['background' => 'light', 'visual_footer' => 'Droit privé · Science politique'],
+        'translations' => ['en' => [
+            'title' => 'Understand the law',
+            'settings' => ['visual_footer' => 'Private Law · Political Science'],
+        ]],
+        'position' => 1,
+        'is_visible' => true,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('locale', 'fr')
+            ->where('page.title', 'Accueil'));
+
+    $this->from(route('home'))
+        ->post(route('locale.update', 'en'))
+        ->assertRedirect(route('home'))
+        ->assertCookie('edsp_locale', 'en');
+
+    $this->withCookie('edsp_locale', 'en')
+        ->get(route('home'))
+        ->assertOk()
+        ->assertSee('<html lang="en">', false)
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('locale', 'en')
+            ->where('page.title', 'Home')
+            ->where('page.sections.0.title', 'Understand the law')
+            ->where('page.sections.0.settings.background', 'light')
+            ->where('page.sections.0.settings.visual_footer', 'Private Law · Political Science'));
+});
+
+test('inline public editing remains on the french source content', function (): void {
+    Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+        'translations' => ['en' => ['title' => 'Home']],
+    ]);
+    $editor = userWithPermissions(['edit pages']);
+
+    $this->actingAs($editor)
+        ->withCookie('edsp_locale', 'en')
+        ->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('locale', 'en')
+            ->where('canEdit', false)
+            ->where('auth.canEdit', false));
+});
+
+test('the application shell initializes the saved colour mode before assets load', function (): void {
+    Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee("localStorage.getItem('edsp-color-mode')", false)
+        ->assertSee("document.documentElement.classList.toggle('dark'", false);
+});
+
 test('every home block including statistics is an editable page section', function (): void {
     $this->seed(PagesSeeder::class);
     $editor = userWithPermissions(['edit pages']);

@@ -19,6 +19,11 @@ class AdmissionsSeeder extends Seeder
             'required_documents' => ['Pièce d’identité', 'Diplôme ou attestation', 'Relevé de notes'],
             'status' => 'published', 'is_visible' => true,
         ]);
+        $campaign->update(['translations' => ['en' => [
+            'title' => 'Applications '.$year,
+            'instructions' => '<p>Complete the form carefully and review your information before submitting it. Official requirements published by the School take precedence.</p>',
+            'required_documents' => ['Identity document', 'Diploma or certificate', 'Academic transcript'],
+        ]]]);
         $campaign->programs()->sync(Program::published()->pluck('id'));
     }
 }

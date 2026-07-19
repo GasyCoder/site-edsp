@@ -13,6 +13,8 @@ class ContactController extends Controller
         $message = ContactMessage::create($request->safe()->except('website'));
         SendContactNotification::dispatch($message->id)->afterCommit();
 
-        return back()->with('success', 'Votre message a bien été envoyé.');
+        return back()->with('success', app()->isLocale('en')
+            ? 'Your message has been sent successfully.'
+            : 'Votre message a bien été envoyé.');
     }
 }

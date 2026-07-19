@@ -135,6 +135,13 @@ class GalleryResource extends Resource
                             ->deleteAction(fn (Action $action): Action => $action->requiresConfirmation())
                             ->columnSpanFull(),
                     ]),
+                Section::make('Version anglaise')
+                    ->description('Présentation affichée lorsque le visiteur choisit English.')
+                    ->schema([
+                        TextInput::make('translations.en.title')->label('Titre en anglais')->maxLength(255),
+                        Textarea::make('translations.en.description')->label('Description en anglais')->rows(4)->maxLength(3000),
+                    ])
+                    ->collapsed(),
                 Section::make('Publication')
                     ->schema([
                         Select::make('status')

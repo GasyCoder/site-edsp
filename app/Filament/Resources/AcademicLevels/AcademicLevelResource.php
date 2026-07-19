@@ -43,6 +43,9 @@ class AcademicLevelResource extends Resource
                     TextInput::make('ordre')->label('Ordre')->numeric()->minValue(1)->required(),
                 ]),
             ]),
+            Section::make('Version anglaise')->description('Libellé affiché lorsque le visiteur choisit English.')->schema([
+                TextInput::make('translations.en.nom')->label('Libellé en anglais')->maxLength(100),
+            ])->collapsed(),
         ]);
     }
 

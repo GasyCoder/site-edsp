@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -11,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 
 class Document extends Model
 {
-    use SoftDeletes;
+    use HasLocalizedContent, SoftDeletes;
+
+    protected array $translatable = ['title', 'description', 'category'];
 
     protected $guarded = [];
 
@@ -21,7 +24,7 @@ class Document extends Model
 
     protected function casts(): array
     {
-        return ['is_public' => 'boolean', 'published_at' => 'datetime', 'size' => 'integer'];
+        return ['is_public' => 'boolean', 'published_at' => 'datetime', 'size' => 'integer', 'translations' => 'array'];
     }
 
     protected static function booted(): void

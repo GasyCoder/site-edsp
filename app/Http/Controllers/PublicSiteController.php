@@ -20,7 +20,7 @@ class PublicSiteController extends Controller
 {
     public function home(SettingService $settings, SeoService $seo)
     {
-        $canEdit = auth()->user()?->can('edit pages') ?? false;
+        $canEdit = (auth()->user()?->can('edit pages') ?? false) && app()->isLocale('fr');
         $page = Page::published()->with([
             'ogImage',
             'sections' => fn ($query) => $query->when(! $canEdit, fn ($query) => $query->where('is_visible', true))->with('image')->orderBy('position'),
@@ -43,7 +43,7 @@ class PublicSiteController extends Controller
 
     public function page(Request $request, string $slug, SettingService $settings, SeoService $seo)
     {
-        $canEdit = auth()->user()?->can('edit pages') ?? false;
+        $canEdit = (auth()->user()?->can('edit pages') ?? false) && app()->isLocale('fr');
         $page = Page::published()->with([
             'ogImage',
             'sections' => fn ($query) => $query->when(! $canEdit, fn ($query) => $query->where('is_visible', true))->with('image')->orderBy('position'),
@@ -71,9 +71,14 @@ class PublicSiteController extends Controller
 
     public function programs(SeoService $seo)
     {
+        $english = app()->isLocale('en');
+
         return Inertia::render('Programs/Index', [
             'programs' => Program::published()->with(['department', 'image'])->orderBy('position')->paginate(12),
-            'seo' => $seo->forListing('Formations — EDSP', 'Découvrez les parcours de formation proposés par l’École de Droit et Science Politique.'),
+            'seo' => $seo->forListing(
+                $english ? 'Degree programmes — EDSP' : 'Formations — EDSP',
+                $english ? 'Explore degree programmes offered by the School of Law and Political Science.' : 'Découvrez les parcours de formation proposés par l’École de Droit et Science Politique.',
+            ),
         ]);
     }
 
@@ -91,9 +96,14 @@ class PublicSiteController extends Controller
 
     public function news(SeoService $seo)
     {
+        $english = app()->isLocale('en');
+
         return Inertia::render('News/Index', [
             'news' => News::published()->with(['category', 'featuredImage'])->latest('published_at')->paginate(12),
-            'seo' => $seo->forListing('Actualités — EDSP', 'Consultez les actualités et communiqués publiés par l’École de Droit et Science Politique.'),
+            'seo' => $seo->forListing(
+                $english ? 'News — EDSP' : 'Actualités — EDSP',
+                $english ? 'Read news and announcements from the School of Law and Political Science.' : 'Consultez les actualités et communiqués publiés par l’École de Droit et Science Politique.',
+            ),
         ]);
     }
 
