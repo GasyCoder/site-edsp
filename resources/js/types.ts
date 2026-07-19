@@ -175,6 +175,7 @@ export interface AdmissionCampaign {
     opens_at?: Nullable<string>;
     closes_at?: Nullable<string>;
     instructions?: Nullable<string>;
+    tutorial_video_url?: Nullable<string>;
     required_documents?: RequiredDocument[] | null;
     programs?: Program[];
 }

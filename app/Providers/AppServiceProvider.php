@@ -18,6 +18,8 @@ use App\Models\Media;
 use App\Models\Mention;
 use App\Models\News;
 use App\Models\NewsCategory;
+use App\Models\NewsletterCampaign;
+use App\Models\NewsletterSubscriber;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Parcours;
@@ -46,6 +48,8 @@ use App\Policies\DocumentPolicy;
 use App\Policies\GalleryPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\NewsCategoryPolicy;
+use App\Policies\NewsletterCampaignPolicy;
+use App\Policies\NewsletterSubscriberPolicy;
 use App\Policies\NewsPolicy;
 use App\Policies\PagePolicy;
 use App\Policies\PageSectionPolicy;
@@ -127,6 +131,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PageSection::class, PageSectionPolicy::class);
         Gate::policy(News::class, NewsPolicy::class);
         Gate::policy(NewsCategory::class, NewsCategoryPolicy::class);
+        Gate::policy(NewsletterSubscriber::class, NewsletterSubscriberPolicy::class);
+        Gate::policy(NewsletterCampaign::class, NewsletterCampaignPolicy::class);
         Gate::policy(Program::class, ProgramPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(TeamMember::class, TeamMemberPolicy::class);
@@ -172,6 +178,8 @@ class AppServiceProvider extends ServiceProvider
             Department::class,
             Document::class,
             NewsCategory::class,
+            NewsletterSubscriber::class,
+            NewsletterCampaign::class,
             Partner::class,
             Redirect::class,
             Setting::class,

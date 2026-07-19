@@ -6,10 +6,13 @@ use App\Enums\ContentStatus;
 use App\Filament\Concerns\HasPublicationActions;
 use App\Filament\Forms\SeoPreview;
 use App\Filament\Resources\News\Pages\ManageNews;
+use App\Filament\Resources\NewsletterCampaigns\NewsletterCampaignResource;
 use App\Models\News;
+use App\Models\NewsletterCampaign;
 use App\Rules\PublicSlug;
 use App\Rules\SafeUrl;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -318,6 +321,28 @@ class NewsResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 ...static::publicationActions(),
+                Action::make('create_newsletter')
+                    ->label('Créer une newsletter')
+                    ->icon(Heroicon::OutlinedMegaphone)
+                    ->iconButton()
+                    ->tooltip('Créer une newsletter depuis cette actualité')
+                    ->authorize(fn (): bool => auth()->user()?->can('create', NewsletterCampaign::class) ?? false)
+                    ->action(function (News $record) {
+                        $campaign = NewsletterCampaign::query()->create([
+                            'type' => 'news',
+                            'title' => $record->title,
+                            'subject' => $record->title.' — EDSP',
+                            'preheader' => Str::limit($record->excerpt, 150),
+                            'content' => $record->content,
+                            'news_id' => $record->id,
+                            'external_url' => route('news.show', $record->slug),
+                            'external_url_label' => 'Lire l’actualité',
+                            'status' => 'draft',
+                            'created_by' => auth()->id(),
+                        ]);
+
+                        return redirect(NewsletterCampaignResource::getUrl('edit', ['record' => $campaign]));
+                    }),
                 EditAction::make()
                     ->modalWidth(Width::ScreenExtraLarge)
                     ->stickyModalHeader()

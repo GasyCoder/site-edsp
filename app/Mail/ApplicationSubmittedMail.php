@@ -15,10 +15,7 @@ class ApplicationSubmittedMail extends Mailable
 
     public function build(): self
     {
-        $name = e($this->application->first_name.' '.$this->application->last_name);
-        $number = e($this->application->application_number);
-
-        return $this->subject('Confirmation de votre préinscription EDSP')
-            ->html("<p>Bonjour {$name},</p><p>Votre dossier de préinscription a bien été reçu.</p><p>Numéro de dossier : <strong>{$number}</strong></p><p>Conservez ce numéro pour vos échanges avec l’EDSP.</p>");
+        return $this->subject('Confirmation de votre inscription EDSP')
+            ->view('emails.application-submitted');
     }
 }

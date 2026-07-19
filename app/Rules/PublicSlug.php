@@ -20,6 +20,7 @@ class PublicSlug implements ValidationRule
         'login',
         'logout',
         'preinscription',
+        'inscription',
         'robots',
         'sitemap',
         'storage',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronDown, Menu, X } from 'lucide-vue-next';
+import { ChevronDown, Menu, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { SiteSettings } from '../../types';
 import { setting } from '../../lib/public-content';
@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
                     <button
                         type="button"
                         class="desktop-nav-link inline-flex items-center gap-1"
-                        :class="{ 'text-edsp-green': isCurrent('/formations') || isCurrent('/preinscription') }"
+                        :class="{ 'text-edsp-green': isCurrent('/formations') || isCurrent('/inscription') }"
                         :aria-expanded="activeDropdown === 'programs'"
                         aria-controls="program-navigation"
                         @click.stop="toggleDropdown('programs')"
@@ -202,10 +202,11 @@ onBeforeUnmount(() => {
                     Contact
                 </Link>
                 <Link
-                    href="/preinscription"
-                    class="rounded-md bg-edsp-green px-5 py-2.5 font-heading text-sm font-semibold text-white transition hover:bg-[#067735]"
+                    href="/inscription"
+                    class="inline-flex items-center gap-2 rounded-md bg-edsp-green px-5 py-2.5 font-heading text-sm font-semibold text-white transition hover:bg-[#067735]"
                 >
-                    Préinscription
+                    <UserPlus :size="17" aria-hidden="true" />
+                    Inscription
                 </Link>
             </nav>
 

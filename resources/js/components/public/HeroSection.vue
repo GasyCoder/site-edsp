@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, GraduationCap, Landmark, MapPin, Scale } from 'lucide-vue-next';
+import { ArrowRight, GraduationCap, Landmark, MapPin, Scale, UserPlus } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Section } from '../../types';
 import { mediaUrl } from '../../lib/public-content';
@@ -26,8 +26,8 @@ const content = computed(
 );
 const buttonText = computed(() => props.section?.button_text || 'Découvrir les parcours');
 const buttonUrl = computed(() => props.section?.button_url || '/formations');
-const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', 'Se préinscrire'));
-const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/preinscription'));
+const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', 'S’inscrire'));
+const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/inscription'));
 const kickerText = computed(() => sectionSetting(props.section, 'kicker_text', 'Deux parcours :'));
 const locationText = computed(() => sectionSetting(props.section, 'location_text', 'Ambondrona, Mahajanga'));
 const degreeText = computed(() => sectionSetting(props.section, 'degree_text', 'Licence · Master'));
@@ -130,6 +130,7 @@ onBeforeUnmount(() => {
                         <ArrowRight :size="17" aria-hidden="true" />
                     </SmartLink>
                     <SmartLink :href="secondaryButtonUrl" class="button-primary justify-center sm:justify-start">
+                        <UserPlus :size="17" aria-hidden="true" />
                         {{ secondaryButtonText }}
                     </SmartLink>
                 </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentRevisionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\NewsletterCampaignAttachmentController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PageSectionController;
 use App\Http\Controllers\PublicSiteController;
@@ -26,18 +27,26 @@ Route::get('/actualites', [PublicSiteController::class, 'news'])->name('news.ind
 Route::get('/actualites/{news:slug}', [PublicSiteController::class, 'article'])
     ->missing(fn (Request $request) => app(RedirectController::class)($request))
     ->name('news.show');
-Route::get('/preinscription', [ApplicationController::class, 'create'])->name('applications.create');
-Route::post('/preinscription', [ApplicationController::class, 'store'])->middleware('throttle:5,60')->name('applications.store');
+Route::get('/preinscription', fn () => redirect('/inscription', 301));
+Route::post('/preinscription', [ApplicationController::class, 'store'])->middleware('throttle:5,60');
+Route::get('/inscription', [ApplicationController::class, 'create'])->name('applications.create');
+Route::post('/inscription', [ApplicationController::class, 'store'])->middleware('throttle:5,60')->name('applications.store');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,10')->name('contact.store');
 Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:5,10')->name('newsletter.store');
 Route::get('/newsletter/confirmer/{subscriber}', [NewsletterSubscriptionController::class, 'verify'])->middleware('throttle:20,1')->name('newsletter.verify');
+Route::get('/newsletter/desinscription/{subscriber}', [NewsletterSubscriptionController::class, 'unsubscribe'])->middleware('throttle:20,1')->name('newsletter.unsubscribe');
 Route::get('/documents/{document}/telecharger', [DocumentController::class, 'download'])->middleware('throttle:60,1')->name('documents.download');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 
 Route::middleware('auth')->group(function (): void {
+    Route::get('/administration/newsletters/{campaign}/piece-jointe', [NewsletterCampaignAttachmentController::class, 'download'])
+        ->name('newsletter-campaigns.attachment.download');
     Route::patch('/edition/sections/{section}', [PageSectionController::class, 'update'])->name('sections.update');
     Route::patch('/administration/candidatures/{application}/statut', [ApplicationStatusController::class, 'update'])->name('applications.status.update');
+    Route::get('/administration/documents-candidature/{document}/apercu', [ApplicationDocumentController::class, 'preview'])
+        ->middleware('throttle:120,1')
+        ->name('application-documents.preview');
     Route::get('/administration/documents-candidature/{document}/telecharger', [ApplicationDocumentController::class, 'download'])->name('application-documents.download');
     Route::post('/administration/revisions/{revision}/restaurer', [ContentRevisionController::class, 'restore'])->name('revisions.restore');
     Route::patch('/administration/parametres/{setting}', [SettingController::class, 'update'])->name('settings.update');

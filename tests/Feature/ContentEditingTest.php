@@ -36,7 +36,7 @@ test('an authorized editor updates a controlled section and creates a revision',
             'container' => 'wide',
             'visual_title' => 'Un nouveau message dans le visuel',
             'secondary_button_text' => 'Candidater maintenant',
-            'secondary_button_url' => '/preinscription',
+            'secondary_button_url' => '/inscription',
         ],
     ])->assertRedirect();
 
@@ -45,7 +45,7 @@ test('an authorized editor updates a controlled section and creates a revision',
         ->and($section->content)->not->toContain('<script>')
         ->and($section->settings['background'])->toBe('blue')
         ->and($section->settings['visual_title'])->toBe('Un nouveau message dans le visuel')
-        ->and($section->settings['secondary_button_url'])->toBe('/preinscription');
+        ->and($section->settings['secondary_button_url'])->toBe('/inscription');
 
     $revision = ContentRevision::query()
         ->where('revisionable_type', $section::class)

@@ -20,6 +20,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -84,6 +86,24 @@ class MediaResource extends Resource
                             ->rules([fn (): Closure => self::strictUploadRule()])
                             ->maxSize(self::effectiveUploadSizeInKilobytes())
                             ->storeFileNamesIn('original_name')
+                            ->live()
+                            ->afterStateUpdated(function (mixed $state, Get $get, Set $set): void {
+                                if (filled($get('alt_text'))) {
+                                    return;
+                                }
+
+                                $file = is_array($state) ? reset($state) : $state;
+
+                                if (! $file instanceof TemporaryUploadedFile) {
+                                    return;
+                                }
+
+                                $suggestion = self::altTextFromFilename($file->getClientOriginalName());
+
+                                if ($suggestion !== '') {
+                                    $set('alt_text', $suggestion);
+                                }
+                            })
                             ->imagePreviewHeight('260')
                             ->panelLayout('integrated')
                             ->previewable()
@@ -268,6 +288,14 @@ class MediaResource extends Resource
     public static function allowedMimeTypes(): array
     {
         return array_values(array_unique(array_merge(...array_values(self::ALLOWED_MIME_TYPES))));
+    }
+
+    public static function altTextFromFilename(string $filename): string
+    {
+        $name = pathinfo(trim($filename), PATHINFO_FILENAME);
+        $name = preg_replace('/[\s_\-]+/u', ' ', $name) ?? $name;
+
+        return Str::ucfirst(trim($name));
     }
 
     public static function effectiveUploadSizeInKilobytes(): int

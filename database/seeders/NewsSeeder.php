@@ -15,7 +15,7 @@ class NewsSeeder extends Seeder
         $events = NewsCategory::query()->updateOrCreate(['slug' => 'evenements'], ['name' => 'Événements']);
 
         $items = [
-            ['ouverture-des-preinscriptions', 'Ouverture des préinscriptions', 'Les informations relatives à la campagne de préinscription sont accessibles en ligne.', 'Consultez les dates, les formations ouvertes et les pièces demandées avant de transmettre votre dossier.', $announcement->id, true],
+            ['ouverture-des-inscriptions', 'Ouverture des inscriptions', 'Les informations relatives à la campagne d’inscription sont accessibles en ligne.', 'Consultez les dates, les formations ouvertes et les pièces demandées avant de transmettre votre dossier.', $announcement->id, true],
             ['calendrier-academique', 'Calendrier académique', 'Retrouvez les principales informations du calendrier universitaire.', 'Les dates officielles et leurs éventuelles mises à jour sont publiées dans cet espace par l’établissement.', $academic->id, false],
             ['activites-scientifiques-et-conferences', 'Activités scientifiques et conférences', 'Conférences, rencontres et activités académiques de l’EDSP.', 'Suivez les annonces relatives aux activités scientifiques et aux conférences organisées ou accueillies par l’EDSP.', $events->id, false],
         ];

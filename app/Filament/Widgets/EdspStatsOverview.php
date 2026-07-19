@@ -32,7 +32,7 @@ class EdspStatsOverview extends StatsOverviewWidget
         }
 
         if ($user?->can('view applications')) {
-            $stats[] = Stat::make('Préinscriptions reçues', Application::query()->count())
+            $stats[] = Stat::make('Inscriptions reçues', Application::query()->count())
                 ->description(Application::query()->whereIn('status', ['submitted', 'under_review', 'incomplete'])->count().' à traiter')
                 ->color('warning');
         }

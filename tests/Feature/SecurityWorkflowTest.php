@@ -112,6 +112,7 @@ test('candidate documents reject a real mime type that does not match the extens
     [$campaign, $program] = securityOpenCampaign();
 
     $this->from(route('applications.create'))->post(route('applications.store'), [
+        ...academicApplicationData(),
         'admission_campaign_id' => $campaign->id,
         'program_id' => $program->id,
         'first_name' => 'Aina',

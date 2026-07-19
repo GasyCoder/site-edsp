@@ -103,8 +103,21 @@ test('candidate documents remain private and require permission to download', fu
     $this->actingAs(userWithPermissions([]))
         ->get(route('application-documents.download', $document))
         ->assertNotFound();
+    $this->get(route('application-documents.preview', $document))
+        ->assertNotFound();
 
     $authorized = userWithPermissions(['download application documents']);
+    $previewResponse = $this->actingAs($authorized)
+        ->get(route('application-documents.preview', $document))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf');
+
+    expect($previewResponse->headers->get('content-disposition'))
+        ->toContain('inline')
+        ->and($previewResponse->headers->get('cache-control'))
+        ->toContain('private')
+        ->toContain('no-store');
+
     $response = $this->actingAs($authorized)
         ->get(route('application-documents.download', $document))
         ->assertOk();

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, CheckCircle2, Info } from 'lucide-vue-next';
+import { ArrowRight, Info, UserPlus } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { AdmissionCampaign, Section } from '../../types';
 import { formatPublicDate } from '../../lib/public-content';
@@ -18,7 +18,7 @@ const props = withDefaults(
     },
 );
 
-const title = computed(() => props.section?.title || 'Admissions et préinscriptions');
+const title = computed(() => props.section?.title || 'Admissions et inscriptions');
 const eyebrow = computed(() => props.section?.subtitle || "Rejoindre l'EDSP");
 const content = computed(
     () =>
@@ -40,7 +40,7 @@ const steps = computed(() => [
         title: sectionSetting(props.section, 'step_2_title', 'Préparer les pièces demandées'),
     },
     {
-        description: sectionSetting(props.section, 'step_3_description', 'Complétez soigneusement le formulaire de préinscription et vérifiez vos informations.'),
+        description: sectionSetting(props.section, 'step_3_description', 'Complétez soigneusement le formulaire d’inscription et vérifiez vos informations.'),
         title: sectionSetting(props.section, 'step_3_title', 'Déposer le dossier'),
     },
     {
@@ -49,7 +49,7 @@ const steps = computed(() => [
     },
 ]);
 const infoText = computed(() => sectionSetting(props.section, 'info_text', 'Les informations relatives aux inscriptions, calendriers et pièces à fournir sont publiées régulièrement sur le site.'));
-const campaignFallback = computed(() => sectionSetting(props.section, 'campaign_fallback_text', "Consultez l'avis officiel de préinscription en cours."));
+const campaignFallback = computed(() => sectionSetting(props.section, 'campaign_fallback_text', "Consultez l'avis officiel d’inscription en cours."));
 const campaignLinkText = computed(() => sectionSetting(props.section, 'campaign_link_text', 'Consulter les avis'));
 const campaignLinkUrl = computed(() => sectionSetting(props.section, 'campaign_link_url', '/admissions'));
 const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', "Voir les conditions d'admission"));
@@ -116,9 +116,9 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
 
             <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
                 <SmartLink :href="secondaryButtonUrl" class="button-secondary justify-center">{{ secondaryButtonText }}</SmartLink>
-                <SmartLink :href="section?.button_url || '/preinscription'" class="button-primary justify-center">
-                    <CheckCircle2 :size="18" aria-hidden="true" />
-                    {{ section?.button_text || 'Commencer la préinscription' }}
+                <SmartLink :href="section?.button_url || '/inscription'" class="button-primary justify-center">
+                    <UserPlus :size="18" aria-hidden="true" />
+                    {{ section?.button_text || 'Commencer l’inscription' }}
                 </SmartLink>
             </div>
         </div>

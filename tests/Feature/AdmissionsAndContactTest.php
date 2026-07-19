@@ -4,12 +4,16 @@ use App\Enums\ApplicationStatus;
 use App\Jobs\SendApplicationConfirmation;
 use App\Jobs\SendApplicationStatusNotification;
 use App\Jobs\SendContactNotification;
+use App\Mail\ApplicationSubmittedMail;
 use App\Models\AdmissionCampaign;
 use App\Models\Application;
+use App\Models\Parcours;
 use App\Models\Program;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 
 function openCampaignForTest(): array
 {
@@ -35,12 +39,25 @@ function openCampaignForTest(): array
     return [$campaign, $program];
 }
 
+test('the registration page exposes the campaign video tutorial', function (): void {
+    [$campaign] = openCampaignForTest();
+    $campaign->update(['tutorial_video_url' => 'https://www.youtube.com/watch?v=edsp-tutoriel']);
+
+    $this->get(route('applications.create'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('Admissions')
+            ->where('campaign.tutorial_video_url', 'https://www.youtube.com/watch?v=edsp-tutoriel'));
+});
+
 test('a candidate submits a private application with a unique number', function (): void {
     Storage::fake('private');
     Queue::fake();
+    Mail::fake();
     [$campaign, $program] = openCampaignForTest();
 
     $this->post(route('applications.store'), [
+        ...academicApplicationData(),
         'admission_campaign_id' => $campaign->id,
         'program_id' => $program->id,
         'first_name' => 'Aina',
@@ -55,16 +72,57 @@ test('a candidate submits a private application with a unique number', function 
             'identity' => UploadedFile::fake()->create('identite.pdf', 120, 'application/pdf'),
         ],
         'website' => '',
-    ])->assertRedirect();
+    ])->assertRedirect()
+        ->assertSessionHas('success', fn (string $message): bool => str_contains($message, 'aina@example.test'));
 
     $application = Application::query()->sole();
     expect($application->application_number)->toMatch('/^EDSP-\d{4}-[A-Z0-9]{8}$/')
         ->and($application->status)->toBe(ApplicationStatus::Submitted)
+        ->and($application->civility)->toBe('madame')
+        ->and($application->gender)->toBe('feminin')
+        ->and($application->academicLevel?->code)->toBe('TEST-L1')
+        ->and($application->mention?->code)->toBe('TEST-DROIT')
+        ->and($application->parcours?->code)->toBe('TEST-DROI')
         ->and($application->documents)->toHaveCount(1)
         ->and($application->statusHistory)->toHaveCount(1);
 
     Storage::disk('private')->assertExists($application->documents->first()->path);
     Queue::assertPushed(SendApplicationConfirmation::class);
+
+    (new SendApplicationConfirmation($application->id))->handle();
+    Mail::assertSent(
+        ApplicationSubmittedMail::class,
+        fn (ApplicationSubmittedMail $mail): bool => $mail->hasTo('aina@example.test')
+            && $mail->application->is($application),
+    );
+});
+
+test('an application rejects an inconsistent pedagogical choice', function (): void {
+    [$campaign, $program] = openCampaignForTest();
+    $academicData = academicApplicationData();
+    $otherParcours = Parcours::query()->create([
+        'mention_id' => $academicData['mention_id'],
+        'code' => 'TEST-AUTRE',
+        'nom' => 'Autre parcours test',
+    ]);
+
+    $this->from(route('applications.create'))->post(route('applications.store'), [
+        ...$academicData,
+        'parcours_id' => $otherParcours->id,
+        'admission_campaign_id' => $campaign->id,
+        'program_id' => $program->id,
+        'first_name' => 'Aina',
+        'last_name' => 'Rakoto',
+        'email' => 'aina@example.test',
+        'phone' => '+261 34 00 000 00',
+        'birth_date' => '2000-01-10',
+        'address' => 'Mahajanga',
+        'privacy_accepted' => '1',
+        'website' => '',
+    ])->assertRedirect(route('applications.create'))
+        ->assertSessionHasErrors('parcours_id');
+
+    $this->assertDatabaseCount('applications', 0);
 });
 
 test('an admissions manager changes status with a complete history', function (): void {

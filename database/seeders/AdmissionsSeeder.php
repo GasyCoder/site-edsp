@@ -12,7 +12,7 @@ class AdmissionsSeeder extends Seeder
     {
         $year = now()->year.'-'.(now()->year + 1);
         $campaign = AdmissionCampaign::query()->updateOrCreate(['academic_year' => $year], [
-            'title' => 'Préinscriptions '.$year,
+            'title' => 'Inscriptions '.$year,
             'opens_at' => now()->startOfDay()->subDay(),
             'closes_at' => now()->addMonths(2)->endOfDay(),
             'instructions' => '<p>Complétez soigneusement le formulaire et vérifiez vos informations avant l’envoi. Les conditions officielles publiées par l’établissement prévalent.</p>',

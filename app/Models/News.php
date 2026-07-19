@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\SanitizedHtml;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -72,6 +73,11 @@ class News extends Model
     public function revisions(): MorphMany
     {
         return $this->morphMany(ContentRevision::class, 'revisionable')->latest();
+    }
+
+    public function newsletterCampaigns(): HasMany
+    {
+        return $this->hasMany(NewsletterCampaign::class);
     }
 
     public function scopePublished($q)

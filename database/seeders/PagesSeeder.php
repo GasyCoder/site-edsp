@@ -16,7 +16,7 @@ class PagesSeeder extends Seeder
             ['presentation', 'presentation', 'Bienvenue à l’EDSP', 'L’établissement', 'L’EDSP forme des étudiants capables de comprendre, d’analyser et d’accompagner les transformations juridiques, administratives, sociales et politiques de Madagascar.', 'En savoir plus', '/presentation'],
             ['programs', 'programs', 'Nos parcours de formation', 'Formations', 'Deux parcours complémentaires pour comprendre le droit et l’action publique.', 'Voir toutes les formations', '/formations'],
             ['stats', 'stats', null, null, null, null, null],
-            ['admissions', 'admissions', 'Admissions et préinscriptions', 'Rejoindre l’EDSP', 'Consultez les conditions, préparez vos pièces et déposez votre dossier pendant une campagne ouverte.', 'Commencer la préinscription', '/preinscription'],
+            ['admissions', 'admissions', 'Admissions et inscriptions', 'Rejoindre l’EDSP', 'Consultez les conditions, préparez vos pièces et déposez votre dossier pendant une campagne ouverte.', 'Commencer l’inscription', '/inscription'],
             ['news', 'news', 'Actualités et communiqués', 'À la une', 'Retrouvez les informations académiques et les événements de l’établissement.', 'Toutes les actualités', '/actualites'],
             ['student_life', 'student-life', 'Une expérience universitaire enrichissante', 'Vie étudiante', 'La vie de campus associe apprentissages, activités académiques, conférences et initiatives étudiantes.', 'Découvrir la vie étudiante', '/vie-etudiante'],
             ['library', 'library', 'Bibliothèque et ressources documentaires', 'Ressources', 'Des ressources juridiques, politiques et académiques pour soutenir la formation et la recherche.', 'Découvrir la bibliothèque', '/bibliotheque'],

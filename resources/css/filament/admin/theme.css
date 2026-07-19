@@ -104,6 +104,170 @@
     color: #cbd5e1;
 }
 
+/* Dossiers d’inscription : grille de cartes au lieu d’un tableau horizontal. */
+.edsp-applications-table {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.edsp-applications-table .fi-ta-content {
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: transparent;
+}
+
+.edsp-applications-table .fi-ta-record {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    background: #ffffff;
+    box-shadow: none;
+    transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.edsp-applications-table .fi-ta-record::before {
+    display: none;
+}
+
+.edsp-applications-table .fi-ta-record:hover {
+    border-color: #cbd5e1;
+    background: #fbfdfc;
+}
+
+.edsp-applications-table .fi-ta-record-content {
+    padding: 0.95rem 1rem 0.65rem;
+}
+
+.edsp-applications-table .fi-ta-record-content-ctn > .fi-ta-actions {
+    margin: 0;
+    border: 0;
+    padding: 0.35rem 0.75rem 0.7rem;
+    background: transparent;
+}
+
+.edsp-applications-table .edsp-application-card-details {
+    gap: 0.8rem;
+    margin-top: 0.2rem;
+    border-top: 1px solid #eef2f7;
+    padding-top: 0.65rem;
+}
+
+.edsp-applications-table .edsp-application-status-submitted::before {
+    background: #3b82f6;
+}
+
+.edsp-applications-table .edsp-application-status-under_review::before,
+.edsp-applications-table .edsp-application-status-waitlisted::before {
+    background: #f4b942;
+}
+
+.edsp-applications-table .edsp-application-status-eligible::before,
+.edsp-applications-table .edsp-application-status-accepted::before {
+    background: #078b3e;
+}
+
+.edsp-applications-table .edsp-application-status-incomplete::before,
+.edsp-applications-table .edsp-application-status-rejected::before {
+    background: #dc2626;
+}
+
+.edsp-applications-table .fi-ta-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem !important;
+}
+
+.edsp-applications-table .fi-ta-actions .fi-icon-btn + .fi-icon-btn {
+    margin-inline-start: 0.15rem;
+}
+
+.edsp-applications-table .fi-ta-actions .fi-icon-btn {
+    width: 2.15rem;
+    height: 2.15rem;
+    border: 1px solid #dbe3ef;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.edsp-applications-table .fi-ta-actions .fi-icon-btn:hover {
+    border-color: #b9c5d6;
+    background: #f8fafc;
+}
+
+/* Vue liste : de simples lignes, sans effet de cartes. */
+.edsp-applications-view-list .fi-ta-content {
+    gap: 0;
+    padding: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.edsp-applications-view-list .fi-ta-record {
+    border-width: 0 0 1px;
+    border-color: #e2e8f0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.edsp-applications-view-list .fi-ta-record:hover {
+    border-color: #e2e8f0;
+    background: rgb(248 250 252 / 0.72);
+}
+
+.edsp-applications-view-list .fi-ta-record-content-ctn {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.edsp-applications-view-list .fi-ta-record-content {
+    padding: 1rem 1.1rem;
+}
+
+.edsp-applications-view-list .fi-ta-record-content-ctn > .fi-ta-actions {
+    align-self: center;
+    padding: 0.75rem 1rem;
+}
+
+.dark .edsp-applications-table .fi-ta-content {
+    background: transparent;
+}
+
+.dark .edsp-applications-table .fi-ta-record {
+    border-color: #334155;
+    background: transparent;
+    box-shadow: none;
+}
+
+.dark .edsp-applications-table .fi-ta-record:hover {
+    border-color: #475569;
+    background: rgb(30 41 59 / 0.42);
+    box-shadow: none;
+}
+
+.dark .edsp-applications-table .edsp-application-card-details {
+    border-color: #334155;
+}
+
+.dark .edsp-applications-table .fi-ta-record-content-ctn > .fi-ta-actions {
+    border-color: #334155;
+    background: transparent;
+}
+
+.dark .edsp-applications-table .fi-ta-actions .fi-icon-btn {
+    border-color: #475569;
+    background: transparent;
+}
+
+.dark .edsp-applications-view-list .fi-ta-content,
+.dark .edsp-applications-view-list .fi-ta-record {
+    border-color: #334155;
+}
+
 @media (max-width: 767px) {
     .fi-simple-layout {
         background-image:

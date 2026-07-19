@@ -56,4 +56,21 @@ class NewsletterSubscriptionController extends Controller
             'message' => 'Votre adresse e-mail est confirmée. Vous êtes maintenant inscrit(e) à la newsletter de l’EDSP.',
         ]);
     }
+
+    public function unsubscribe(Request $request, NewsletterSubscriber $subscriber): RedirectResponse
+    {
+        if (! $request->hasValidSignature()) {
+            return redirect('/#newsletter')->with('newsletter', [
+                'status' => 'error',
+                'message' => 'Ce lien de désinscription est invalide ou a expiré.',
+            ]);
+        }
+
+        $subscriber->forceFill(['unsubscribed_at' => now()])->save();
+
+        return redirect('/#newsletter')->with('newsletter', [
+            'status' => 'verified',
+            'message' => 'Votre adresse a bien été désinscrite de la newsletter de l’EDSP.',
+        ]);
+    }
 }

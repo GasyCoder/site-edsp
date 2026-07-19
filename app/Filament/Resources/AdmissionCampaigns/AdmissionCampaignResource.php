@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AdmissionCampaigns;
 
 use App\Filament\Resources\AdmissionCampaigns\Pages\ManageAdmissionCampaigns;
 use App\Models\AdmissionCampaign;
+use App\Rules\SafeUrl;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -88,7 +89,15 @@ class AdmissionCampaignResource extends Resource
                             ->required(),
                         Textarea::make('instructions')
                             ->label('Instructions')
+                            ->helperText('Présentez brièvement les consignes importantes avant de commencer le formulaire.')
                             ->rows(5),
+                        TextInput::make('tutorial_video_url')
+                            ->label('Lien du tutoriel vidéo')
+                            ->placeholder('https://www.youtube.com/watch?v=…')
+                            ->helperText('Facultatif. Ajoutez une vidéo YouTube, Vimeo ou toute autre adresse HTTPS expliquant comment remplir le dossier.')
+                            ->prefixIcon(Heroicon::OutlinedPlayCircle)
+                            ->rules([new SafeUrl(allowRelative: false)])
+                            ->maxLength(2048),
                         TagsInput::make('required_documents')
                             ->label('Pièces demandées')
                             ->placeholder('Ajouter une pièce'),
@@ -130,6 +139,13 @@ class AdmissionCampaignResource extends Resource
                 IconColumn::make('is_visible')
                     ->label('Visible')
                     ->boolean(),
+                IconColumn::make('has_tutorial')
+                    ->label('Tutoriel')
+                    ->state(fn (AdmissionCampaign $record): bool => filled($record->tutorial_video_url))
+                    ->boolean()
+                    ->tooltip(fn (AdmissionCampaign $record): string => filled($record->tutorial_video_url)
+                        ? 'Un tutoriel vidéo est disponible'
+                        : 'Aucun tutoriel vidéo'),
                 TextColumn::make('applications_count')
                     ->label('Dossiers')
                     ->counts('applications')

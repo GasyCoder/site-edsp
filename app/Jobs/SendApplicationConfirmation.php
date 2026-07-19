@@ -18,7 +18,9 @@ class SendApplicationConfirmation implements ShouldQueue
 
     public function handle(): void
     {
-        $application = Application::query()->find($this->applicationId);
+        $application = Application::query()
+            ->with(['academicLevel', 'mention', 'parcours'])
+            ->find($this->applicationId);
         if ($application) {
             Mail::to($application->email)->send(new ApplicationSubmittedMail($application));
         }

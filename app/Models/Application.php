@@ -49,6 +49,21 @@ class Application extends Model
         return $this->belongsTo(Program::class);
     }
 
+    public function academicLevel(): BelongsTo
+    {
+        return $this->belongsTo(AcademicLevel::class, 'academic_level_id');
+    }
+
+    public function mention(): BelongsTo
+    {
+        return $this->belongsTo(Mention::class);
+    }
+
+    public function parcours(): BelongsTo
+    {
+        return $this->belongsTo(Parcours::class);
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(ApplicationDocument::class);

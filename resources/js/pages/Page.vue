@@ -9,6 +9,7 @@ import {
     Images,
     Mail,
     Send,
+    UserPlus,
     Users,
 } from 'lucide-vue-next';
 import PublicLayout from '../layouts/PublicLayout.vue';
@@ -321,7 +322,10 @@ const submitContact = (): void => {
                         <ul v-if="campaign.required_documents?.length" class="mt-5 list-disc space-y-1 pl-5 text-gray-600">
                             <li v-for="document in campaign.required_documents" :key="document.key">{{ document.label }}</li>
                         </ul>
-                        <Link href="/preinscription" class="button-primary mt-7">Commencer la préinscription</Link>
+                        <Link href="/inscription" class="button-primary mt-7">
+                            <UserPlus :size="18" aria-hidden="true" />
+                            Commencer l’inscription
+                        </Link>
                     </template>
                     <p v-else class="mt-4 text-gray-600">Aucune campagne n’est ouverte actuellement.</p>
                 </div>

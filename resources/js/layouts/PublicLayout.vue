@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import { CheckCircle2 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { CheckCircle2, X } from 'lucide-vue-next';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../types';
 import BackToTopButton from '../components/public/BackToTopButton.vue';
 import MainHeader from '../components/public/MainHeader.vue';
@@ -24,6 +24,36 @@ const resolvedSettings = computed<SiteSettings>(() => ({
     ...props.settings,
 }));
 const successMessage = computed(() => shared.value.flash?.success || null);
+const toastVisible = ref(Boolean(successMessage.value));
+let dismissTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearDismissTimer = (): void => {
+    if (dismissTimer) clearTimeout(dismissTimer);
+    dismissTimer = null;
+};
+
+const scheduleDismiss = (): void => {
+    clearDismissTimer();
+    dismissTimer = setTimeout(() => {
+        toastVisible.value = false;
+    }, 7000);
+};
+
+const dismissToast = (): void => {
+    clearDismissTimer();
+    toastVisible.value = false;
+};
+
+watch(successMessage, (message) => {
+    toastVisible.value = Boolean(message);
+    if (message) scheduleDismiss();
+});
+
+onMounted(() => {
+    if (successMessage.value) scheduleDismiss();
+});
+
+onBeforeUnmount(clearDismissTimer);
 </script>
 
 <template>
@@ -37,17 +67,35 @@ const successMessage = computed(() => shared.value.flash?.success || null);
         <TopBar :settings="resolvedSettings" />
         <MainHeader :settings="resolvedSettings" />
 
-        <div
-            v-if="successMessage"
-            class="border-b border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900 sm:px-6"
-            role="status"
-            aria-live="polite"
+        <Transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="translate-y-3 opacity-0 sm:translate-x-5 sm:translate-y-0"
+            enter-to-class="translate-x-0 translate-y-0 opacity-100"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="opacity-100"
+            leave-to-class="translate-y-2 opacity-0 sm:translate-x-4 sm:translate-y-0"
         >
-            <div class="mx-auto flex max-w-7xl items-center gap-2">
-                <CheckCircle2 :size="18" class="flex-none text-edsp-green" aria-hidden="true" />
-                {{ successMessage }}
+            <div
+                v-if="successMessage && toastVisible"
+                class="fixed inset-x-4 top-4 z-[120] mx-auto max-w-md overflow-hidden rounded-xl border border-green-700 bg-edsp-green text-white shadow-[0_18px_55px_rgba(7,139,62,0.35)] sm:inset-x-auto sm:right-6 sm:top-6 sm:w-[26rem]"
+                role="status"
+                aria-live="polite"
+            >
+                <div class="h-1 bg-gold" aria-hidden="true" />
+                <div class="flex items-start gap-3 p-4">
+                    <span class="grid size-10 flex-none place-items-center rounded-full bg-white/20 text-white ring-1 ring-white/40">
+                        <CheckCircle2 :size="22" aria-hidden="true" />
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-heading text-sm font-bold text-white">Opération réussie</p>
+                        <p class="mt-1 text-sm font-medium leading-6 text-white">{{ successMessage }}</p>
+                    </div>
+                    <button type="button" class="grid size-8 flex-none place-items-center rounded-md text-white transition hover:bg-white/20" aria-label="Fermer la notification" @click="dismissToast">
+                        <X :size="18" aria-hidden="true" />
+                    </button>
+                </div>
             </div>
-        </div>
+        </Transition>
 
         <main id="main-content" tabindex="-1">
             <slot />

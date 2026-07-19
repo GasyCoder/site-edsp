@@ -14,6 +14,7 @@ import {
     GraduationCap,
     Landmark,
     Target,
+    UserPlus,
     UserRound,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -301,11 +302,11 @@ const formatFileSize = (bytes?: number | null): string | null => {
                         </dl>
 
                         <Link
-                            href="/preinscription"
+                            href="/inscription"
                             class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-edsp-green px-5 py-3.5 font-heading text-sm font-semibold text-white transition hover:bg-green-700"
                         >
-                            Se préinscrire
-                            <ArrowRight :size="17" aria-hidden="true" />
+                            <UserPlus :size="17" aria-hidden="true" />
+                            S’inscrire
                         </Link>
                     </div>
                 </aside>

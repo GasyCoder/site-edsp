@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ArrowRight, X } from 'lucide-vue-next';
+import { ArrowRight, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -169,12 +169,12 @@ onBeforeUnmount(() => {
                     </div>
 
                     <Link
-                        href="/preinscription"
+                        href="/inscription"
                         class="mt-5 flex items-center justify-center gap-2 rounded-xl bg-edsp-green px-5 py-3.5 text-center font-heading text-sm font-bold text-white shadow-[0_10px_24px_rgba(7,139,62,0.2)] transition hover:bg-[#067735]"
                         @click="close"
                     >
-                        Faire une préinscription
-                        <ArrowRight :size="17" aria-hidden="true" />
+                        <UserPlus :size="18" aria-hidden="true" />
+                        Faire une inscription
                     </Link>
                 </div>
             </nav>

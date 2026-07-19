@@ -2,6 +2,8 @@
 
 use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
+use App\Models\NewsletterCampaign;
+use App\Services\DispatchNewsletterCampaign;
 use App\Services\PublicationService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -28,3 +30,14 @@ Schedule::call(fn () => app(PublicationService::class)->publishDue())
     ->name('publish-scheduled-content')
     ->everyMinute()
     ->withoutOverlapping();
+
+Schedule::call(function (): void {
+    NewsletterCampaign::query()
+        ->due()
+        ->select('id')
+        ->chunkById(50, function ($campaigns): void {
+            foreach ($campaigns as $campaign) {
+                app(DispatchNewsletterCampaign::class)->handle($campaign);
+            }
+        });
+})->name('dispatch-scheduled-newsletters')->everyMinute()->withoutOverlapping();
