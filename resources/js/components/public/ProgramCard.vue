@@ -3,10 +3,12 @@ import { Link } from '@inertiajs/vue3';
 import { ArrowRight, GraduationCap, Landmark, Scale } from 'lucide-vue-next';
 import { computed } from 'vue';
 import type { Program } from '../../types';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     program: Program;
 }>();
+const { tr } = useI18n();
 
 const icon = computed(() => {
     const subject = `${props.program.slug} ${props.program.domain ?? ''}`.toLocaleLowerCase('fr');
@@ -35,11 +37,11 @@ const icon = computed(() => {
         <p class="mt-4 flex-1 leading-7 text-slate-600">{{ program.description }}</p>
         <dl v-if="program.duration || program.domain" class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <div v-if="program.duration">
-                <dt class="sr-only">Durée</dt>
+                <dt class="sr-only">{{ tr('Durée', 'Duration') }}</dt>
                 <dd class="font-semibold text-slate-700">{{ program.duration }}</dd>
             </div>
             <div v-if="program.domain">
-                <dt class="sr-only">Domaine</dt>
+                <dt class="sr-only">{{ tr('Domaine', 'Field') }}</dt>
                 <dd class="text-slate-500">{{ program.domain }}</dd>
             </div>
         </dl>
@@ -47,7 +49,7 @@ const icon = computed(() => {
             :href="`/formations/${program.slug}`"
             class="mt-7 inline-flex w-fit items-center gap-2 font-heading text-sm font-semibold text-institutional transition group-hover:text-edsp-green"
         >
-            Découvrir le parcours
+            {{ tr('Découvrir le parcours', 'Explore this programme') }}
             <ArrowRight :size="17" aria-hidden="true" />
         </Link>
     </article>

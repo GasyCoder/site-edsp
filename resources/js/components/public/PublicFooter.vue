@@ -15,11 +15,13 @@ import { computed } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../../types';
 import { setting } from '../../lib/public-content';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     settings?: SiteSettings;
 }>();
 
+const { tr } = useI18n();
 const page = usePage();
 const shared = computed(() => page.props as SharedPageProps);
 const newsletterFeedback = computed(() => shared.value.flash?.newsletter ?? null);
@@ -29,12 +31,16 @@ const email = computed(() => setting(props.settings, 'email', 'edsp.mahajanga@gm
 const phone = computed(() => setting(props.settings, 'phone', '+261 32 05 579 90'));
 const secondPhone = computed(() => props.settings?.phone_secondary || '+261 32 98 091 18');
 const logoUrl = computed(() => setting(props.settings, 'logo_url', '/images/logo-edsp.png'));
+const darkLogoUrl = computed(() => setting(props.settings, 'logo_dark_url', '/images/logo-edsp-transparent.png'));
 const libraryUrl = computed(() => props.settings?.library_url || '/bibliotheque');
 const footerText = computed(() =>
     setting(
         props.settings,
         'footer_text',
-        "L'École de Droit et Science Politique forme les juristes et analystes politiques de demain.",
+        tr(
+            "L'École de Droit et Science Politique forme les juristes et analystes politiques de demain.",
+            'The School of Law and Political Science educates tomorrow’s legal professionals and political analysts.',
+        ),
     ),
 );
 
@@ -86,18 +92,18 @@ const submitNewsletter = (): void => {
                         <div class="mb-4 flex size-11 items-center justify-center rounded-xl bg-gold/15 text-gold ring-1 ring-gold/20">
                             <Mail :size="21" aria-hidden="true" />
                         </div>
-                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-gold">Restez informé</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-gold">{{ tr('Restez informé', 'Stay informed') }}</p>
                         <h2 id="newsletter-title" class="mt-2 text-xl font-bold leading-tight text-white">
-                            Les actualités de l’EDSP, directement dans votre boîte mail
+                            {{ tr('Les actualités de l’EDSP, directement dans votre boîte mail', 'EDSP news, delivered straight to your inbox') }}
                         </h2>
                         <p class="mt-3 max-w-xl text-sm leading-6 text-[#C9D4EE] sm:text-base">
-                            Recevez les dates d’admission, les événements et les nouvelles formations. Aucun message inutile.
+                            {{ tr('Recevez les dates d’admission, les événements et les nouvelles formations. Aucun message inutile.', 'Receive admission dates, events and new programme announcements. Only useful updates.') }}
                         </p>
                     </div>
 
                     <form action="/newsletter" method="post" novalidate @submit.prevent="submitNewsletter">
                         <label for="newsletter-email" class="mb-2 block font-heading text-sm font-semibold text-white">
-                            Votre adresse e-mail
+                            {{ tr('Votre adresse e-mail', 'Your email address') }}
                         </label>
                         <div class="flex flex-col gap-2.5 sm:flex-row">
                             <div class="relative min-w-0 flex-1">
@@ -114,7 +120,7 @@ const submitNewsletter = (): void => {
                                     inputmode="email"
                                     autocomplete="email"
                                     required
-                                    placeholder="vous@exemple.com"
+                                    :placeholder="tr('vous@exemple.com', 'you@example.com')"
                                     class="h-12 w-full rounded-lg border border-white/15 bg-white pl-11 pr-4 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-white/40 focus:border-gold focus:ring-4 focus:ring-gold/15 focus:outline-none"
                                     :aria-invalid="Boolean(newsletterForm.errors.email)"
                                     :aria-describedby="newsletterDescribedBy"
@@ -127,12 +133,12 @@ const submitNewsletter = (): void => {
                             >
                                 <LoaderCircle v-if="newsletterForm.processing" :size="18" class="animate-spin" aria-hidden="true" />
                                 <Send v-else :size="17" aria-hidden="true" />
-                                {{ newsletterForm.processing ? 'Envoi…' : 'Je m’inscris' }}
+                                {{ newsletterForm.processing ? tr('Envoi…', 'Sending…') : tr('Je m’inscris', 'Subscribe') }}
                             </button>
                         </div>
 
                         <div class="absolute -left-[9999px]" aria-hidden="true">
-                            <label for="newsletter-website">Ne pas remplir ce champ</label>
+                            <label for="newsletter-website">{{ tr('Ne pas remplir ce champ', 'Leave this field blank') }}</label>
                             <input id="newsletter-website" v-model="newsletterForm.website" name="website" type="text" tabindex="-1" autocomplete="off" />
                         </div>
 
@@ -156,9 +162,9 @@ const submitNewsletter = (): void => {
                         <p id="newsletter-privacy" class="mt-3 flex items-start gap-2 text-xs leading-5 text-[#9FB0D5]">
                             <LockKeyhole :size="14" class="mt-0.5 flex-none text-gold" aria-hidden="true" />
                             <span>
-                                Inscription sécurisée en deux étapes : vous devrez confirmer votre adresse par e-mail.
+                                {{ tr('Inscription sécurisée en deux étapes : vous devrez confirmer votre adresse par e-mail.', 'Secure double opt-in: you will need to confirm your email address.') }}
                                 <Link href="/politique-de-confidentialite" class="underline decoration-white/30 underline-offset-2 hover:text-white">
-                                    Confidentialité
+                                    {{ tr('Confidentialité', 'Privacy') }}
                                 </Link>
                             </span>
                         </p>
@@ -169,8 +175,8 @@ const submitNewsletter = (): void => {
             <div class="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-14">
                 <div class="lg:col-span-4 lg:pr-10">
                     <div class="mb-5 flex items-center gap-3">
-                        <span class="grid rounded-xl bg-white p-1.5 shadow-sm">
-                            <img :src="logoUrl" alt="Logo EDSP" class="h-14 w-auto" />
+                        <span class="grid size-16 place-items-center rounded-xl bg-white p-1.5 shadow-sm">
+                            <img :src="darkLogoUrl || logoUrl" alt="Logo EDSP" class="max-h-full max-w-full object-contain" />
                         </span>
                         <span>
                             <span class="block font-heading text-lg font-bold text-white">EDSP</span>
@@ -180,31 +186,31 @@ const submitNewsletter = (): void => {
                     <p class="max-w-sm text-sm leading-7">{{ footerText }}</p>
                 </div>
 
-                <nav aria-label="Liens du site" class="lg:col-span-2">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">Le site</h2>
+                <nav :aria-label="tr('Liens du site', 'Website links')" class="lg:col-span-2">
+                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Le site', 'Explore') }}</h2>
                     <ul class="space-y-2.5 text-sm">
-                        <li><Link href="/" class="footer-link">Accueil</Link></li>
-                        <li><Link href="/presentation" class="footer-link">Présentation</Link></li>
-                        <li><Link href="/formations" class="footer-link">Formations</Link></li>
-                        <li><Link href="/admissions" class="footer-link">Admissions</Link></li>
-                        <li><Link href="/actualites" class="footer-link">Actualités</Link></li>
+                        <li><Link href="/" class="footer-link">{{ tr('Accueil', 'Home') }}</Link></li>
+                        <li><Link href="/presentation" class="footer-link">{{ tr('Présentation', 'About us') }}</Link></li>
+                        <li><Link href="/formations" class="footer-link">{{ tr('Formations', 'Programmes') }}</Link></li>
+                        <li><Link href="/admissions" class="footer-link">{{ tr('Admissions', 'Admissions') }}</Link></li>
+                        <li><Link href="/actualites" class="footer-link">{{ tr('Actualités', 'News') }}</Link></li>
                     </ul>
                 </nav>
 
-                <nav aria-label="Liens utiles" class="lg:col-span-2">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">Liens utiles</h2>
+                <nav :aria-label="tr('Liens utiles', 'Useful links')" class="lg:col-span-2">
+                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Liens utiles', 'Useful links') }}</h2>
                     <ul class="space-y-2.5 text-sm">
-                        <li><Link href="/vie-etudiante" class="footer-link">Vie étudiante</Link></li>
-                        <li><SmartLink :href="libraryUrl" class="footer-link">Bibliothèque</SmartLink></li>
-                        <li><Link href="/galerie" class="footer-link">Galerie</Link></li>
+                        <li><Link href="/vie-etudiante" class="footer-link">{{ tr('Vie étudiante', 'Student life') }}</Link></li>
+                        <li><SmartLink :href="libraryUrl" class="footer-link">{{ tr('Bibliothèque', 'Library') }}</SmartLink></li>
+                        <li><Link href="/galerie" class="footer-link">{{ tr('Galerie', 'Gallery') }}</Link></li>
                         <li><Link href="/contact" class="footer-link">Contact</Link></li>
-                        <li><Link href="/mentions-legales" class="footer-link">Mentions légales</Link></li>
-                        <li><Link href="/politique-de-confidentialite" class="footer-link">Confidentialité</Link></li>
+                        <li><Link href="/mentions-legales" class="footer-link">{{ tr('Mentions légales', 'Legal notice') }}</Link></li>
+                        <li><Link href="/politique-de-confidentialite" class="footer-link">{{ tr('Confidentialité', 'Privacy') }}</Link></li>
                     </ul>
                 </nav>
 
                 <div class="lg:col-span-4 lg:pl-6">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">Nous contacter</h2>
+                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Nous contacter', 'Contact us') }}</h2>
                     <ul class="space-y-4 text-sm">
                         <li class="flex gap-3">
                             <span class="grid size-8 flex-none place-items-center rounded-lg bg-white/7 text-gold">
@@ -235,9 +241,9 @@ const submitNewsletter = (): void => {
             </div>
 
             <div class="flex flex-col gap-3 border-t border-white/10 pt-5 pb-[calc(5rem+env(safe-area-inset-bottom))] text-xs text-[#8295BD] sm:flex-row sm:items-center sm:justify-between min-[1280px]:pb-5">
-                <p>© {{ currentYear }} École de Droit et Science Politique.</p>
+                <p>© {{ currentYear }} {{ tr('École de Droit et Science Politique.', 'School of Law and Political Science.') }}</p>
                 <p class="inline-flex items-center gap-1.5">
-                    Tous droits réservés
+                    {{ tr('Tous droits réservés', 'All rights reserved') }}
                     <ArrowRight :size="12" aria-hidden="true" />
                     Mahajanga
                 </p>

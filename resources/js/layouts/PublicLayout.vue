@@ -9,6 +9,7 @@ import PageLoadingSkeleton from '../components/public/PageLoadingSkeleton.vue';
 import PublicFooter from '../components/public/PublicFooter.vue';
 import TopBar from '../components/public/TopBar.vue';
 import { loadingSkeletonVariant, navigationLoading } from '../lib/navigation-loading';
+import { useI18n } from '../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -26,6 +27,7 @@ const resolvedSettings = computed<SiteSettings>(() => ({
     ...props.settings,
 }));
 const successMessage = computed(() => shared.value.flash?.success || null);
+const { tr } = useI18n();
 const toastVisible = ref(Boolean(successMessage.value));
 let dismissTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -61,12 +63,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-white text-slate-800">
+    <div class="min-h-screen bg-white text-slate-800 transition-colors dark:bg-[#071126] dark:text-slate-200">
         <a
             href="#main-content"
             class="fixed left-4 top-3 z-[100] -translate-y-24 rounded-md bg-white px-4 py-3 font-semibold text-navy shadow-xl transition focus:translate-y-0"
         >
-            Aller au contenu principal
+            {{ tr('Aller au contenu principal', 'Skip to main content') }}
         </a>
         <TopBar :settings="resolvedSettings" />
         <MainHeader :settings="resolvedSettings" />
@@ -91,10 +93,10 @@ onBeforeUnmount(() => {
                         <CheckCircle2 :size="22" aria-hidden="true" />
                     </span>
                     <div class="min-w-0 flex-1">
-                        <p class="font-heading text-sm font-bold text-white">Opération réussie</p>
+                        <p class="font-heading text-sm font-bold text-white">{{ tr('Opération réussie', 'Success') }}</p>
                         <p class="mt-1 text-sm font-medium leading-6 text-white">{{ successMessage }}</p>
                     </div>
-                    <button type="button" class="grid size-8 flex-none place-items-center rounded-md text-white transition hover:bg-white/20" aria-label="Fermer la notification" @click="dismissToast">
+                    <button type="button" class="grid size-8 flex-none place-items-center rounded-md text-white transition hover:bg-white/20" :aria-label="tr('Fermer la notification', 'Dismiss notification')" @click="dismissToast">
                         <X :size="18" aria-hidden="true" />
                     </button>
                 </div>

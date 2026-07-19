@@ -5,13 +5,15 @@ import { computed } from 'vue';
 import type { Article } from '../../types';
 import { formatPublicDate, mediaThumbnailUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     article: Article;
 }>();
+const { languageTag, tr } = useI18n();
 
 const category = computed(() => props.article.category?.name || props.article.category_name || null);
-const date = computed(() => formatPublicDate(props.article.published_at));
+const date = computed(() => formatPublicDate(props.article.published_at, languageTag.value));
 const image = computed(
     () =>
         mediaThumbnailUrl(props.article.featured_image) ||
@@ -29,7 +31,7 @@ const image = computed(
             <MediaPlaceholder
                 :image-url="image"
                 :alt="article.featured_image?.alt_text || article.title"
-                :label="`Illustration de l'actualité : ${article.title}`"
+                :label="tr(`Illustration de l'actualité : ${article.title}`, `News illustration: ${article.title}`)"
                 class="transition duration-500 group-hover:scale-[1.03]"
             />
         </div>
@@ -51,7 +53,7 @@ const image = computed(
                 :href="`/actualites/${article.slug}`"
                 class="mt-5 inline-flex w-fit items-center gap-2 text-sm font-semibold text-edsp-green transition hover:text-institutional"
             >
-                Lire la suite
+                {{ tr('Lire la suite', 'Read more') }}
                 <ArrowRight :size="16" aria-hidden="true" />
             </Link>
         </div>

@@ -4,10 +4,12 @@ import { computed } from 'vue';
 import type { Testimonial } from '../../types';
 import { mediaThumbnailUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     testimonial: Testimonial;
 }>();
+const { tr } = useI18n();
 
 const image = computed(() => mediaThumbnailUrl(props.testimonial.photo) || props.testimonial.photo_url);
 </script>
@@ -23,7 +25,7 @@ const image = computed(() => mediaThumbnailUrl(props.testimonial.photo) || props
                 <MediaPlaceholder
                     :image-url="image"
                     :alt="testimonial.photo?.alt_text || testimonial.author_name"
-                    :label="`Portrait de ${testimonial.author_name}`"
+                    :label="tr(`Portrait de ${testimonial.author_name}`, `Portrait of ${testimonial.author_name}`)"
                 />
             </div>
             <div>

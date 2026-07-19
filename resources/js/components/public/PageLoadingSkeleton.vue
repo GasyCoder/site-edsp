@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from '../../lib/i18n';
+
 type LoadingSkeletonVariant = 'home' | 'listing' | 'detail' | 'form' | 'page';
 
 withDefaults(defineProps<{
@@ -6,17 +8,18 @@ withDefaults(defineProps<{
 }>(), {
     variant: 'page',
 });
+const { tr } = useI18n();
 </script>
 
 <template>
     <section
-        class="min-h-[34rem] bg-white"
+        class="min-h-[34rem] bg-white dark:bg-[#071126]"
         data-page-loading-skeleton
         role="status"
         aria-live="polite"
-        aria-label="Chargement de la page"
+        :aria-label="tr('Chargement de la page', 'Loading page')"
     >
-        <span class="sr-only">Chargement du contenu en cours…</span>
+        <span class="sr-only">{{ tr('Chargement du contenu en cours…', 'Loading content…') }}</span>
 
         <div v-if="variant === 'home'" aria-hidden="true">
             <div class="border-b border-slate-200 bg-soft px-4 py-12 sm:px-6 sm:py-16 lg:py-18">
@@ -39,7 +42,7 @@ withDefaults(defineProps<{
                     </div>
 
                     <div class="relative mx-auto w-full max-w-2xl pt-4 pl-4 sm:pt-6 sm:pl-6">
-                        <div class="absolute top-0 right-4 bottom-4 left-0 rounded-2xl border border-dashed border-slate-300 sm:right-6 sm:bottom-6" />
+                        <div class="absolute top-0 right-4 bottom-4 left-0 rounded-2xl border border-dashed border-institutional/25 bg-institutional/[0.035] sm:right-6 sm:bottom-6 dark:border-slate-500/40 dark:bg-white/[0.025]" />
                         <div class="skeleton-block relative h-[22rem] rounded-2xl sm:h-[27rem]" />
                     </div>
                 </div>
@@ -200,6 +203,11 @@ withDefaults(defineProps<{
 .skeleton-block,
 .skeleton-line {
     background: #e8edf3;
+}
+
+:global(.dark) .skeleton-block,
+:global(.dark) .skeleton-line {
+    background: #26354d;
 }
 
 .skeleton-line {

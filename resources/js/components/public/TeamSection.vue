@@ -6,6 +6,7 @@ import SectionHeading from './SectionHeading.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass } from './section-theme';
 import SmartLink from './SmartLink.vue';
 import TeamMemberCard from './TeamMemberCard.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -16,6 +17,7 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
 const background = computed(() => sectionBackgroundClass(props.section, 'light'));
 const container = computed(() => sectionContainerClass(props.section));
@@ -27,8 +29,8 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
     <section id="equipe" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
         <div :class="container" class="mx-auto">
             <SectionHeading
-                :eyebrow="section?.subtitle || `L'équipe`"
-                :title="section?.title || 'Direction et équipe pédagogique'"
+                :eyebrow="section?.subtitle || tr(`L'équipe`, 'Our team')"
+                :title="section?.title || tr('Direction et équipe pédagogique', 'Leadership and teaching team')"
                 :description="section?.content"
                 :align="alignment"
                 :dark="dark"

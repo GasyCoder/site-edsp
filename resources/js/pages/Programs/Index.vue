@@ -12,6 +12,7 @@ import PublicLayout from '../../layouts/PublicLayout.vue';
 import SeoHead from '../../components/public/SeoHead.vue';
 import type { SeoData } from '../../types';
 import type { Program } from '../../types';
+import { useI18n } from '../../lib/i18n';
 
 type ProgramListItem = Program & {
     domain?: string | null;
@@ -31,12 +32,13 @@ type Paginator<T> = {
 };
 
 defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
+const { tr } = useI18n();
 </script>
 
 <template>
     <SeoHead
-        :title="seo?.title || 'Formations | EDSP'"
-        :description="seo?.description || 'Découvrez les parcours de formation proposés par l’École de Droit et Science Politique de l’Université de Mahajanga.'"
+        :title="seo?.title || tr('Formations | EDSP', 'Degree programmes | EDSP')"
+        :description="seo?.description || tr('Découvrez les parcours de formation proposés par l’École de Droit et Science Politique de l’Université de Mahajanga.', 'Explore degree programmes offered by the University of Mahajanga School of Law and Political Science.')"
         :canonical-url="seo?.canonical"
         :structured-data="seo?.schema"
     />
@@ -53,23 +55,23 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
             />
 
             <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav aria-label="Fil d’Ariane" class="mb-8">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
                     <ol class="flex items-center gap-2 text-sm text-gray-500">
-                        <li><Link href="/" class="transition hover:text-edsp-green">Accueil</Link></li>
+                        <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
-                        <li class="font-semibold text-navy" aria-current="page">Formations</li>
+                        <li class="font-semibold text-navy" aria-current="page">{{ tr('Formations', 'Programmes') }}</li>
                     </ol>
                 </nav>
 
                 <div class="max-w-3xl">
                     <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
-                        Formations
+                        {{ tr('Formations', 'Programmes') }}
                     </p>
                     <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
-                        Nos parcours de formation
+                        {{ tr('Nos parcours de formation', 'Our degree programmes') }}
                     </h1>
                     <p class="mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-                        Explorez les formations publiées par l’EDSP et trouvez le parcours qui correspond à votre projet universitaire.
+                        {{ tr('Explorez les formations publiées par l’EDSP et trouvez le parcours qui correspond à votre projet universitaire.', 'Explore EDSP degree programmes and find the pathway that matches your academic goals.') }}
                     </p>
                 </div>
             </div>
@@ -80,14 +82,14 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
                 <div class="mb-9 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
-                            Catalogue
+                            {{ tr('Catalogue', 'Programme catalogue') }}
                         </p>
                         <h2 id="programs-heading" class="mt-2 text-2xl font-bold text-navy sm:text-3xl">
-                            Formations disponibles
+                            {{ tr('Formations disponibles', 'Available programmes') }}
                         </h2>
                     </div>
                     <p v-if="programs.total" class="text-sm text-gray-500">
-                        {{ programs.total }} formation{{ programs.total > 1 ? 's' : '' }} publiée{{ programs.total > 1 ? 's' : '' }}
+                        {{ programs.total }} {{ tr(programs.total > 1 ? 'formations publiées' : 'formation publiée', programs.total > 1 ? 'programmes' : 'programme') }}
                     </p>
                 </div>
 
@@ -146,7 +148,7 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
                         </div>
 
                         <span class="mt-6 inline-flex items-center gap-2 font-heading text-sm font-semibold text-institutional">
-                            Découvrir la formation
+                            {{ tr('Découvrir la formation', 'Explore this programme') }}
                             <ArrowRight
                                 :size="17"
                                 class="transition-transform group-hover:translate-x-1"
@@ -158,16 +160,16 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
 
                 <div v-else class="rounded-xl border border-dashed border-gray-300 bg-soft px-6 py-16 text-center">
                     <BookOpen :size="36" class="mx-auto text-institutional" aria-hidden="true" />
-                    <h3 class="mt-5 text-xl font-bold text-navy">Aucune formation publiée</h3>
+                    <h3 class="mt-5 text-xl font-bold text-navy">{{ tr('Aucune formation publiée', 'No programmes published') }}</h3>
                     <p class="mx-auto mt-2 max-w-lg leading-7 text-gray-600">
-                        Le catalogue des formations sera mis à jour prochainement.
+                        {{ tr('Le catalogue des formations sera mis à jour prochainement.', 'The programme catalogue will be updated soon.') }}
                     </p>
                 </div>
 
                 <nav
                     v-if="programs.last_page > 1"
                     class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-7 sm:flex-row"
-                    aria-label="Pagination des formations"
+                    :aria-label="tr('Pagination des formations', 'Programme pagination')"
                 >
                     <component
                         :is="programs.prev_page_url ? Link : 'span'"
@@ -178,11 +180,11 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
                         :class="programs.prev_page_url ? 'hover:border-institutional hover:text-institutional' : 'cursor-not-allowed opacity-40'"
                     >
                         <ArrowLeft :size="16" aria-hidden="true" />
-                        Précédent
+                        {{ tr('Précédent', 'Previous') }}
                     </component>
 
                     <p class="text-sm text-gray-600" aria-live="polite">
-                        Page <strong class="text-navy">{{ programs.current_page }}</strong> sur {{ programs.last_page }}
+                        {{ tr('Page', 'Page') }} <strong class="text-navy">{{ programs.current_page }}</strong> {{ tr('sur', 'of') }} {{ programs.last_page }}
                     </p>
 
                     <component
@@ -193,7 +195,7 @@ defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
                         class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2.5 text-sm font-semibold text-navy transition"
                         :class="programs.next_page_url ? 'hover:border-institutional hover:text-institutional' : 'cursor-not-allowed opacity-40'"
                     >
-                        Suivant
+                        {{ tr('Suivant', 'Next') }}
                         <ArrowRight :size="16" aria-hidden="true" />
                     </component>
                 </nav>

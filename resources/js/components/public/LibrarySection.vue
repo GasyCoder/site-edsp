@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import type { Section, SiteSettings } from '../../types';
 import { sectionAlignment, sectionBackgroundClass, sectionContainerClass } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -15,14 +16,15 @@ const props = withDefaults(
         settings: () => ({}),
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || 'Bibliothèque et ressources documentaires');
+const title = computed(() => props.section?.title || tr('Bibliothèque et ressources documentaires', 'Library and learning resources'));
 const content = computed(
     () =>
         props.section?.content ||
-        "La bibliothèque de l'EDSP met à la disposition des étudiants des ouvrages juridiques, politiques et académiques pour soutenir leur formation et leurs travaux de recherche.",
+        tr("La bibliothèque de l'EDSP met à la disposition des étudiants des ouvrages juridiques, politiques et académiques pour soutenir leur formation et leurs travaux de recherche.", 'The EDSP library provides legal, political and academic resources to support students’ studies and research.'),
 );
-const buttonText = computed(() => props.section?.button_text || 'Consulter le catalogue');
+const buttonText = computed(() => props.section?.button_text || tr('Consulter le catalogue', 'Browse the catalogue'));
 const libraryUrl = computed(
     () => props.section?.button_url || props.settings.library_url || '/bibliotheque',
 );

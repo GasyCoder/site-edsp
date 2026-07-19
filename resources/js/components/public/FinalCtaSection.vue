@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import type { Section } from '../../types';
 import { sectionAlignment, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -13,16 +14,17 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || "Prêt à construire votre parcours à l’EDSP ?");
+const title = computed(() => props.section?.title || tr("Prêt à construire votre parcours à l’EDSP ?", 'Ready to start your journey at EDSP?'));
 const content = computed(
     () =>
         props.section?.content ||
-        "Explorez nos formations en droit et en science politique, puis préparez votre candidature avec toutes les informations utiles.",
+        tr("Explorez nos formations en droit et en science politique, puis préparez votre candidature avec toutes les informations utiles.", 'Explore our Law and Political Science programmes, then prepare your application with all the information you need.'),
 );
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section, 'left'));
-const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', 'Poser une question'));
+const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', tr('Poser une question', 'Ask a question')));
 const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/contact'));
 </script>
 
@@ -55,18 +57,18 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
                     <ul class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
                         <li class="inline-flex items-center gap-2">
                             <Check :size="16" class="text-edsp-green" aria-hidden="true" />
-                            Licence et Master
+                            {{ tr('Licence et Master', 'Bachelor’s and Master’s') }}
                         </li>
                         <li class="inline-flex items-center gap-2">
                             <Check :size="16" class="text-edsp-green" aria-hidden="true" />
-                            Candidature accompagnée
+                            {{ tr('Candidature accompagnée', 'Application support') }}
                         </li>
                     </ul>
                 </div>
 
                 <div class="flex min-w-56 flex-col gap-3 sm:flex-row lg:flex-col">
                     <SmartLink :href="section?.button_url || '/formations'" class="button-primary justify-center px-6">
-                        {{ section?.button_text || 'Voir les formations' }}
+                        {{ section?.button_text || tr('Voir les formations', 'View programmes') }}
                         <ArrowRight :size="17" aria-hidden="true" />
                     </SmartLink>
                     <SmartLink

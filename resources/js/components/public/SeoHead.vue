@@ -2,6 +2,7 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import type { SiteSettings } from '../../types';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -33,20 +34,21 @@ const props = withDefaults(
 );
 
 const page = usePage();
+const { tr } = useI18n();
 const sharedSettings = computed(() => (page.props.settings ?? {}) as SiteSettings);
 const resolvedTitle = computed(
     () =>
         props.title ||
         sharedSettings.value.default_meta_title ||
         sharedSettings.value.site_name ||
-        'EDSP — Université de Mahajanga',
+        tr('EDSP — Université de Mahajanga', 'EDSP — University of Mahajanga'),
 );
 const resolvedDescription = computed(
     () =>
         props.description ||
         sharedSettings.value.default_meta_description ||
         sharedSettings.value.site_description ||
-        "École de Droit et Science Politique de l'Université de Mahajanga.",
+        tr("École de Droit et Science Politique de l'Université de Mahajanga.", 'University of Mahajanga School of Law and Political Science.'),
 );
 const resolvedKeywords = computed(() => props.keywords || sharedSettings.value.default_meta_keywords || null);
 const resolvedImage = computed(

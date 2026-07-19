@@ -6,6 +6,7 @@ import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -15,13 +16,14 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || 'Une expérience universitaire enrichissante');
-const eyebrow = computed(() => props.section?.subtitle || 'Vie étudiante');
+const title = computed(() => props.section?.title || tr('Une expérience universitaire enrichissante', 'A rewarding university experience'));
+const eyebrow = computed(() => props.section?.subtitle || tr('Vie étudiante', 'Student life'));
 const content = computed(
     () =>
         props.section?.content ||
-        "Au-delà des cours, l'EDSP offre un cadre vivant où les étudiants apprennent, débattent et s'engagent.",
+        tr("Au-delà des cours, l'EDSP offre un cadre vivant où les étudiants apprennent, débattent et s'engagent.", 'Beyond the classroom, EDSP offers a vibrant environment where students learn, debate and get involved.'),
 );
 const image = computed(() => mediaUrl(props.section));
 const background = computed(() => sectionBackgroundClass(props.section, 'white'));
@@ -29,15 +31,15 @@ const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section));
 const dark = computed(() => isDarkSection(props.section));
 const activities = computed(() => [
-    sectionSetting(props.section, 'item_1', 'Activités académiques'),
-    sectionSetting(props.section, 'item_2', 'Conférences'),
-    sectionSetting(props.section, 'item_3', 'Associations étudiantes'),
-    sectionSetting(props.section, 'item_4', 'Événements culturels'),
-    sectionSetting(props.section, 'item_5', 'Accompagnement pédagogique'),
-    sectionSetting(props.section, 'item_6', 'Insertion professionnelle'),
+    sectionSetting(props.section, 'item_1', tr('Activités académiques', 'Academic activities')),
+    sectionSetting(props.section, 'item_2', tr('Conférences', 'Conferences')),
+    sectionSetting(props.section, 'item_3', tr('Associations étudiantes', 'Student societies')),
+    sectionSetting(props.section, 'item_4', tr('Événements culturels', 'Cultural events')),
+    sectionSetting(props.section, 'item_5', tr('Accompagnement pédagogique', 'Academic support')),
+    sectionSetting(props.section, 'item_6', tr('Insertion professionnelle', 'Career support')),
 ]);
-const secondaryMediaLabel = computed(() => sectionSetting(props.section, 'secondary_media_label', 'Conférence'));
-const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiary_media_label', 'Événement étudiant'));
+const secondaryMediaLabel = computed(() => sectionSetting(props.section, 'secondary_media_label', tr('Conférence', 'Conference')));
+const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiary_media_label', tr('Événement étudiant', 'Student event')));
 </script>
 
 <template>
@@ -65,7 +67,7 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="title"
-                        label="Grande photo — vie étudiante"
+                        :label="tr('Grande photo — vie étudiante', 'Student life photo')"
                     />
                 </div>
                 <div class="overflow-hidden rounded-xl">

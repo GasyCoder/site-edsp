@@ -6,6 +6,7 @@ import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -15,25 +16,26 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
 const title = computed(
-    () => props.section?.title || 'Comprendre le droit. Agir sur la société.',
+    () => props.section?.title || tr('Comprendre le droit. Agir sur la société.', 'Understand the law. Shape society.'),
 );
 const content = computed(
     () =>
         props.section?.content ||
-        'L’EDSP vous forme à l’analyse juridique, aux institutions et aux politiques publiques, de la Licence au Master, au cœur de Mahajanga.',
+        tr('L’EDSP vous forme à l’analyse juridique, aux institutions et aux politiques publiques, de la Licence au Master, au cœur de Mahajanga.', 'EDSP equips you to analyse law, institutions and public policy, from Bachelor’s to Master’s level, in the heart of Mahajanga.'),
 );
-const buttonText = computed(() => props.section?.button_text || 'Découvrir les parcours');
+const buttonText = computed(() => props.section?.button_text || tr('Découvrir les parcours', 'Explore our programmes'));
 const buttonUrl = computed(() => props.section?.button_url || '/formations');
-const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', 'S’inscrire'));
+const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', tr('S’inscrire', 'Apply now')));
 const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/inscription'));
-const kickerText = computed(() => sectionSetting(props.section, 'kicker_text', 'Deux parcours :'));
+const kickerText = computed(() => sectionSetting(props.section, 'kicker_text', tr('Deux parcours :', 'Two pathways:')));
 const locationText = computed(() => sectionSetting(props.section, 'location_text', 'Ambondrona, Mahajanga'));
-const degreeText = computed(() => sectionSetting(props.section, 'degree_text', 'Licence · Master'));
-const visualEyebrow = computed(() => sectionSetting(props.section, 'visual_eyebrow', 'Choisissez votre parcours'));
-const visualTitle = computed(() => sectionSetting(props.section, 'visual_title', 'Une formation ancrée dans les réalités juridiques et publiques de Madagascar.'));
-const visualFooter = computed(() => sectionSetting(props.section, 'visual_footer', 'Droit privé · Science politique'));
+const degreeText = computed(() => sectionSetting(props.section, 'degree_text', tr('Licence · Master', 'Bachelor’s · Master’s')));
+const visualEyebrow = computed(() => sectionSetting(props.section, 'visual_eyebrow', tr('Choisissez votre parcours', 'Choose your programme')));
+const visualTitle = computed(() => sectionSetting(props.section, 'visual_title', tr('Une formation ancrée dans les réalités juridiques et publiques de Madagascar.', 'A degree grounded in Madagascar’s legal and public realities.')));
+const visualFooter = computed(() => sectionSetting(props.section, 'visual_footer', tr('Droit privé · Science politique', 'Private Law · Political Science')));
 const background = computed(() => sectionBackgroundClass(props.section, 'light'));
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section));
@@ -43,12 +45,12 @@ const alt = computed(
     () =>
         (typeof props.section?.settings?.alt_text === 'string' && props.section.settings.alt_text) ||
         props.section?.image?.alt_text ||
-        "Campus et vie étudiante de l'EDSP",
+        tr("Campus et vie étudiante de l'EDSP", 'EDSP campus and student life'),
 );
 
 const programs = computed(() => [
-    sectionSetting(props.section, 'rotating_item_1', 'Droit privé'),
-    sectionSetting(props.section, 'rotating_item_2', 'Science politique'),
+    sectionSetting(props.section, 'rotating_item_1', tr('Droit privé', 'Private Law')),
+    sectionSetting(props.section, 'rotating_item_2', tr('Science politique', 'Political Science')),
 ]);
 const displayedProgram = ref(programs.value[0]);
 let programIndex = 0;
@@ -121,7 +123,7 @@ onBeforeUnmount(() => {
                     <span>{{ kickerText }}</span>
                     <span class="text-edsp-green" aria-hidden="true">{{ displayedProgram }}</span>
                     <span class="h-4 w-px bg-edsp-green motion-safe:animate-pulse" aria-hidden="true" />
-                    <span class="sr-only">{{ programs.join(' et ') }}</span>
+                    <span class="sr-only">{{ programs.join(tr(' et ', ' and ')) }}</span>
                 </div>
 
                 <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -148,7 +150,7 @@ onBeforeUnmount(() => {
 
             <div class="relative mx-auto w-full max-w-2xl pt-4 pl-4 sm:pt-6 sm:pl-6 lg:mx-0">
                 <div
-                    class="pointer-events-none absolute top-0 right-4 bottom-4 left-0 rounded-2xl border border-dashed border-slate-400/70 sm:right-6 sm:bottom-6"
+                    class="pointer-events-none absolute top-0 right-4 bottom-4 left-0 rounded-2xl border border-dashed border-institutional/25 bg-institutional/[0.035] sm:right-6 sm:bottom-6 dark:border-slate-500/40 dark:bg-white/[0.025]"
                     aria-hidden="true"
                 />
                 <div
@@ -159,13 +161,13 @@ onBeforeUnmount(() => {
                         :image-url="image"
                         :alt="alt"
                         eager
-                        label="Campus et vie étudiante de l'EDSP"
+                        :label="tr(`Campus et vie étudiante de l'EDSP`, 'EDSP campus and student life')"
                     />
                     <div
                         v-else
                         class="flex h-full flex-col bg-navy px-6 py-7 text-white sm:px-9 sm:py-9"
                         role="img"
-                        aria-label="Les parcours de formation de l’EDSP"
+                        :aria-label="tr('Les parcours de formation de l’EDSP', 'EDSP degree programmes')"
                     >
                         <div class="flex items-center justify-between gap-4">
                             <span class="grid size-12 place-items-center rounded-xl bg-white/10 text-gold">

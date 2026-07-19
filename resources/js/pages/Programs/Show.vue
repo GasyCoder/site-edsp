@@ -24,6 +24,7 @@ import SeoHead from '../../components/public/SeoHead.vue';
 import RichText from '../../components/public/RichText.vue';
 import { mediaUrl, safePublicUrl } from '../../lib/public-content';
 import type { Program, PublicDocument, SeoData } from '../../types';
+import { useI18n } from '../../lib/i18n';
 
 type ProgramDetails = Program & {
     admission_requirements?: string | null;
@@ -40,10 +41,11 @@ type ProgramDetails = Program & {
 };
 
 const props = defineProps<{ program: ProgramDetails; seo?: SeoData }>();
+const { locale, tr } = useI18n();
 
 const programImage = computed(() => props.program.image_url || mediaUrl(props.program.image));
 const programImageAlt = computed(
-    () => props.program.image?.alt_text || `Illustration de la formation : ${props.program.title}`,
+    () => props.program.image?.alt_text || tr(`Illustration de la formation : ${props.program.title}`, `Programme illustration: ${props.program.title}`),
 );
 const documentUrl = (document: PublicDocument): string | null => safePublicUrl(document.download_url);
 
@@ -53,10 +55,10 @@ const formatFileSize = (bytes?: number | null): string | null => {
     }
 
     if (bytes < 1024 * 1024) {
-        return `${Math.ceil(bytes / 1024)} Ko`;
+        return `${Math.ceil(bytes / 1024)} ${locale.value === 'en' ? 'KB' : 'Ko'}`;
     }
 
-    return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} Mo`;
+    return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', locale.value === 'en' ? '.' : ',')} ${locale.value === 'en' ? 'MB' : 'Mo'}`;
 };
 </script>
 
@@ -86,11 +88,11 @@ const formatFileSize = (bytes?: number | null): string | null => {
             />
 
             <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav aria-label="Fil d’Ariane" class="mb-9">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-9">
                     <ol class="flex flex-wrap items-center gap-2 text-sm text-blue-100/80">
-                        <li><Link href="/" class="transition hover:text-white">Accueil</Link></li>
+                        <li><Link href="/" class="transition hover:text-white">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
-                        <li><Link href="/formations" class="transition hover:text-white">Formations</Link></li>
+                        <li><Link href="/formations" class="transition hover:text-white">{{ tr('Formations', 'Programmes') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
                         <li class="font-semibold text-white" aria-current="page">{{ program.title }}</li>
                     </ol>
@@ -135,8 +137,8 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <Target :size="22" aria-hidden="true" />
                             </div>
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">La formation</p>
-                                <h2 id="objectives-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">Objectifs</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('La formation', 'The programme') }}</p>
+                                <h2 id="objectives-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Objectifs', 'Objectives') }}</h2>
                             </div>
                         </div>
                         <RichText :html="program.objectives" class="mt-6 text-gray-600" />
@@ -152,8 +154,8 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <BookOpen :size="22" aria-hidden="true" />
                             </div>
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">Enseignements</p>
-                                <h2 id="curriculum-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">Programme</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('Enseignements', 'Teaching') }}</p>
+                                <h2 id="curriculum-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Programme', 'Curriculum') }}</h2>
                             </div>
                         </div>
                         <RichText :html="program.curriculum" class="mt-6 text-gray-600" />
@@ -169,8 +171,8 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <Award :size="22" aria-hidden="true" />
                             </div>
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">Savoir-faire</p>
-                                <h2 id="skills-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">Compétences visées</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('Savoir-faire', 'Skills') }}</p>
+                                <h2 id="skills-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Compétences visées', 'Skills developed') }}</h2>
                             </div>
                         </div>
                         <RichText :html="program.skills" class="mt-6 text-gray-600" />
@@ -186,8 +188,8 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <CheckCircle2 :size="22" aria-hidden="true" />
                             </div>
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">Candidature</p>
-                                <h2 id="admission-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">Conditions d’admission</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('Candidature', 'Applications') }}</p>
+                                <h2 id="admission-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Conditions d’admission', 'Entry requirements') }}</h2>
                             </div>
                         </div>
                         <RichText :html="program.admission_requirements" class="mt-6 text-gray-600" />
@@ -199,8 +201,8 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <BriefcaseBusiness :size="22" aria-hidden="true" />
                             </div>
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">Après la formation</p>
-                                <h2 id="careers-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">Débouchés</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('Après la formation', 'After graduation') }}</p>
+                                <h2 id="careers-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Débouchés', 'Career opportunities') }}</h2>
                             </div>
                         </div>
                         <RichText :html="program.careers" class="mt-6 text-gray-600" />
@@ -215,10 +217,10 @@ const formatFileSize = (bytes?: number | null): string | null => {
                             <FileText :size="23" class="text-edsp-green" aria-hidden="true" />
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">
-                                    Ressources
+                                    {{ tr('Ressources', 'Resources') }}
                                 </p>
                                 <h2 id="program-documents-title" class="mt-1 text-2xl font-bold text-navy">
-                                    Documents de la formation
+                                    {{ tr('Documents de la formation', 'Programme documents') }}
                                 </h2>
                             </div>
                         </div>
@@ -258,35 +260,35 @@ const formatFileSize = (bytes?: number | null): string | null => {
                         class="rounded-xl border border-dashed border-gray-300 bg-soft p-8 text-center"
                     >
                         <GraduationCap :size="34" class="mx-auto text-institutional" aria-hidden="true" />
-                        <h2 class="mt-4 text-xl font-bold text-navy">Informations complémentaires à venir</h2>
+                        <h2 class="mt-4 text-xl font-bold text-navy">{{ tr('Informations complémentaires à venir', 'More information coming soon') }}</h2>
                         <p class="mt-2 leading-7 text-gray-600">
-                            Les détails de cette formation seront publiés prochainement.
+                            {{ tr('Les détails de cette formation seront publiés prochainement.', 'Further details about this programme will be published soon.') }}
                         </p>
                     </div>
                 </article>
 
-                <aside class="lg:order-last" aria-label="Informations pratiques">
+                <aside class="lg:order-last" :aria-label="tr('Informations pratiques', 'Practical information')">
                     <div class="rounded-xl border border-gray-200 bg-soft p-6 lg:sticky lg:top-28">
-                        <h2 class="text-lg font-bold text-navy">En bref</h2>
+                        <h2 class="text-lg font-bold text-navy">{{ tr('En bref', 'At a glance') }}</h2>
                         <dl class="mt-5 divide-y divide-gray-200">
                             <div class="flex gap-3 py-4 first:pt-0">
                                 <GraduationCap :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
-                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">Niveau</dt>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Niveau', 'Level') }}</dt>
                                     <dd class="mt-1 font-semibold text-navy">{{ program.level }}</dd>
                                 </div>
                             </div>
                             <div v-if="program.duration" class="flex gap-3 py-4">
                                 <Clock3 :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
-                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">Durée</dt>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Durée', 'Duration') }}</dt>
                                     <dd class="mt-1 font-semibold text-navy">{{ program.duration }}</dd>
                                 </div>
                             </div>
                             <div v-if="program.domain || program.mention || program.track" class="flex gap-3 py-4">
                                 <Landmark :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
-                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">Parcours</dt>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Parcours', 'Pathway') }}</dt>
                                     <dd class="mt-1 font-semibold leading-6 text-navy">
                                         {{ program.track || program.mention || program.domain }}
                                     </dd>
@@ -295,7 +297,7 @@ const formatFileSize = (bytes?: number | null): string | null => {
                             <div v-if="program.manager" class="flex gap-3 py-4">
                                 <UserRound :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
-                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">Responsable</dt>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Responsable', 'Programme leader') }}</dt>
                                     <dd class="mt-1 font-semibold leading-6 text-navy">{{ program.manager }}</dd>
                                 </div>
                             </div>
@@ -306,7 +308,7 @@ const formatFileSize = (bytes?: number | null): string | null => {
                             class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-edsp-green px-5 py-3.5 font-heading text-sm font-semibold text-white transition hover:bg-green-700"
                         >
                             <UserPlus :size="17" aria-hidden="true" />
-                            S’inscrire
+                            {{ tr('S’inscrire', 'Apply now') }}
                         </Link>
                     </div>
                 </aside>
@@ -319,7 +321,7 @@ const formatFileSize = (bytes?: number | null): string | null => {
                         class="inline-flex items-center gap-2 font-semibold text-institutional transition hover:text-navy"
                     >
                         <ArrowLeft :size="18" aria-hidden="true" />
-                        Toutes les formations
+                        {{ tr('Toutes les formations', 'All programmes') }}
                     </Link>
                 </div>
             </div>

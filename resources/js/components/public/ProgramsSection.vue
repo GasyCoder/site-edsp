@@ -7,6 +7,7 @@ import ProgramCard from './ProgramCard.vue';
 import SectionHeading from './SectionHeading.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -17,19 +18,20 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || 'Nos parcours de formation');
-const eyebrow = computed(() => props.section?.subtitle || 'Formations');
+const title = computed(() => props.section?.title || tr('Nos parcours de formation', 'Our degree programmes'));
+const eyebrow = computed(() => props.section?.subtitle || tr('Formations', 'Programmes'));
 const content = computed(
     () =>
         props.section?.content ||
-        "Des parcours complémentaires pour comprendre le droit et l'action publique à Madagascar et dans le monde.",
+        tr("Des parcours complémentaires pour comprendre le droit et l'action publique à Madagascar et dans le monde.", 'Complementary pathways for understanding law and public affairs in Madagascar and beyond.'),
 );
 const background = computed(() => sectionBackgroundClass(props.section, 'light'));
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section, 'center'));
 const dark = computed(() => isDarkSection(props.section, 'light'));
-const footerLabel = computed(() => sectionSetting(props.section, 'footer_label', 'Diplômes et niveaux proposés :'));
+const footerLabel = computed(() => sectionSetting(props.section, 'footer_label', tr('Diplômes et niveaux proposés :', 'Qualifications and levels:')));
 </script>
 
 <template>
@@ -39,7 +41,7 @@ const footerLabel = computed(() => sectionSetting(props.section, 'footer_label',
             <div v-if="programs.length" class="mt-10 grid gap-6 lg:grid-cols-2">
                 <ProgramCard v-for="program in programs" :key="program.id" :program="program" />
             </div>
-            <EmptyState v-else class="mt-10" message="Les parcours de formation seront bientôt publiés." />
+            <EmptyState v-else class="mt-10" :message="tr('Les parcours de formation seront bientôt publiés.', 'Degree programmes will be published soon.')" />
 
             <div
                 v-if="programs.length"
@@ -54,7 +56,7 @@ const footerLabel = computed(() => sectionSetting(props.section, 'footer_label',
                     {{ program.level }}
                 </span>
                 <SmartLink :href="section?.button_url || '/formations'" class="inline-flex items-center gap-2 font-heading text-sm font-semibold text-edsp-green sm:ml-auto">
-                    {{ section?.button_text || 'Toutes les formations' }}
+                    {{ section?.button_text || tr('Toutes les formations', 'All programmes') }}
                     <ArrowRight :size="16" aria-hidden="true" />
                 </SmartLink>
             </div>

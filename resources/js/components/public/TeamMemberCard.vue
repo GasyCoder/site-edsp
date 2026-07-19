@@ -3,10 +3,12 @@ import { computed } from 'vue';
 import type { TeamMember } from '../../types';
 import { mediaThumbnailUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     member: TeamMember;
 }>();
+const { tr } = useI18n();
 
 const fullName = computed(() => `${props.member.first_name} ${props.member.last_name}`.trim());
 const image = computed(() => mediaThumbnailUrl(props.member.photo) || props.member.photo_url);
@@ -20,7 +22,7 @@ const image = computed(() => mediaThumbnailUrl(props.member.photo) || props.memb
             <MediaPlaceholder
                 :image-url="image"
                 :alt="member.photo?.alt_text || fullName"
-                :label="`Portrait de ${fullName}`"
+                :label="tr(`Portrait de ${fullName}`, `Portrait of ${fullName}`)"
             />
         </div>
         <span

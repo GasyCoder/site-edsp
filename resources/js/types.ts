@@ -166,6 +166,7 @@ export interface Partner {
     url?: Nullable<string>;
     logo?: Nullable<MediaAsset>;
     logo_url?: Nullable<string>;
+    logo_dark_url?: Nullable<string>;
 }
 
 export interface AdmissionCampaign {
@@ -241,6 +242,12 @@ export interface SharedPageProps {
         success?: Nullable<string>;
     };
     settings?: SiteSettings;
+    locale?: 'fr' | 'en';
+    locales?: Array<{
+        code: 'fr' | 'en';
+        label: string;
+        shortLabel: string;
+    }>;
 }
 
 export interface SeoData {

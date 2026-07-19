@@ -7,17 +7,19 @@ import MediaPlaceholder from './MediaPlaceholder.vue';
 import SectionHeading from './SectionHeading.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     partners: Partner[];
     section: Section;
 }>();
+const { tr } = useI18n();
 
 const background = computed(() => sectionBackgroundClass(props.section, 'white'));
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section, 'center'));
 const dark = computed(() => isDarkSection(props.section));
-const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_link_text', 'Découvrir le partenaire'));
+const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_link_text', tr('Découvrir le partenaire', 'Discover this partner')));
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_li
         <div :class="container" class="mx-auto">
             <SectionHeading
                 :eyebrow="section.subtitle"
-                :title="section.title || 'Nos partenaires'"
+                :title="section.title || tr('Nos partenaires', 'Our partners')"
                 :description="section.content"
                 :align="alignment"
                 :dark="dark"
@@ -36,8 +38,8 @@ const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_li
                     <div class="h-24 overflow-hidden rounded-lg border border-slate-100">
                         <MediaPlaceholder
                             :image-url="mediaThumbnailUrl(partner.logo) || partner.logo_url"
-                            :alt="partner.logo?.alt_text || `Logo ${partner.name}`"
-                            :label="`Logo ${partner.name}`"
+                            :alt="partner.logo?.alt_text || tr(`Logo ${partner.name}`, `${partner.name} logo`)"
+                            :label="tr(`Logo ${partner.name}`, `${partner.name} logo`)"
                         />
                     </div>
                     <h3 class="mt-4 font-bold text-navy">{{ partner.name }}</h3>

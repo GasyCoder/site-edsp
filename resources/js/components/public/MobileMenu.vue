@@ -3,6 +3,8 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ArrowRight, LayoutDashboard, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import type { SharedPageProps } from '../../types';
+import DisplayPreferences from './DisplayPreferences.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     open: boolean;
@@ -15,6 +17,7 @@ const emit = defineEmits<{
 const page = usePage();
 const shared = computed(() => page.props as SharedPageProps);
 const canAccessAdmin = computed(() => shared.value.auth?.canAccessAdmin === true);
+const { tr } = useI18n();
 const panel = ref<HTMLElement | null>(null);
 const closeButton = ref<HTMLButtonElement | null>(null);
 const currentPath = computed(() => page.url.split('?')[0]);
@@ -86,7 +89,7 @@ onBeforeUnmount(() => {
             v-if="open"
             ref="panel"
             id="mobile-navigation"
-            class="fixed inset-x-0 top-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-[60] flex flex-col bg-white min-[1280px]:hidden"
+            class="fixed inset-x-0 top-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-[60] flex flex-col bg-white dark:bg-slate-950 min-[1280px]:hidden"
             role="dialog"
             aria-modal="true"
             aria-labelledby="mobile-navigation-title"
@@ -96,20 +99,20 @@ onBeforeUnmount(() => {
             <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3.5 sm:px-6">
                 <div>
                     <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-edsp-green">EDSP</p>
-                    <h2 id="mobile-navigation-title" class="mt-0.5 font-heading text-lg font-bold text-navy">Menu principal</h2>
+                    <h2 id="mobile-navigation-title" class="mt-0.5 font-heading text-lg font-bold text-navy">{{ tr('Menu principal', 'Main menu') }}</h2>
                 </div>
                 <button
                     ref="closeButton"
                     type="button"
                     class="grid size-11 place-items-center rounded-xl border border-slate-200 text-navy transition hover:border-edsp-green hover:bg-soft hover:text-edsp-green"
-                    aria-label="Fermer le menu principal"
+                    :aria-label="tr('Fermer le menu principal', 'Close main menu')"
                     @click="close"
                 >
                     <X :size="22" aria-hidden="true" />
                 </button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6" aria-label="Menu mobile complet">
+            <nav class="flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6" :aria-label="tr('Menu mobile complet', 'Full mobile menu')">
                 <div class="mx-auto max-w-xl pb-6">
                     <Link
                         href="/"
@@ -118,22 +121,22 @@ onBeforeUnmount(() => {
                         :aria-current="isCurrent('/') ? 'page' : undefined"
                         @click="close"
                     >
-                        Accueil
+                        {{ tr('Accueil', 'Home') }}
                         <ArrowRight :size="16" aria-hidden="true" />
                     </Link>
 
                     <div class="mt-4 rounded-2xl border border-slate-200 bg-soft/70 p-2">
-                        <p class="nav-group-label mt-1">L'École</p>
-                        <Link href="/presentation" class="mobile-nav-sublink block" @click="close">Présentation</Link>
-                        <Link href="/historique" class="mobile-nav-sublink block" @click="close">Historique</Link>
-                        <Link href="/missions-et-valeurs" class="mobile-nav-sublink block" @click="close">Missions et valeurs</Link>
-                        <Link href="/equipe" class="mobile-nav-sublink block" @click="close">Direction et équipe</Link>
+                        <p class="nav-group-label mt-1">{{ tr("L'École", 'The School') }}</p>
+                        <Link href="/presentation" class="mobile-nav-sublink block" @click="close">{{ tr('Présentation', 'About us') }}</Link>
+                        <Link href="/historique" class="mobile-nav-sublink block" @click="close">{{ tr('Historique', 'History') }}</Link>
+                        <Link href="/missions-et-valeurs" class="mobile-nav-sublink block" @click="close">{{ tr('Missions et valeurs', 'Mission and values') }}</Link>
+                        <Link href="/equipe" class="mobile-nav-sublink block" @click="close">{{ tr('Direction et équipe', 'Leadership and team') }}</Link>
                     </div>
 
                     <div class="mt-3 rounded-2xl border border-slate-200 bg-soft/70 p-2">
-                        <p class="nav-group-label mt-1">Formations</p>
-                        <Link href="/formations" class="mobile-nav-sublink block" @click="close">Nos parcours</Link>
-                        <Link href="/admissions" class="mobile-nav-sublink block" @click="close">Admissions</Link>
+                        <p class="nav-group-label mt-1">{{ tr('Formations', 'Programmes') }}</p>
+                        <Link href="/formations" class="mobile-nav-sublink block" @click="close">{{ tr('Nos parcours', 'Our programmes') }}</Link>
+                        <Link href="/admissions" class="mobile-nav-sublink block" @click="close">{{ tr('Admissions', 'Admissions') }}</Link>
                     </div>
 
                     <div class="mt-4 grid grid-cols-2 gap-2">
@@ -143,7 +146,7 @@ onBeforeUnmount(() => {
                             :class="isCurrent('/vie-etudiante') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
-                            Vie étudiante
+                            {{ tr('Vie étudiante', 'Student life') }}
                         </Link>
                         <Link
                             href="/bibliotheque"
@@ -151,7 +154,7 @@ onBeforeUnmount(() => {
                             :class="isCurrent('/bibliotheque') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
-                            Bibliothèque
+                            {{ tr('Bibliothèque', 'Library') }}
                         </Link>
                         <Link
                             href="/actualites"
@@ -159,7 +162,7 @@ onBeforeUnmount(() => {
                             :class="isCurrent('/actualites') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
-                            Actualités
+                            {{ tr('Actualités', 'News') }}
                         </Link>
                         <Link
                             href="/contact"
@@ -167,7 +170,7 @@ onBeforeUnmount(() => {
                             :class="isCurrent('/contact') && 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
                             @click="close"
                         >
-                            Contact
+                            {{ tr('Contact', 'Contact') }}
                         </Link>
                     </div>
 
@@ -177,7 +180,7 @@ onBeforeUnmount(() => {
                         @click="close"
                     >
                         <UserPlus :size="18" aria-hidden="true" />
-                        Faire une inscription
+                        {{ tr('Faire une inscription', 'Apply now') }}
                     </Link>
 
                     <a
@@ -187,8 +190,10 @@ onBeforeUnmount(() => {
                         @click="close"
                     >
                         <LayoutDashboard :size="18" aria-hidden="true" />
-                        Accéder à l’administration
+                        {{ tr('Accéder à l’administration', 'Open administration') }}
                     </a>
+
+                    <DisplayPreferences class="mt-4" expanded />
                 </div>
             </nav>
         </div>

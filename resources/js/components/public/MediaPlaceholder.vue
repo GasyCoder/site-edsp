@@ -42,7 +42,7 @@ watch(
     />
     <div
         v-else
-        class="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-200 px-4 text-center text-sm text-slate-500"
+        class="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-200 px-4 text-center text-sm text-slate-500 dark:from-slate-800 dark:to-slate-900 dark:text-slate-300"
         role="img"
         :aria-label="label"
     >

@@ -25,6 +25,7 @@ import RichText from '../components/public/RichText.vue';
 import SeoHead from '../components/public/SeoHead.vue';
 import { safePublicUrl } from '../lib/public-content';
 import type { RequiredDocument, SeoData } from '../types';
+import { useI18n } from '../lib/i18n';
 
 type CampaignProgram = {
     id: number;
@@ -71,6 +72,7 @@ const props = withDefaults(defineProps<{
     academicOptions: () => [],
     seo: () => ({}),
 });
+const { languageTag, locale, tr } = useI18n();
 
 const form = useForm({
     admission_campaign_id: props.campaign?.id ?? 0,
@@ -104,12 +106,12 @@ const form = useForm({
     website: '',
 });
 
-const steps = [
-    { number: 1, short: 'Identité', title: 'État civil et coordonnées' },
-    { number: 2, short: 'Famille', title: 'Parents et répondant' },
-    { number: 3, short: 'Formation', title: 'Orientation pédagogique' },
-    { number: 4, short: 'Validation', title: 'Pièces et confirmation' },
-];
+const steps = computed(() => [
+    { number: 1, short: tr('Identité', 'Identity'), title: tr('État civil et coordonnées', 'Personal details and contact information') },
+    { number: 2, short: tr('Famille', 'Family'), title: tr('Parents et répondant', 'Parents and guardian') },
+    { number: 3, short: tr('Formation', 'Studies'), title: tr('Orientation pédagogique', 'Academic choices') },
+    { number: 4, short: tr('Validation', 'Review'), title: tr('Pièces et confirmation', 'Documents and confirmation') },
+]);
 const currentStep = ref(1);
 const highestStep = ref(1);
 const documentPreviews = ref<Record<string, DocumentPreview>>({});
@@ -152,7 +154,7 @@ const parcours = computed(() => Array.from(new Map(
 const selectedLevel = computed(() => levels.value.find((level) => level.id === form.academic_level_id));
 const selectedMention = computed(() => mentions.value.find((mention) => mention.id === form.mention_id));
 const selectedParcours = computed(() => parcours.value.find((item) => item.id === form.parcours_id));
-const selectedProgram = computed(() => props.campaign?.programs.find((program) => program.id === form.program_id)?.title ?? 'Non déterminée');
+const selectedProgram = computed(() => props.campaign?.programs.find((program) => program.id === form.program_id)?.title ?? tr('Non déterminée', 'Not selected'));
 const attachedDocuments = computed(() => Object.values(form.documents).filter((file) => file instanceof File).length);
 const tutorialVideoUrl = computed(() => safePublicUrl(props.campaign?.tutorial_video_url));
 
@@ -183,7 +185,7 @@ const formatDate = (date: string): string => {
 
     return Number.isNaN(parsed.getTime())
         ? date
-        : new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(parsed);
+        : new Intl.DateTimeFormat(languageTag.value, { day: 'numeric', month: 'long', year: 'numeric' }).format(parsed);
 };
 
 const documentError = (key: string): string | undefined => (
@@ -195,10 +197,10 @@ const fieldError = (field: string): string | undefined => (
 )[field];
 
 const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} octets`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+    if (bytes < 1024) return `${bytes} ${tr('octets', 'bytes')}`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} ${locale.value === 'en' ? 'KB' : 'Ko'}`;
 
-    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} ${locale.value === 'en' ? 'MB' : 'Mo'}`;
 };
 
 const revokePreview = (key: string): void => {
@@ -217,7 +219,7 @@ const setDocument = (key: string, event: Event): void => {
         form.documents[key] = null;
         delete documentPreviews.value[key];
         input.value = '';
-        form.setError(`documents.${key}` as never, 'Ce fichier dépasse la taille maximale autorisée de 5 Mo.');
+        form.setError(`documents.${key}` as never, tr('Ce fichier dépasse la taille maximale autorisée de 5 Mo.', 'This file exceeds the maximum size of 5 MB.'));
         return;
     }
 
@@ -275,7 +277,7 @@ const validateStep = (): boolean => {
 };
 
 const nextStep = (): void => {
-    if (!validateStep() || currentStep.value >= steps.length) return;
+    if (!validateStep() || currentStep.value >= steps.value.length) return;
 
     currentStep.value += 1;
     highestStep.value = Math.max(highestStep.value, currentStep.value);
@@ -325,8 +327,8 @@ const submit = (): void => {
 
 <template>
     <SeoHead
-        :title="seo?.title || 'Inscription | EDSP'"
-        :description="seo?.description || 'Déposez votre dossier d’inscription à l’École de Droit et Science Politique.'"
+        :title="seo?.title || tr('Inscription | EDSP', 'Application | EDSP')"
+        :description="seo?.description || tr('Déposez votre dossier d’inscription à l’École de Droit et Science Politique.', 'Submit your application to the School of Law and Political Science.')"
         :canonical-url="seo?.canonical"
         :open-graph-title="seo?.og_title"
         :open-graph-description="seo?.og_description"
@@ -339,18 +341,18 @@ const submit = (): void => {
             <div class="absolute inset-y-0 right-0 -z-10 hidden w-[30%] bg-navy lg:block" aria-hidden="true" />
             <div class="absolute -left-24 -top-32 -z-10 size-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
             <div class="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
-                <nav aria-label="Fil d’Ariane" class="mb-7">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-7">
                     <ol class="flex items-center gap-2 text-sm text-slate-500">
-                        <li><Link href="/" class="transition hover:text-edsp-green">Accueil</Link></li>
+                        <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
-                        <li class="font-semibold text-navy" aria-current="page">Inscription</li>
+                        <li class="font-semibold text-navy" aria-current="page">{{ tr('Inscription', 'Application') }}</li>
                     </ol>
                 </nav>
                 <div class="max-w-3xl">
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">Rejoindre l’EDSP</p>
-                    <h1 class="mt-2 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">Votre dossier d’inscription</h1>
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">{{ tr('Rejoindre l’EDSP', 'Join EDSP') }}</p>
+                    <h1 class="mt-2 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">{{ tr('Votre dossier d’inscription', 'Your application') }}</h1>
                     <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                        Renseignez votre situation, choisissez votre parcours et vérifiez votre dossier avant l’envoi.
+                        {{ tr('Renseignez votre situation, choisissez votre parcours et vérifiez votre dossier avant l’envoi.', 'Enter your details, choose your programme and review your application before submitting it.') }}
                     </p>
                 </div>
             </div>
@@ -360,19 +362,19 @@ const submit = (): void => {
             <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
                 <div v-if="!campaign" class="mx-auto max-w-3xl rounded-2xl border border-amber-200 bg-amber-50 px-6 py-10 text-center" role="status">
                     <CalendarClock :size="40" class="mx-auto text-[#8A6410]" aria-hidden="true" />
-                    <h2 class="mt-5 text-2xl font-bold text-navy">Campagne actuellement fermée</h2>
-                    <p class="mx-auto mt-3 max-w-xl leading-7 text-amber-950">Aucune campagne d’inscription n’est ouverte actuellement.</p>
-                    <Link href="/actualites" class="button-dark mt-7">Consulter les actualités <ArrowRight :size="17" aria-hidden="true" /></Link>
+                    <h2 class="mt-5 text-2xl font-bold text-navy">{{ tr('Campagne actuellement fermée', 'Applications are currently closed') }}</h2>
+                    <p class="mx-auto mt-3 max-w-xl leading-7 text-amber-950">{{ tr('Aucune campagne d’inscription n’est ouverte actuellement.', 'There is no open application round at present.') }}</p>
+                    <Link href="/actualites" class="button-dark mt-7">{{ tr('Consulter les actualités', 'View latest news') }} <ArrowRight :size="17" aria-hidden="true" /></Link>
                 </div>
 
                 <div v-else class="grid items-start gap-8 xl:grid-cols-[19rem_minmax(0,1fr)] xl:gap-12">
                     <aside class="rounded-2xl bg-navy p-6 text-white xl:sticky xl:top-28" aria-labelledby="campaign-title">
                         <span class="grid size-11 place-items-center rounded-xl bg-white/10 text-gold"><ClipboardList :size="23" aria-hidden="true" /></span>
-                        <p class="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-gold">Campagne ouverte</p>
+                        <p class="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-gold">{{ tr('Campagne ouverte', 'Applications open') }}</p>
                         <h2 id="campaign-title" class="mt-2 text-xl font-bold leading-snug">{{ campaign.title }}</h2>
                         <dl class="mt-5 divide-y divide-white/15 text-sm">
-                            <div class="py-3"><dt class="text-blue-200">Année universitaire</dt><dd class="mt-1 font-semibold">{{ campaign.academic_year }}</dd></div>
-                            <div class="py-3"><dt class="text-blue-200">Clôture</dt><dd class="mt-1 font-semibold">{{ formatDate(campaign.closes_at) }}</dd></div>
+                            <div class="py-3"><dt class="text-blue-200">{{ tr('Année universitaire', 'Academic year') }}</dt><dd class="mt-1 font-semibold">{{ campaign.academic_year }}</dd></div>
+                            <div class="py-3"><dt class="text-blue-200">{{ tr('Clôture', 'Closing date') }}</dt><dd class="mt-1 font-semibold">{{ formatDate(campaign.closes_at) }}</dd></div>
                         </dl>
                         <RichText
                             v-if="campaign.instructions"
@@ -385,14 +387,14 @@ const submit = (): void => {
                             target="_blank"
                             rel="noopener noreferrer"
                             class="mt-5 flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-3.5 text-left transition hover:border-gold/60 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-                            aria-label="Voir le tutoriel vidéo dans un nouvel onglet"
+                            :aria-label="tr('Voir le tutoriel vidéo dans un nouvel onglet', 'Watch the video guide in a new tab')"
                         >
                             <span class="grid size-10 flex-none place-items-center rounded-lg bg-gold text-navy">
                                 <PlayCircle :size="22" aria-hidden="true" />
                             </span>
                             <span class="min-w-0 flex-1">
-                                <span class="block text-sm font-bold text-white">Voir le tutoriel vidéo</span>
-                                <span class="mt-0.5 block text-xs leading-5 text-blue-200">Comment remplir votre dossier</span>
+                                <span class="block text-sm font-bold text-white">{{ tr('Voir le tutoriel vidéo', 'Watch the video guide') }}</span>
+                                <span class="mt-0.5 block text-xs leading-5 text-blue-200">{{ tr('Comment remplir votre dossier', 'How to complete your application') }}</span>
                             </span>
                             <ExternalLink :size="17" class="flex-none text-blue-200" aria-hidden="true" />
                         </a>
@@ -400,12 +402,12 @@ const submit = (): void => {
 
                     <section class="min-w-0" aria-labelledby="application-form-title">
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">Dossier candidat</p>
-                            <h2 id="application-form-title" class="mt-2 scroll-mt-28 text-2xl font-bold text-navy sm:text-3xl">Formulaire d’inscription</h2>
-                            <p class="mt-2 text-sm leading-6 text-slate-600">Les champs avec un astérisque sont obligatoires. Vos données sont enregistrées uniquement après l’envoi final.</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">{{ tr('Dossier candidat', 'Applicant file') }}</p>
+                            <h2 id="application-form-title" class="mt-2 scroll-mt-28 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Formulaire d’inscription', 'Application form') }}</h2>
+                            <p class="mt-2 text-sm leading-6 text-slate-600">{{ tr('Les champs avec un astérisque sont obligatoires. Vos données sont enregistrées uniquement après l’envoi final.', 'Fields marked with an asterisk are required. Your information is saved only after final submission.') }}</p>
                         </div>
 
-                        <ol class="mt-7 grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-soft" aria-label="Étapes de l’inscription">
+                        <ol class="mt-7 grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-soft" :aria-label="tr('Étapes de l’inscription', 'Application steps')">
                             <li v-for="step in steps" :key="step.number" class="relative min-w-0">
                                 <button
                                     type="button"
@@ -432,14 +434,14 @@ const submit = (): void => {
                             <input v-model="form.program_id" type="hidden" name="program_id">
 
                             <fieldset v-show="currentStep === 1" id="application-step-1" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
-                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><IdCard :size="21" class="text-edsp-green" aria-hidden="true" /> État civil et coordonnées</span></legend>
-                                <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">Renseignez les informations telles qu’elles figurent sur vos pièces officielles.</p>
+                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><IdCard :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('État civil et coordonnées', 'Personal details and contact information') }}</span></legend>
+                                <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">{{ tr('Renseignez les informations telles qu’elles figurent sur vos pièces officielles.', 'Enter your information exactly as it appears on your official documents.') }}</p>
 
                                 <fieldset>
-                                    <legend class="text-sm font-semibold text-navy">Civilité *</legend>
+                                    <legend class="text-sm font-semibold text-navy">{{ tr('Civilité', 'Title') }} *</legend>
                                     <div class="mt-2 grid grid-cols-3 gap-2">
                                         <label
-                                            v-for="option in [{ value: 'monsieur', label: 'M.' }, { value: 'madame', label: 'Mme' }, { value: 'mademoiselle', label: 'Mlle' }]"
+                                            v-for="option in [{ value: 'monsieur', label: tr('M.', 'Mr') }, { value: 'madame', label: tr('Mme', 'Mrs') }, { value: 'mademoiselle', label: tr('Mlle', 'Ms') }]"
                                             :key="option.value"
                                             class="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border px-2 py-2.5 text-sm font-semibold transition focus-within:ring-2 focus-within:ring-edsp-green/30"
                                             :class="form.civility === option.value ? 'border-edsp-green bg-edsp-green/5 text-edsp-green shadow-sm' : 'border-slate-300 bg-white text-slate-700 hover:border-edsp-green/60'"
@@ -451,10 +453,10 @@ const submit = (): void => {
                                     <p v-if="fieldError('civility')" class="mt-1.5 text-sm text-red-700">{{ fieldError('civility') }}</p>
                                 </fieldset>
                                 <fieldset>
-                                    <legend class="text-sm font-semibold text-navy">Genre *</legend>
+                                    <legend class="text-sm font-semibold text-navy">{{ tr('Genre', 'Gender') }} *</legend>
                                     <div class="mt-2 grid grid-cols-2 gap-2">
                                         <label
-                                            v-for="option in [{ value: 'masculin', label: 'Masculin' }, { value: 'feminin', label: 'Féminin' }]"
+                                            v-for="option in [{ value: 'masculin', label: tr('Masculin', 'Male') }, { value: 'feminin', label: tr('Féminin', 'Female') }]"
                                             :key="option.value"
                                             class="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-semibold transition focus-within:ring-2 focus-within:ring-edsp-green/30"
                                             :class="form.gender === option.value ? 'border-edsp-green bg-edsp-green/5 text-edsp-green shadow-sm' : 'border-slate-300 bg-white text-slate-700 hover:border-edsp-green/60'"
@@ -466,134 +468,134 @@ const submit = (): void => {
                                     <p v-if="fieldError('gender')" class="mt-1.5 text-sm text-red-700">{{ fieldError('gender') }}</p>
                                 </fieldset>
                                 <div>
-                                    <label for="first-name" class="text-sm font-semibold text-navy">Prénom(s) *</label>
+                                    <label for="first-name" class="text-sm font-semibold text-navy">{{ tr('Prénom(s)', 'First name(s)') }} *</label>
                                     <input id="first-name" v-model="form.first_name" name="first_name" type="text" autocomplete="given-name" required maxlength="100" class="form-control mt-2" :aria-invalid="Boolean(fieldError('first_name'))">
                                     <p v-if="fieldError('first_name')" class="mt-1.5 text-sm text-red-700">{{ fieldError('first_name') }}</p>
                                 </div>
                                 <div>
-                                    <label for="last-name" class="text-sm font-semibold text-navy">Nom *</label>
+                                    <label for="last-name" class="text-sm font-semibold text-navy">{{ tr('Nom', 'Last name') }} *</label>
                                     <input id="last-name" v-model="form.last_name" name="last_name" type="text" autocomplete="family-name" required maxlength="100" class="form-control mt-2" :aria-invalid="Boolean(fieldError('last_name'))">
                                     <p v-if="fieldError('last_name')" class="mt-1.5 text-sm text-red-700">{{ fieldError('last_name') }}</p>
                                 </div>
                                 <div>
-                                    <label for="birth-date" class="text-sm font-semibold text-navy">Date de naissance *</label>
+                                    <label for="birth-date" class="text-sm font-semibold text-navy">{{ tr('Date de naissance', 'Date of birth') }} *</label>
                                     <input id="birth-date" v-model="form.birth_date" name="birth_date" type="date" autocomplete="bday" required :max="maxBirthDate" class="form-control mt-2" :aria-invalid="Boolean(fieldError('birth_date'))">
                                     <p v-if="fieldError('birth_date')" class="mt-1.5 text-sm text-red-700">{{ fieldError('birth_date') }}</p>
                                 </div>
                                 <div>
-                                    <label for="birth-place" class="text-sm font-semibold text-navy">Lieu de naissance *</label>
+                                    <label for="birth-place" class="text-sm font-semibold text-navy">{{ tr('Lieu de naissance', 'Place of birth') }} *</label>
                                     <input id="birth-place" v-model="form.birth_place" name="birth_place" type="text" required maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('birth_place'))">
                                     <p v-if="fieldError('birth_place')" class="mt-1.5 text-sm text-red-700">{{ fieldError('birth_place') }}</p>
                                 </div>
                                 <div>
-                                    <label for="nationality" class="text-sm font-semibold text-navy">Nationalité *</label>
+                                    <label for="nationality" class="text-sm font-semibold text-navy">{{ tr('Nationalité', 'Nationality') }} *</label>
                                     <input id="nationality" v-model="form.nationality" name="nationality" type="text" autocomplete="country-name" required maxlength="100" class="form-control mt-2" :aria-invalid="Boolean(fieldError('nationality'))">
                                     <p v-if="fieldError('nationality')" class="mt-1.5 text-sm text-red-700">{{ fieldError('nationality') }}</p>
                                 </div>
                                 <div>
-                                    <label for="national-id" class="text-sm font-semibold text-navy">CIN ou passeport <span class="font-normal text-slate-500">(facultatif)</span></label>
+                                    <label for="national-id" class="text-sm font-semibold text-navy">{{ tr('CIN ou passeport', 'National ID or passport') }} <span class="font-normal text-slate-500">({{ tr('facultatif', 'optional') }})</span></label>
                                     <input id="national-id" v-model="form.national_id" name="national_id" type="text" maxlength="80" class="form-control mt-2" :aria-invalid="Boolean(fieldError('national_id'))">
                                     <p v-if="fieldError('national_id')" class="mt-1.5 text-sm text-red-700">{{ fieldError('national_id') }}</p>
                                 </div>
                                 <div>
-                                    <label for="email" class="text-sm font-semibold text-navy">Adresse e-mail *</label>
+                                    <label for="email" class="text-sm font-semibold text-navy">{{ tr('Adresse e-mail', 'Email address') }} *</label>
                                     <input id="email" v-model="form.email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('email'))">
                                     <p v-if="fieldError('email')" class="mt-1.5 text-sm text-red-700">{{ fieldError('email') }}</p>
                                 </div>
                                 <div>
-                                    <label for="phone" class="text-sm font-semibold text-navy">Téléphone du candidat *</label>
+                                    <label for="phone" class="text-sm font-semibold text-navy">{{ tr('Téléphone du candidat', 'Applicant phone number') }} *</label>
                                     <input id="phone" v-model="form.phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="40" class="form-control mt-2" :aria-invalid="Boolean(fieldError('phone'))">
                                     <p v-if="fieldError('phone')" class="mt-1.5 text-sm text-red-700">{{ fieldError('phone') }}</p>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="address" class="text-sm font-semibold text-navy">Adresse complète *</label>
+                                    <label for="address" class="text-sm font-semibold text-navy">{{ tr('Adresse complète', 'Full address') }} *</label>
                                     <textarea id="address" v-model="form.address" name="address" rows="3" autocomplete="street-address" required maxlength="500" class="form-control mt-2 resize-y" :aria-invalid="Boolean(fieldError('address'))" />
                                     <p v-if="fieldError('address')" class="mt-1.5 text-sm text-red-700">{{ fieldError('address') }}</p>
                                 </div>
                             </fieldset>
 
                             <fieldset v-show="currentStep === 2" id="application-step-2" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
-                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><HeartHandshake :size="21" class="text-edsp-green" aria-hidden="true" /> Parents et répondant</span></legend>
-                                <div class="-mt-1 rounded-lg bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-950 sm:col-span-2">Indiquez au minimum un numéro joignable : téléphone des parents ou téléphone du répondant.</div>
+                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><HeartHandshake :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('Parents et répondant', 'Parents and guardian') }}</span></legend>
+                                <div class="-mt-1 rounded-lg bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-950 sm:col-span-2">{{ tr('Indiquez au minimum un numéro joignable : téléphone des parents ou téléphone du répondant.', 'Provide at least one reachable number: a parent’s or guardian’s phone number.') }}</div>
                                 <div>
-                                    <label for="father-name" class="text-sm font-semibold text-navy">Nom complet du père</label>
+                                    <label for="father-name" class="text-sm font-semibold text-navy">{{ tr('Nom complet du père', 'Father’s full name') }}</label>
                                     <input id="father-name" v-model="form.father_name" name="father_name" type="text" maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('father_name'))">
                                 </div>
                                 <div>
-                                    <label for="mother-name" class="text-sm font-semibold text-navy">Nom complet de la mère</label>
+                                    <label for="mother-name" class="text-sm font-semibold text-navy">{{ tr('Nom complet de la mère', 'Mother’s full name') }}</label>
                                     <input id="mother-name" v-model="form.mother_name" name="mother_name" type="text" maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('mother_name'))">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="parent-phone" class="text-sm font-semibold text-navy">Téléphone des parents <span v-if="!form.guardian_phone">*</span></label>
+                                    <label for="parent-phone" class="text-sm font-semibold text-navy">{{ tr('Téléphone des parents', 'Parent phone number') }} <span v-if="!form.guardian_phone">*</span></label>
                                     <input id="parent-phone" v-model="form.parent_phone" name="parent_phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" :required="!form.guardian_phone" class="form-control mt-2" :aria-invalid="Boolean(fieldError('parent_phone'))">
                                     <p v-if="fieldError('parent_phone')" class="mt-1.5 text-sm text-red-700">{{ fieldError('parent_phone') }}</p>
                                 </div>
-                                <div class="sm:col-span-2 mt-2 border-t border-slate-200 pt-5"><h3 class="font-heading text-base font-bold text-navy">Tuteur ou répondant <span class="font-body text-sm font-normal text-slate-500">(si différent des parents)</span></h3></div>
+                                <div class="sm:col-span-2 mt-2 border-t border-slate-200 pt-5"><h3 class="font-heading text-base font-bold text-navy">{{ tr('Tuteur ou répondant', 'Guardian or sponsor') }} <span class="font-body text-sm font-normal text-slate-500">({{ tr('si différent des parents', 'if different from parents') }})</span></h3></div>
                                 <div>
-                                    <label for="guardian-name" class="text-sm font-semibold text-navy">Nom complet</label>
+                                    <label for="guardian-name" class="text-sm font-semibold text-navy">{{ tr('Nom complet', 'Full name') }}</label>
                                     <input id="guardian-name" v-model="form.guardian_name" name="guardian_name" type="text" maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('guardian_name'))">
                                 </div>
                                 <div>
-                                    <label for="guardian-relationship" class="text-sm font-semibold text-navy">Lien avec le candidat</label>
-                                    <input id="guardian-relationship" v-model="form.guardian_relationship" name="guardian_relationship" type="text" maxlength="100" placeholder="Ex. oncle, tante, répondant légal" class="form-control mt-2" :aria-invalid="Boolean(fieldError('guardian_relationship'))">
+                                    <label for="guardian-relationship" class="text-sm font-semibold text-navy">{{ tr('Lien avec le candidat', 'Relationship to applicant') }}</label>
+                                    <input id="guardian-relationship" v-model="form.guardian_relationship" name="guardian_relationship" type="text" maxlength="100" :placeholder="tr('Ex. oncle, tante, répondant légal', 'E.g. uncle, aunt, legal guardian')" class="form-control mt-2" :aria-invalid="Boolean(fieldError('guardian_relationship'))">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="guardian-phone" class="text-sm font-semibold text-navy">Téléphone du répondant <span v-if="!form.parent_phone">*</span></label>
+                                    <label for="guardian-phone" class="text-sm font-semibold text-navy">{{ tr('Téléphone du répondant', 'Guardian phone number') }} <span v-if="!form.parent_phone">*</span></label>
                                     <input id="guardian-phone" v-model="form.guardian_phone" name="guardian_phone" type="tel" inputmode="tel" maxlength="40" :required="!form.parent_phone" class="form-control mt-2" :aria-invalid="Boolean(fieldError('guardian_phone'))">
                                     <p v-if="fieldError('guardian_phone')" class="mt-1.5 text-sm text-red-700">{{ fieldError('guardian_phone') }}</p>
                                 </div>
                             </fieldset>
 
                             <fieldset v-show="currentStep === 3" id="application-step-3" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
-                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><GraduationCap :size="22" class="text-edsp-green" aria-hidden="true" /> Orientation pédagogique</span></legend>
-                                <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">Les mentions et parcours proposés s’adaptent automatiquement au niveau choisi.</p>
+                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><GraduationCap :size="22" class="text-edsp-green" aria-hidden="true" /> {{ tr('Orientation pédagogique', 'Academic choices') }}</span></legend>
+                                <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">{{ tr('Les mentions et parcours proposés s’adaptent automatiquement au niveau choisi.', 'Available specialisations and pathways update automatically for the selected level.') }}</p>
                                 <div>
-                                    <label for="academic-level" class="text-sm font-semibold text-navy">Niveau demandé *</label>
+                                    <label for="academic-level" class="text-sm font-semibold text-navy">{{ tr('Niveau demandé', 'Level applied for') }} *</label>
                                     <select id="academic-level" v-model.number="form.academic_level_id" name="academic_level_id" required class="form-control mt-2" :aria-invalid="Boolean(fieldError('academic_level_id'))">
-                                        <option :value="0" disabled>Sélectionnez le niveau</option>
+                                        <option :value="0" disabled>{{ tr('Sélectionnez le niveau', 'Select a level') }}</option>
                                         <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.code }} — {{ level.name }}</option>
                                     </select>
                                     <p v-if="fieldError('academic_level_id')" class="mt-1.5 text-sm text-red-700">{{ fieldError('academic_level_id') }}</p>
                                 </div>
                                 <div>
-                                    <label for="mention" class="text-sm font-semibold text-navy">Mention *</label>
+                                    <label for="mention" class="text-sm font-semibold text-navy">{{ tr('Mention', 'Specialisation') }} *</label>
                                     <select id="mention" v-model.number="form.mention_id" name="mention_id" required :disabled="!form.academic_level_id" class="form-control mt-2 disabled:cursor-not-allowed disabled:bg-slate-100" :aria-invalid="Boolean(fieldError('mention_id'))">
-                                        <option :value="0" disabled>{{ form.academic_level_id ? 'Sélectionnez la mention' : 'Choisissez d’abord un niveau' }}</option>
+                                        <option :value="0" disabled>{{ form.academic_level_id ? tr('Sélectionnez la mention', 'Select a specialisation') : tr('Choisissez d’abord un niveau', 'Select a level first') }}</option>
                                         <option v-for="mention in mentions" :key="mention.id" :value="mention.id">{{ mention.name }}</option>
                                     </select>
                                     <p v-if="fieldError('mention_id')" class="mt-1.5 text-sm text-red-700">{{ fieldError('mention_id') }}</p>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="parcours" class="text-sm font-semibold text-navy">Parcours *</label>
+                                    <label for="parcours" class="text-sm font-semibold text-navy">{{ tr('Parcours', 'Pathway') }} *</label>
                                     <select id="parcours" v-model.number="form.parcours_id" name="parcours_id" required :disabled="!form.mention_id" class="form-control mt-2 disabled:cursor-not-allowed disabled:bg-slate-100" :aria-invalid="Boolean(fieldError('parcours_id'))">
-                                        <option :value="0" disabled>{{ form.mention_id ? 'Sélectionnez le parcours' : 'Choisissez d’abord une mention' }}</option>
+                                        <option :value="0" disabled>{{ form.mention_id ? tr('Sélectionnez le parcours', 'Select a pathway') : tr('Choisissez d’abord une mention', 'Select a specialisation first') }}</option>
                                         <option v-for="item in parcours" :key="item.id" :value="item.id">{{ item.name }}</option>
                                     </select>
                                     <p v-if="fieldError('parcours_id')" class="mt-1.5 text-sm text-red-700">{{ fieldError('parcours_id') }}</p>
                                 </div>
                                 <div>
-                                    <label for="last-diploma" class="text-sm font-semibold text-navy">Dernier diplôme obtenu *</label>
-                                    <input id="last-diploma" v-model="form.last_diploma" name="last_diploma" type="text" required maxlength="255" placeholder="Ex. Baccalauréat série A2" class="form-control mt-2" :aria-invalid="Boolean(fieldError('last_diploma'))">
+                                    <label for="last-diploma" class="text-sm font-semibold text-navy">{{ tr('Dernier diplôme obtenu', 'Most recent qualification') }} *</label>
+                                    <input id="last-diploma" v-model="form.last_diploma" name="last_diploma" type="text" required maxlength="255" :placeholder="tr('Ex. Baccalauréat série A2', 'E.g. secondary school diploma')" class="form-control mt-2" :aria-invalid="Boolean(fieldError('last_diploma'))">
                                     <p v-if="fieldError('last_diploma')" class="mt-1.5 text-sm text-red-700">{{ fieldError('last_diploma') }}</p>
                                 </div>
                                 <div>
-                                    <label for="graduation-year" class="text-sm font-semibold text-navy">Année d’obtention *</label>
+                                    <label for="graduation-year" class="text-sm font-semibold text-navy">{{ tr('Année d’obtention', 'Year awarded') }} *</label>
                                     <input id="graduation-year" v-model.number="form.graduation_year" name="graduation_year" type="number" inputmode="numeric" required min="1950" :max="currentYear" class="form-control mt-2" :aria-invalid="Boolean(fieldError('graduation_year'))">
                                     <p v-if="fieldError('graduation_year')" class="mt-1.5 text-sm text-red-700">{{ fieldError('graduation_year') }}</p>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="previous-institution" class="text-sm font-semibold text-navy">Établissement précédent *</label>
+                                    <label for="previous-institution" class="text-sm font-semibold text-navy">{{ tr('Établissement précédent', 'Previous institution') }} *</label>
                                     <input id="previous-institution" v-model="form.previous_institution" name="previous_institution" type="text" required maxlength="255" class="form-control mt-2" :aria-invalid="Boolean(fieldError('previous_institution'))">
                                     <p v-if="fieldError('previous_institution')" class="mt-1.5 text-sm text-red-700">{{ fieldError('previous_institution') }}</p>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="academic-background" class="text-sm font-semibold text-navy">Informations pédagogiques complémentaires <span class="font-normal text-slate-500">(facultatif)</span></label>
-                                    <textarea id="academic-background" v-model="form.academic_background" name="academic_background" rows="4" maxlength="3000" placeholder="Redoublement, équivalences, autre diplôme ou information utile…" class="form-control mt-2 resize-y" :aria-invalid="Boolean(fieldError('academic_background'))" />
+                                    <label for="academic-background" class="text-sm font-semibold text-navy">{{ tr('Informations pédagogiques complémentaires', 'Additional academic information') }} <span class="font-normal text-slate-500">({{ tr('facultatif', 'optional') }})</span></label>
+                                    <textarea id="academic-background" v-model="form.academic_background" name="academic_background" rows="4" maxlength="3000" :placeholder="tr('Redoublement, équivalences, autre diplôme ou information utile…', 'Repeated years, credit transfers, other qualifications or relevant information…')" class="form-control mt-2 resize-y" :aria-invalid="Boolean(fieldError('academic_background'))" />
                                 </div>
                             </fieldset>
 
                             <fieldset v-show="currentStep === 4" id="application-step-4" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
-                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><Upload :size="21" class="text-edsp-green" aria-hidden="true" /> Pièces et confirmation</span></legend>
+                                <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><Upload :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('Pièces et confirmation', 'Documents and confirmation') }}</span></legend>
 
                                 <div v-if="campaign.required_documents?.length" class="grid gap-4 sm:col-span-2 sm:grid-cols-2">
                                     <div v-for="document in campaign.required_documents" :key="document.key" class="rounded-xl border border-slate-200 bg-soft p-4 transition" :class="documentPreviews[document.key] ? 'border-edsp-green/40 bg-green-50/40' : ''">
@@ -604,7 +606,7 @@ const submit = (): void => {
                                             <img
                                                 v-if="documentPreviews[document.key].isImage && documentPreviews[document.key].url"
                                                 :src="documentPreviews[document.key].url || undefined"
-                                                :alt="`Aperçu de ${documentPreviews[document.key].name}`"
+                                                :alt="tr(`Aperçu de ${documentPreviews[document.key].name}`, `Preview of ${documentPreviews[document.key].name}`)"
                                                 class="h-36 w-full bg-slate-100 object-contain"
                                             >
                                             <div v-else class="grid h-24 place-items-center bg-slate-50 text-institutional">
@@ -619,47 +621,47 @@ const submit = (): void => {
                                                     <span class="block truncate text-xs font-semibold text-navy" :title="documentPreviews[document.key].name">{{ documentPreviews[document.key].name }}</span>
                                                     <span class="mt-0.5 block text-xs text-slate-500">{{ documentPreviews[document.key].size }}</span>
                                                 </span>
-                                                <button type="button" class="grid size-8 flex-none place-items-center rounded-md text-slate-500 transition hover:bg-red-50 hover:text-red-700" :aria-label="`Retirer ${documentPreviews[document.key].name}`" @click="removeDocument(document.key)">
+                                                <button type="button" class="grid size-8 flex-none place-items-center rounded-md text-slate-500 transition hover:bg-red-50 hover:text-red-700" :aria-label="tr(`Retirer ${documentPreviews[document.key].name}`, `Remove ${documentPreviews[document.key].name}`)" @click="removeDocument(document.key)">
                                                     <X :size="17" aria-hidden="true" />
                                                 </button>
                                             </div>
                                         </div>
                                         <p v-if="documentError(document.key)" class="mt-2 text-sm text-red-700">{{ documentError(document.key) }}</p>
                                     </div>
-                                    <p class="text-xs leading-5 text-slate-500 sm:col-span-2">JPG, PNG, WebP, PDF, DOC ou DOCX — 5 Mo maximum par fichier.</p>
+                                    <p class="text-xs leading-5 text-slate-500 sm:col-span-2">{{ tr('JPG, PNG, WebP, PDF, DOC ou DOCX — 5 Mo maximum par fichier.', 'JPG, PNG, WebP, PDF, DOC or DOCX — maximum 5 MB per file.') }}</p>
                                 </div>
 
                                 <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:col-span-2">
-                                    <h3 class="font-heading text-base font-bold text-navy">Résumé du dossier</h3>
+                                    <h3 class="font-heading text-base font-bold text-navy">{{ tr('Résumé du dossier', 'Application summary') }}</h3>
                                     <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-                                        <div><dt class="text-slate-500">Candidat</dt><dd class="mt-1 font-semibold text-navy">{{ form.first_name }} {{ form.last_name }}</dd></div>
+                                        <div><dt class="text-slate-500">{{ tr('Candidat', 'Applicant') }}</dt><dd class="mt-1 font-semibold text-navy">{{ form.first_name }} {{ form.last_name }}</dd></div>
                                         <div><dt class="text-slate-500">Contact</dt><dd class="mt-1 font-semibold text-navy">{{ form.email }}</dd></div>
-                                        <div><dt class="text-slate-500">Orientation</dt><dd class="mt-1 font-semibold text-navy">{{ selectedLevel?.code }} · {{ selectedMention?.name }} · {{ selectedParcours?.name }}</dd></div>
-                                        <div><dt class="text-slate-500">Formation associée</dt><dd class="mt-1 font-semibold text-navy">{{ selectedProgram }}</dd></div>
-                                        <div><dt class="text-slate-500">Dernier diplôme</dt><dd class="mt-1 font-semibold text-navy">{{ form.last_diploma }} ({{ form.graduation_year }})</dd></div>
-                                        <div><dt class="text-slate-500">Pièces jointes</dt><dd class="mt-1 font-semibold text-navy">{{ attachedDocuments }}</dd></div>
+                                        <div><dt class="text-slate-500">{{ tr('Orientation', 'Academic choice') }}</dt><dd class="mt-1 font-semibold text-navy">{{ selectedLevel?.code }} · {{ selectedMention?.name }} · {{ selectedParcours?.name }}</dd></div>
+                                        <div><dt class="text-slate-500">{{ tr('Formation associée', 'Linked programme') }}</dt><dd class="mt-1 font-semibold text-navy">{{ selectedProgram }}</dd></div>
+                                        <div><dt class="text-slate-500">{{ tr('Dernier diplôme', 'Most recent qualification') }}</dt><dd class="mt-1 font-semibold text-navy">{{ form.last_diploma }} ({{ form.graduation_year }})</dd></div>
+                                        <div><dt class="text-slate-500">{{ tr('Pièces jointes', 'Attached documents') }}</dt><dd class="mt-1 font-semibold text-navy">{{ attachedDocuments }}</dd></div>
                                     </dl>
                                 </div>
 
                                 <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-soft p-4 sm:col-span-2">
                                     <input v-model="form.privacy_accepted" type="checkbox" name="privacy_accepted" required class="mt-1 size-4 flex-none accent-edsp-green" :aria-invalid="Boolean(fieldError('privacy_accepted'))">
-                                    <span class="text-sm leading-6 text-slate-700">J’accepte le traitement de mes données pour l’étude de mon dossier et j’ai lu la <Link href="/politique-de-confidentialite" class="font-semibold text-institutional underline underline-offset-2">politique de confidentialité</Link>. *</span>
+                                    <span class="text-sm leading-6 text-slate-700">{{ tr('J’accepte le traitement de mes données pour l’étude de mon dossier et j’ai lu la', 'I agree to the processing of my data for the assessment of my application and I have read the') }} <Link href="/politique-de-confidentialite" class="font-semibold text-institutional underline underline-offset-2">{{ tr('politique de confidentialité', 'privacy policy') }}</Link>. *</span>
                                 </label>
                                 <p v-if="fieldError('privacy_accepted')" class="-mt-3 text-sm text-red-700 sm:col-span-2">{{ fieldError('privacy_accepted') }}</p>
                             </fieldset>
 
-                            <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true"><label for="website">Site web</label><input id="website" v-model="form.website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
+                            <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true"><label for="website">{{ tr('Site web', 'Website') }}</label><input id="website" v-model="form.website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
 
                             <div v-if="Object.keys(form.errors).length" class="mt-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
                                 <AlertCircle :size="20" class="mt-0.5 flex-none" aria-hidden="true" />
-                                <p>Certains champs doivent être corrigés. Vous avez été redirigé vers l’étape concernée.</p>
+                                <p>{{ tr('Certains champs doivent être corrigés. Vous avez été redirigé vers l’étape concernée.', 'Some fields need attention. You have been taken to the relevant step.') }}</p>
                             </div>
 
                             <div class="mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-                                <button v-if="currentStep > 1" type="button" class="button-secondary justify-center" @click="previousStep"><ArrowLeft :size="17" aria-hidden="true" /> Étape précédente</button>
+                                <button v-if="currentStep > 1" type="button" class="button-secondary justify-center" @click="previousStep"><ArrowLeft :size="17" aria-hidden="true" /> {{ tr('Étape précédente', 'Previous step') }}</button>
                                 <span v-else />
-                                <button v-if="currentStep < steps.length" type="button" class="button-primary justify-center" @click="nextStep">Continuer <ArrowRight :size="17" aria-hidden="true" /></button>
-                                <button v-else type="submit" :disabled="form.processing" class="button-primary justify-center px-6 py-3.5 disabled:cursor-wait disabled:opacity-60"><Send :size="18" aria-hidden="true" /> {{ form.processing ? 'Envoi en cours…' : 'Envoyer mon inscription' }}</button>
+                                <button v-if="currentStep < steps.length" type="button" class="button-primary justify-center" @click="nextStep">{{ tr('Continuer', 'Continue') }} <ArrowRight :size="17" aria-hidden="true" /></button>
+                                <button v-else type="submit" :disabled="form.processing" class="button-primary justify-center px-6 py-3.5 disabled:cursor-wait disabled:opacity-60"><Send :size="18" aria-hidden="true" /> {{ form.processing ? tr('Envoi en cours…', 'Submitting…') : tr('Envoyer mon inscription', 'Submit my application') }}</button>
                             </div>
                         </form>
                     </section>

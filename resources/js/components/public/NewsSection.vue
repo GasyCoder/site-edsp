@@ -6,6 +6,7 @@ import EmptyState from './EmptyState.vue';
 import NewsCard from './NewsCard.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -16,10 +17,11 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || 'Actualités et communiqués');
-const eyebrow = computed(() => props.section?.subtitle || 'À la une');
-const content = computed(() => props.section?.content || 'Retrouvez les informations académiques et les événements de l’établissement.');
+const title = computed(() => props.section?.title || tr('Actualités et communiqués', 'News and announcements'));
+const eyebrow = computed(() => props.section?.subtitle || tr('À la une', 'Latest news'));
+const content = computed(() => props.section?.content || tr('Retrouvez les informations académiques et les événements de l’établissement.', 'Keep up with academic information and events at the School.'));
 const background = computed(() => sectionBackgroundClass(props.section, 'light'));
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section));
@@ -38,7 +40,7 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
                     <p class="mt-3 max-w-2xl text-pretty leading-7" :class="dark ? 'text-[#C9D4EE]' : 'text-slate-600'">{{ content }}</p>
                 </div>
                 <SmartLink :href="section?.button_url || '/actualites'" class="button-outline w-fit" :class="dark ? 'border-white text-white hover:bg-white hover:text-navy' : ''">
-                    {{ section?.button_text || 'Voir toutes les actualités' }}
+                    {{ section?.button_text || tr('Voir toutes les actualités', 'View all news') }}
                     <ArrowRight :size="17" aria-hidden="true" />
                 </SmartLink>
             </div>
@@ -46,7 +48,7 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
             <div v-if="news.length" class="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <NewsCard v-for="article in news" :key="article.id" :article="article" />
             </div>
-            <EmptyState v-else class="mt-9" message="Les prochaines actualités seront publiées ici." />
+            <EmptyState v-else class="mt-9" :message="tr('Les prochaines actualités seront publiées ici.', 'New updates will be published here.')" />
         </div>
     </section>
 </template>

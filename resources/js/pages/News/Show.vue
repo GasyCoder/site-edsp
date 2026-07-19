@@ -17,6 +17,7 @@ import SeoHead from '../../components/public/SeoHead.vue';
 import RichText from '../../components/public/RichText.vue';
 import { mediaUrl, safePublicUrl } from '../../lib/public-content';
 import type { Article, PublicDocument, PublicGallery, SeoData } from '../../types';
+import { useI18n } from '../../lib/i18n';
 
 type NewsArticle = Article & {
     content: string;
@@ -25,6 +26,7 @@ type NewsArticle = Article & {
 };
 
 const props = defineProps<{ article: NewsArticle; seo?: SeoData }>();
+const { languageTag, locale, tr } = useI18n();
 
 const featuredImage = computed(
     () =>
@@ -33,7 +35,7 @@ const featuredImage = computed(
         mediaUrl(props.article.featured_image),
 );
 const featuredImageAlt = computed(
-    () => props.article.featured_image?.alt_text || `Illustration de l’actualité : ${props.article.title}`,
+    () => props.article.featured_image?.alt_text || tr(`Illustration de l’actualité : ${props.article.title}`, `News illustration: ${props.article.title}`),
 );
 
 const documentUrl = (document: PublicDocument): string | null => safePublicUrl(document.download_url);
@@ -46,15 +48,15 @@ const formatFileSize = (bytes?: number | null): string | null => {
     }
 
     if (bytes < 1024 * 1024) {
-        return `${Math.ceil(bytes / 1024)} Ko`;
+        return `${Math.ceil(bytes / 1024)} ${locale.value === 'en' ? 'KB' : 'Ko'}`;
     }
 
-    return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} Mo`;
+    return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', locale.value === 'en' ? '.' : ',')} ${locale.value === 'en' ? 'MB' : 'Mo'}`;
 };
 
 const formatDate = (date: string | null): string => {
     if (!date) {
-        return 'Date non renseignée';
+        return tr('Date non renseignée', 'Date not available');
     }
 
     const parsed = new Date(date);
@@ -63,7 +65,7 @@ const formatDate = (date: string | null): string => {
         return date;
     }
 
-    return new Intl.DateTimeFormat('fr-FR', {
+    return new Intl.DateTimeFormat(languageTag.value, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -99,11 +101,11 @@ const formatDate = (date: string | null): string => {
                 />
 
                 <div class="mx-auto max-w-5xl px-6 py-14 sm:py-16 lg:py-20">
-                    <nav aria-label="Fil d’Ariane" class="mb-9">
+                    <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-9">
                         <ol class="flex flex-wrap items-center gap-2 text-sm text-blue-100/80">
-                            <li><Link href="/" class="transition hover:text-white">Accueil</Link></li>
+                            <li><Link href="/" class="transition hover:text-white">{{ tr('Accueil', 'Home') }}</Link></li>
                             <li aria-hidden="true"><ChevronRight :size="15" /></li>
-                            <li><Link href="/actualites" class="transition hover:text-white">Actualités</Link></li>
+                            <li><Link href="/actualites" class="transition hover:text-white">{{ tr('Actualités', 'News') }}</Link></li>
                             <li aria-hidden="true"><ChevronRight :size="15" /></li>
                             <li class="max-w-xs truncate font-semibold text-white" aria-current="page">
                                 {{ article.title }}
@@ -171,7 +173,7 @@ const formatDate = (date: string | null): string => {
                             <div class="flex items-center gap-3">
                                 <FileText :size="22" class="text-edsp-green" aria-hidden="true" />
                                 <h2 id="news-documents-title" class="text-xl font-bold text-navy">
-                                    Documents associés
+                                    {{ tr('Documents associés', 'Related documents') }}
                                 </h2>
                             </div>
                             <ul class="mt-5 grid gap-3">
@@ -206,22 +208,22 @@ const formatDate = (date: string | null): string => {
                         </section>
                     </div>
 
-                    <aside class="border-t border-gray-200 pt-7 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0" aria-label="Publication">
+                    <aside class="border-t border-gray-200 pt-7 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0" :aria-label="tr('Publication', 'Publication details')">
                         <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-institutional/10 text-institutional">
                             <CalendarDays :size="22" aria-hidden="true" />
                         </div>
                         <p class="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-gray-500">
-                            Date de publication
+                            {{ tr('Date de publication', 'Publication date') }}
                         </p>
                         <p class="mt-1 font-semibold leading-6 text-navy">
                             {{ formatDate(article.published_at) }}
                         </p>
                         <template v-if="article.category?.name">
-                            <p class="mt-7 text-xs font-bold uppercase tracking-[0.14em] text-gray-500">Rubrique</p>
+                            <p class="mt-7 text-xs font-bold uppercase tracking-[0.14em] text-gray-500">{{ tr('Rubrique', 'Category') }}</p>
                             <p class="mt-1 font-semibold leading-6 text-navy">{{ article.category.name }}</p>
                         </template>
                         <template v-if="article.author_name">
-                            <p class="mt-7 text-xs font-bold uppercase tracking-[0.14em] text-gray-500">Auteur</p>
+                            <p class="mt-7 text-xs font-bold uppercase tracking-[0.14em] text-gray-500">{{ tr('Auteur', 'Author') }}</p>
                             <p class="mt-1 font-semibold leading-6 text-navy">{{ article.author_name }}</p>
                         </template>
                     </aside>
@@ -234,7 +236,7 @@ const formatDate = (date: string | null): string => {
                 >
                     <div class="flex items-center gap-3">
                         <Images :size="24" class="text-edsp-green" aria-hidden="true" />
-                        <h2 id="news-galleries-title" class="text-2xl font-bold text-navy">Galeries photos</h2>
+                        <h2 id="news-galleries-title" class="text-2xl font-bold text-navy">{{ tr('Galeries photos', 'Photo galleries') }}</h2>
                     </div>
 
                     <article
@@ -276,7 +278,7 @@ const formatDate = (date: string | null): string => {
                         class="inline-flex items-center gap-2 font-semibold text-institutional transition hover:text-navy"
                     >
                         <ArrowLeft :size="18" aria-hidden="true" />
-                        Toutes les actualités
+                        {{ tr('Toutes les actualités', 'All news') }}
                     </Link>
                 </div>
             </footer>

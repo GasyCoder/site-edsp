@@ -6,6 +6,7 @@ import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
@@ -15,13 +16,14 @@ const props = withDefaults(
         section: null,
     },
 );
+const { tr } = useI18n();
 
-const title = computed(() => props.section?.title || "Bienvenue à l'EDSP");
-const eyebrow = computed(() => props.section?.subtitle || "L'établissement");
+const title = computed(() => props.section?.title || tr("Bienvenue à l'EDSP", 'Welcome to EDSP'));
+const eyebrow = computed(() => props.section?.subtitle || tr("L'établissement", 'The School'));
 const content = computed(
     () =>
         props.section?.content ||
-        "L'École de Droit et Science Politique de l'Université de Mahajanga forme des étudiants capables de comprendre, d'analyser et d'accompagner les transformations juridiques, administratives, sociales et politiques de Madagascar.",
+        tr("L'École de Droit et Science Politique de l'Université de Mahajanga forme des étudiants capables de comprendre, d'analyser et d'accompagner les transformations juridiques, administratives, sociales et politiques de Madagascar.", 'The University of Mahajanga School of Law and Political Science educates students to understand, analyse and support Madagascar’s legal, administrative, social and political transformations.'),
 );
 const image = computed(() => mediaUrl(props.section));
 const background = computed(() => sectionBackgroundClass(props.section, 'white'));
@@ -30,16 +32,16 @@ const alignment = computed(() => sectionAlignment(props.section));
 const dark = computed(() => isDarkSection(props.section));
 const features = computed(() => [
     {
-        description: sectionSetting(props.section, 'feature_1_description', 'Des enseignements rigoureux, ancrés dans le droit positif malagasy et ouverts sur les débats contemporains.'),
-        title: sectionSetting(props.section, 'feature_1_title', 'Excellence académique'),
+        description: sectionSetting(props.section, 'feature_1_description', tr('Des enseignements rigoureux, ancrés dans le droit positif malagasy et ouverts sur les débats contemporains.', 'Rigorous teaching grounded in Malagasy law and open to contemporary debate.')),
+        title: sectionSetting(props.section, 'feature_1_title', tr('Excellence académique', 'Academic excellence')),
     },
     {
-        description: sectionSetting(props.section, 'feature_2_description', 'Une équipe pédagogique disponible accompagne chaque étudiant tout au long de son parcours.'),
-        title: sectionSetting(props.section, 'feature_2_title', 'Encadrement de proximité'),
+        description: sectionSetting(props.section, 'feature_2_description', tr('Une équipe pédagogique disponible accompagne chaque étudiant tout au long de son parcours.', 'An accessible teaching team supports every student throughout their studies.')),
+        title: sectionSetting(props.section, 'feature_2_title', tr('Encadrement de proximité', 'Personal academic support')),
     },
     {
-        description: sectionSetting(props.section, 'feature_3_description', "Des liens avec les institutions, les juridictions et le monde professionnel préparent l'insertion."),
-        title: sectionSetting(props.section, 'feature_3_title', 'Ouverture professionnelle'),
+        description: sectionSetting(props.section, 'feature_3_description', tr("Des liens avec les institutions, les juridictions et le monde professionnel préparent l'insertion.", 'Links with institutions, courts and employers prepare students for professional life.')),
+        title: sectionSetting(props.section, 'feature_3_title', tr('Ouverture professionnelle', 'Career readiness')),
     },
 ]);
 </script>
@@ -52,7 +54,7 @@ const features = computed(() => [
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="title"
-                        label="Photo de l'établissement ou des étudiants"
+                        :label="tr(`Photo de l'établissement ou des étudiants`, 'Photo of the School or its students')"
                     />
                 </div>
                 <div :class="alignment === 'center' ? 'text-center' : 'text-left'">

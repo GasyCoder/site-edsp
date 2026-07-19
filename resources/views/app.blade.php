@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
     <head>
         @php
             $seo = $page['props']['seo'] ?? [];
@@ -18,6 +18,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#0B1F55">
+        <script>
+            (() => {
+                try {
+                    const saved = localStorage.getItem('edsp-color-mode');
+                    const dark = saved === 'dark' || (saved === null && matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.classList.toggle('dark', dark);
+                    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+                    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#071126' : '#0B1F55');
+                } catch (_) {}
+            })();
+        </script>
         <link rel="icon" href="{{ str_starts_with($favicon, 'http') ? $favicon : asset(ltrim($favicon, '/')) }}">
 
         <title inertia data-inertia="">{{ $seoTitle }}</title>

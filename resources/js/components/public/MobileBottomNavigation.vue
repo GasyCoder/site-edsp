@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, GraduationCap, Home, Menu, UsersRound, X } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useI18n } from '../../lib/i18n';
 
 defineProps<{
     menuOpen: boolean;
@@ -17,12 +18,13 @@ const currentPath = computed(() => page.url.split('?')[0]);
 const isCurrent = (path: string): boolean => path === '/'
     ? currentPath.value === '/'
     : currentPath.value.startsWith(path);
+const { tr } = useI18n();
 </script>
 
 <template>
     <nav
-        class="fixed inset-x-0 bottom-0 z-[70] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(11,31,85,0.12)] backdrop-blur-xl min-[1280px]:hidden"
-        aria-label="Navigation rapide mobile"
+        class="fixed inset-x-0 bottom-0 z-[70] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(11,31,85,0.12)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95 min-[1280px]:hidden"
+        :aria-label="tr('Navigation rapide mobile', 'Quick mobile navigation')"
     >
         <div class="mx-auto grid max-w-xl grid-cols-5 px-1.5 py-1.5">
             <Link
@@ -33,7 +35,7 @@ const isCurrent = (path: string): boolean => path === '/'
                 @click="emit('close')"
             >
                 <Home :size="20" aria-hidden="true" />
-                <span>Accueil</span>
+                <span>{{ tr('Accueil', 'Home') }}</span>
             </Link>
 
             <Link
@@ -44,7 +46,7 @@ const isCurrent = (path: string): boolean => path === '/'
                 @click="emit('close')"
             >
                 <GraduationCap :size="21" aria-hidden="true" />
-                <span>Formations</span>
+                <span>{{ tr('Formations', 'Courses') }}</span>
             </Link>
 
             <Link
@@ -55,7 +57,7 @@ const isCurrent = (path: string): boolean => path === '/'
                 @click="emit('close')"
             >
                 <UsersRound :size="20" aria-hidden="true" />
-                <span class="max-w-full truncate">Vie étud.</span>
+                <span class="max-w-full truncate">{{ tr('Vie étud.', 'Student life') }}</span>
             </Link>
 
             <Link
@@ -66,7 +68,7 @@ const isCurrent = (path: string): boolean => path === '/'
                 @click="emit('close')"
             >
                 <BookOpen :size="20" aria-hidden="true" />
-                <span class="max-w-full truncate">Bibliothèque</span>
+                <span class="max-w-full truncate">{{ tr('Bibliothèque', 'Library') }}</span>
             </Link>
 
             <button
@@ -75,12 +77,12 @@ const isCurrent = (path: string): boolean => path === '/'
                 :class="menuOpen ? 'bg-navy text-white' : 'text-slate-500 hover:bg-soft hover:text-navy'"
                 :aria-expanded="menuOpen"
                 aria-controls="mobile-navigation"
-                :aria-label="menuOpen ? 'Fermer le menu principal' : 'Ouvrir le menu principal'"
+                :aria-label="menuOpen ? tr('Fermer le menu principal', 'Close main menu') : tr('Ouvrir le menu principal', 'Open main menu')"
                 @click="emit('toggle')"
             >
                 <X v-if="menuOpen" :size="20" aria-hidden="true" />
                 <Menu v-else :size="20" aria-hidden="true" />
-                <span>Menu</span>
+                <span>{{ tr('Menu', 'Menu') }}</span>
             </button>
         </div>
     </nav>

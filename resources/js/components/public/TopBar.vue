@@ -5,6 +5,7 @@ import type { SiteSettings } from '../../types';
 import { setting } from '../../lib/public-content';
 import { safePublicUrl } from '../../lib/public-content';
 import SmartLink from './SmartLink.vue';
+import { useI18n } from '../../lib/i18n';
 
 const props = defineProps<{
     settings?: SiteSettings;
@@ -14,6 +15,7 @@ const address = computed(() => setting(props.settings, 'address', 'Ambondrona, M
 const email = computed(() => setting(props.settings, 'email', 'edsp.mahajanga@gmail.com'));
 const phone = computed(() => setting(props.settings, 'phone', '+261 32 05 579 90'));
 const facebookUrl = computed(() => safePublicUrl(props.settings?.facebook));
+const { tr } = useI18n();
 </script>
 
 <template>
@@ -43,7 +45,7 @@ const facebookUrl = computed(() => safePublicUrl(props.settings?.facebook));
                     v-if="facebookUrl"
                     :href="facebookUrl"
                     class="inline-flex w-fit items-center gap-1.5 transition hover:text-white"
-                    aria-label="Page Facebook de l'EDSP (nouvel onglet)"
+                    :aria-label="tr(`Page Facebook de l'EDSP (nouvel onglet)`, 'EDSP Facebook page (opens in a new tab)')"
                 >
                     <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path

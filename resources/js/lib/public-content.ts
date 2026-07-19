@@ -45,7 +45,7 @@ export function mediaThumbnailUrl(source: MediaAsset | null | undefined): string
     return mediaUrl(source);
 }
 
-export function formatPublicDate(value?: string | null): string | null {
+export function formatPublicDate(value?: string | null, locale = 'fr-FR'): string | null {
     if (!value) {
         return null;
     }
@@ -56,7 +56,7 @@ export function formatPublicDate(value?: string | null): string | null {
         return null;
     }
 
-    return new Intl.DateTimeFormat('fr-FR', {
+    return new Intl.DateTimeFormat(locale, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
