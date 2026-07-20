@@ -4,9 +4,13 @@ namespace App\Filament\Resources\News;
 
 use App\Enums\ContentStatus;
 use App\Filament\Concerns\HasPublicationActions;
+use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Forms\SeoPreview;
+use App\Filament\Resources\News\Pages\CreateNews;
+use App\Filament\Resources\News\Pages\EditNews;
 use App\Filament\Resources\News\Pages\ManageNews;
 use App\Filament\Resources\NewsletterCampaigns\NewsletterCampaignResource;
+use App\Models\Media;
 use App\Models\News;
 use App\Models\NewsletterCampaign;
 use App\Rules\PublicSlug;
@@ -23,6 +27,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -35,7 +40,6 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -157,8 +161,14 @@ class NewsResource extends Resource
                                                 titleAttribute: 'original_name',
                                                 modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                                             )
+                                            ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                            ->allowHtml()
+                                            ->live()
                                             ->searchable()
                                             ->preload(),
+                                        Placeholder::make('featured_image_preview')
+                                            ->label('Aperçu de l’image principale')
+                                            ->content(fn (Get $get) => MediaImagePreview::render($get->integer('featured_image_id'), 'Aucune image principale sélectionnée.')),
                                     ]),
                             ])
                             ->columnSpan(['default' => 12, 'xl' => 4]),
@@ -215,8 +225,15 @@ class NewsResource extends Resource
                                                             titleAttribute: 'original_name',
                                                             modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                                                         )
+                                                        ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                                        ->allowHtml()
+                                                        ->live()
                                                         ->searchable()
                                                         ->preload(),
+                                                    Placeholder::make('og_image_preview')
+                                                        ->label('Aperçu de l’image de partage')
+                                                        ->content(fn (Get $get) => MediaImagePreview::render($get->integer('og_image_id'), 'Aucune image de partage sélectionnée.'))
+                                                        ->columnSpanFull(),
                                                 ]),
                                                 Textarea::make('og_description')
                                                     ->label('Description du partage')
@@ -371,10 +388,9 @@ class NewsResource extends Resource
                         return redirect(NewsletterCampaignResource::getUrl('edit', ['record' => $campaign]));
                     }),
                 EditAction::make()
-                    ->modalWidth(Width::ScreenExtraLarge)
-                    ->stickyModalHeader()
-                    ->stickyModalFooter()
-                    ->modalDescription('Modifiez le contenu, la publication et le référencement de l’actualité.'),
+                    ->iconButton()
+                    ->tooltip('Modifier l’actualité')
+                    ->url(fn (News $record): string => static::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
                 ForceDeleteAction::make(),
                 RestoreAction::make(),
@@ -392,6 +408,8 @@ class NewsResource extends Resource
     {
         return [
             'index' => ManageNews::route('/'),
+            'create' => CreateNews::route('/create'),
+            'edit' => EditNews::route('/{record}/edit'),
         ];
     }
 
