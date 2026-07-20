@@ -6,15 +6,19 @@ const props = withDefaults(
     defineProps<{
         alt?: string | null;
         eager?: boolean;
+        fit?: 'contain' | 'cover';
         imageUrl?: string | null;
         label: string;
         objectPosition?: string;
+        scale?: number;
     }>(),
     {
         alt: null,
         eager: false,
+        fit: 'cover',
         imageUrl: null,
         objectPosition: 'center',
+        scale: 100,
     },
 );
 
@@ -33,8 +37,13 @@ watch(
         v-if="imageUrl && !failed"
         :src="imageUrl"
         :alt="alt || label"
-        class="h-full w-full object-cover"
-        :style="{ objectPosition }"
+        class="h-full w-full bg-slate-100 dark:bg-slate-900"
+        :class="fit === 'contain' ? 'object-contain' : 'object-cover'"
+        :style="{
+            objectPosition,
+            transform: `scale(${Math.min(200, Math.max(50, scale)) / 100})`,
+            transformOrigin: objectPosition,
+        }"
         :loading="eager ? 'eager' : 'lazy'"
         :fetchpriority="eager ? 'high' : 'auto'"
         decoding="async"

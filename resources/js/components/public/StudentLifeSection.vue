@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ArrowRight } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { ArrowRight, Camera } from 'lucide-vue-next';
+import { computed, inject } from 'vue';
 import type { Section } from '../../types';
 import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
 import { useI18n } from '../../lib/i18n';
+import { editSectionContextKey } from './edit-section-context';
 
 const props = withDefaults(
     defineProps<{
@@ -17,6 +18,7 @@ const props = withDefaults(
     },
 );
 const { tr } = useI18n();
+const editContext = inject(editSectionContextKey, null);
 
 const title = computed(() => props.section?.title || tr('Une expérience universitaire enrichissante', 'A rewarding university experience'));
 const eyebrow = computed(() => props.section?.subtitle || tr('Vie étudiante', 'Student life'));
@@ -26,6 +28,9 @@ const content = computed(
         tr("Au-delà des cours, l'EDSP offre un cadre vivant où les étudiants apprennent, débattent et s'engagent.", 'Beyond the classroom, EDSP offers a vibrant environment where students learn, debate and get involved.'),
 );
 const image = computed(() => mediaUrl(props.section));
+const secondaryImage = computed(() => props.section?.secondary_image_url ?? null);
+const tertiaryImage = computed(() => props.section?.tertiary_image_url ?? null);
+const editing = computed(() => editContext?.editing.value === true);
 const background = computed(() => sectionBackgroundClass(props.section, 'white'));
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section));
@@ -63,18 +68,49 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
             </div>
 
             <div class="grid h-[25rem] grid-cols-2 gap-3 sm:grid-cols-[2fr_1fr] sm:grid-rows-2">
-                <div class="col-span-2 overflow-hidden rounded-xl sm:col-span-1 sm:row-span-2">
+                <div class="relative col-span-2 overflow-hidden rounded-xl sm:col-span-1 sm:row-span-2">
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="title"
                         :label="tr('Grande photo — vie étudiante', 'Student life photo')"
                     />
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="absolute right-2 top-2 z-10 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-navy shadow-md backdrop-blur transition hover:border-edsp-green hover:text-edsp-green"
+                        title="Changer la grande photo"
+                        aria-label="Changer la grande photo de la vie étudiante"
+                        @click="editContext?.openEditor('image_id')"
+                    >
+                        <Camera :size="16" aria-hidden="true" />
+                        <span class="hidden sm:inline">Changer la photo</span>
+                    </button>
                 </div>
-                <div class="overflow-hidden rounded-xl">
-                    <MediaPlaceholder :label="secondaryMediaLabel" />
+                <div class="relative overflow-hidden rounded-xl">
+                    <MediaPlaceholder :image-url="secondaryImage" :alt="secondaryMediaLabel" :label="secondaryMediaLabel" />
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-lg border border-slate-200 bg-white/95 text-navy shadow-md backdrop-blur transition hover:border-edsp-green hover:text-edsp-green"
+                        title="Changer la photo de conférence"
+                        aria-label="Changer la photo de conférence"
+                        @click="editContext?.openEditor('settings.secondary_media_id')"
+                    >
+                        <Camera :size="16" aria-hidden="true" />
+                    </button>
                 </div>
-                <div class="overflow-hidden rounded-xl">
-                    <MediaPlaceholder :label="tertiaryMediaLabel" />
+                <div class="relative overflow-hidden rounded-xl">
+                    <MediaPlaceholder :image-url="tertiaryImage" :alt="tertiaryMediaLabel" :label="tertiaryMediaLabel" />
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="absolute right-2 top-2 z-10 grid size-9 place-items-center rounded-lg border border-slate-200 bg-white/95 text-navy shadow-md backdrop-blur transition hover:border-edsp-green hover:text-edsp-green"
+                        title="Changer la photo de l’événement étudiant"
+                        aria-label="Changer la photo de l’événement étudiant"
+                        @click="editContext?.openEditor('settings.tertiary_media_id')"
+                    >
+                        <Camera :size="16" aria-hidden="true" />
+                    </button>
                 </div>
             </div>
         </div>

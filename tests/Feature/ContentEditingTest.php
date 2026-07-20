@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ContentRevision;
+use App\Models\Media;
 use App\Models\Page;
 
 test('an authorized editor updates a controlled section and creates a revision', function (): void {
@@ -35,6 +36,14 @@ test('an authorized editor updates a controlled section and creates a revision',
             'alignment' => 'center',
             'container' => 'wide',
             'visual_title' => 'Un nouveau message dans le visuel',
+            'title_highlight_1' => 'droit',
+            'title_highlight_1_color' => 'green',
+            'title_highlight_2' => 'science politique',
+            'title_highlight_2_color' => 'institutional',
+            'title_font_size' => 56,
+            'image_zoom' => 75,
+            'image_position_x' => 42,
+            'image_position_y' => 28,
             'kicker_text' => 'Choisissez votre orientation :',
             'rotating_item_1' => 'Droit des affaires',
             'rotating_item_2' => 'Administration publique',
@@ -53,6 +62,12 @@ test('an authorized editor updates a controlled section and creates a revision',
         ->and($section->content)->not->toContain('<script>')
         ->and($section->settings['background'])->toBe('blue')
         ->and($section->settings['visual_title'])->toBe('Un nouveau message dans le visuel')
+        ->and($section->settings['title_highlight_1'])->toBe('droit')
+        ->and($section->settings['title_highlight_2_color'])->toBe('institutional')
+        ->and($section->settings['title_font_size'])->toBe(56)
+        ->and($section->settings['image_zoom'])->toBe(75)
+        ->and($section->settings['image_position_x'])->toBe(42)
+        ->and($section->settings['image_position_y'])->toBe(28)
         ->and($section->settings['kicker_text'])->toBe('Choisissez votre orientation :')
         ->and($section->settings['rotating_item_1'])->toBe('Droit des affaires')
         ->and($section->settings['location_text'])->toBe('Campus Ambondrona')
@@ -106,6 +121,51 @@ test('visual editor rejects unknown or unsafe section settings', function (): vo
     ]);
 
     expect($section->fresh()->settings)->toBe([]);
+});
+
+test('an editor can assign the three student life images independently', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil-vie-etudiante',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+    $section = $page->sections()->create([
+        'section_key' => 'student-life',
+        'section_type' => 'student_life',
+        'position' => 8,
+        'is_visible' => true,
+    ]);
+    $images = collect(['principale', 'conference', 'evenement'])->map(fn (string $name): Media => Media::query()->create([
+        'disk' => 'public',
+        'path' => "media/{$name}.jpg",
+        'filename' => "{$name}.jpg",
+        'original_name' => "{$name}.jpg",
+        'mime_type' => 'image/jpeg',
+        'extension' => 'jpg',
+        'size' => 10,
+        'alt_text' => "Photo {$name}",
+    ]));
+
+    $this->actingAs(userWithPermissions(['edit pages']))
+        ->patch(route('sections.update', $section), [
+            'image_id' => $images[0]->id,
+            'is_visible' => true,
+            'settings' => [
+                'secondary_media_id' => $images[1]->id,
+                'tertiary_media_id' => $images[2]->id,
+            ],
+        ])
+        ->assertRedirect();
+
+    $section->refresh();
+
+    expect($section->image_id)->toBe($images[0]->id)
+        ->and($section->settings['secondary_media_id'])->toBe($images[1]->id)
+        ->and($section->settings['tertiary_media_id'])->toBe($images[2]->id)
+        ->and($section->secondary_image_url)->toContain('conference.jpg')
+        ->and($section->tertiary_image_url)->toContain('evenement.jpg');
 });
 
 test('section mutation is denied without backend permission', function (): void {

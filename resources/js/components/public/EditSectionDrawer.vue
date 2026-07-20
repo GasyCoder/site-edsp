@@ -7,6 +7,7 @@ import SectionFormRenderer, { type EditableSectionPayload } from './SectionFormR
 import SectionPreview from './SectionPreview.vue';
 
 const props = defineProps<{
+    focusField?: string | null;
     open: boolean;
     section: Section;
 }>();
@@ -40,7 +41,7 @@ function payloadFromSection(section: Section): EditableSectionPayload {
 const draft = ref<EditableSectionPayload>(payloadFromSection(props.section));
 
 watch(
-    () => [props.open, props.section] as const,
+    () => [props.open, props.section, props.focusField] as const,
     async ([open]) => {
         if (open) {
             returnFocus.value = document.activeElement as HTMLElement | null;
@@ -49,7 +50,17 @@ watch(
             previousOverflow.value = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
             await nextTick();
-            closeButton.value?.focus();
+            const fieldId = props.focusField
+                ? `section-${props.section.id}-${props.focusField.replace('.', '-')}`
+                : null;
+            const field = fieldId ? document.getElementById(fieldId) : null;
+
+            if (field instanceof HTMLElement) {
+                field.scrollIntoView({ block: 'center' });
+                field.focus();
+            } else {
+                closeButton.value?.focus();
+            }
         } else {
             document.body.style.overflow = previousOverflow.value;
             await nextTick();

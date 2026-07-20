@@ -14,11 +14,19 @@ type MediaOption = {
 
 const props = withDefaults(defineProps<{
     alt?: string | null;
+    inputId?: string;
     modelValue: number | null;
+    positionX?: number;
+    positionY?: number;
     previewUrl?: string | null;
+    zoom?: number;
 }>(), {
     alt: null,
+    inputId: 'section-media',
+    positionX: 50,
+    positionY: 50,
     previewUrl: null,
+    zoom: 100,
 });
 
 const emit = defineEmits<{
@@ -71,28 +79,31 @@ onMounted(loadMedia);
             <MediaPlaceholder
                 :image-url="resolvedPreview"
                 :alt="resolvedAlt"
+                fit="contain"
                 label="Aperçu du média sélectionné"
+                :object-position="`${positionX}% ${positionY}%`"
+                :scale="zoom"
             />
         </div>
 
         <form class="flex gap-2" role="search" @submit.prevent="loadMedia">
-            <label for="media-search" class="sr-only">Rechercher dans la médiathèque</label>
+            <label :for="`${inputId}-search`" class="sr-only">Rechercher dans la médiathèque</label>
             <span class="relative flex-1">
                 <Search :size="17" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-                <input id="media-search" v-model="search" type="search" class="form-control pl-10" placeholder="Nom ou texte alternatif">
+                <input :id="`${inputId}-search`" v-model="search" type="search" class="form-control pl-10" placeholder="Nom ou texte alternatif">
             </span>
             <button type="submit" class="button-secondary px-3" :disabled="loading" aria-label="Rechercher">
                 <RefreshCw :size="17" :class="loading && 'animate-spin'" aria-hidden="true" />
             </button>
         </form>
 
-        <label class="mt-4 block text-sm font-semibold text-slate-800" for="section-media-select">
+        <label class="mt-4 block text-sm font-semibold text-slate-800" :for="`${inputId}-select`">
             Image de la médiathèque
         </label>
         <div class="mt-1.5 flex gap-2">
             <span class="relative flex-1">
                 <ImagePlus :size="18" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-                <select id="section-media-select" :value="modelValue ?? ''" class="form-control pl-10" @change="selectMedia">
+                <select :id="`${inputId}-select`" :value="modelValue ?? ''" class="form-control pl-10" @change="selectMedia">
                     <option value="">Aucune image</option>
                     <option v-for="item in media" :key="item.id" :value="item.id">
                         {{ item.original_name }}{{ item.alt_text ? ` — ${item.alt_text}` : '' }}

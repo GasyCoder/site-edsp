@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ArrowRight, GraduationCap, Landmark, MapPin, Scale, UserPlus } from 'lucide-vue-next';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { ArrowRight, GraduationCap, Landmark, MapPin, Pencil, Scale, UserPlus } from 'lucide-vue-next';
+import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { Section } from '../../types';
 import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 import { isDarkSection, sectionAlignment, sectionBackgroundClass, sectionContainerClass, sectionSetting } from './section-theme';
 import SmartLink from './SmartLink.vue';
 import { useI18n } from '../../lib/i18n';
+import { editSectionContextKey } from './edit-section-context';
 
 const props = withDefaults(
     defineProps<{
@@ -17,10 +18,53 @@ const props = withDefaults(
     },
 );
 const { tr } = useI18n();
+const editContext = inject(editSectionContextKey, null);
+const editing = computed(() => editContext?.editing.value === true);
+const editField = (fieldKey: string): void => editContext?.openEditor(fieldKey);
 
 const title = computed(
     () => props.section?.title || tr('Comprendre le droit. Agir sur la société.', 'Understand the law. Shape society.'),
 );
+type HighlightColor = 'gold' | 'green' | 'institutional';
+type TitleSegment = { color?: HighlightColor; text: string };
+
+const firstHighlight = computed(() => sectionSetting(props.section, 'title_highlight_1', tr('droit', 'law')));
+const secondHighlight = computed(() => sectionSetting(props.section, 'title_highlight_2', tr('science politique', 'political science')));
+const firstHighlightColor = computed(() => sectionSetting(props.section, 'title_highlight_1_color', 'green') as HighlightColor);
+const secondHighlightColor = computed(() => sectionSetting(props.section, 'title_highlight_2_color', 'institutional') as HighlightColor);
+const titleFontSize = computed(() => {
+    const value = Number(props.section?.settings?.title_font_size ?? 48);
+
+    return Number.isFinite(value) ? Math.min(64, Math.max(32, value)) : 48;
+});
+const highlightClasses: Record<HighlightColor, string> = {
+    gold: 'hero-title-highlight hero-title-highlight--gold',
+    green: 'hero-title-highlight hero-title-highlight--green',
+    institutional: 'hero-title-highlight hero-title-highlight--blue',
+};
+const titleSegments = computed<TitleSegment[]>(() => {
+    const highlights = [
+        { color: firstHighlightColor.value, text: firstHighlight.value.trim() },
+        { color: secondHighlightColor.value, text: secondHighlight.value.trim() },
+    ].filter((highlight) => highlight.text.length > 0);
+
+    if (!highlights.length) {
+        return [{ text: title.value }];
+    }
+
+    const escaped = highlights
+        .map((highlight) => highlight.text)
+        .sort((left, right) => right.length - left.length)
+        .map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const matcher = new RegExp(`(${escaped.join('|')})`, 'giu');
+
+    return title.value.split(matcher).filter(Boolean).map((text) => {
+        const normalized = text.toLocaleLowerCase();
+        const highlight = highlights.find((candidate) => candidate.text.toLocaleLowerCase() === normalized);
+
+        return highlight ? { text, color: highlight.color } : { text };
+    });
+});
 const content = computed(
     () =>
         props.section?.content ||
@@ -30,7 +74,7 @@ const buttonText = computed(() => props.section?.button_text || tr('Découvrir l
 const buttonUrl = computed(() => props.section?.button_url || '/formations');
 const secondaryButtonText = computed(() => sectionSetting(props.section, 'secondary_button_text', tr('S’inscrire', 'Apply now')));
 const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'secondary_button_url', '/inscription'));
-const kickerText = computed(() => sectionSetting(props.section, 'kicker_text', tr('Deux parcours :', 'Two pathways:')));
+const kickerText = computed(() => sectionSetting(props.section, 'kicker_text', tr('Deux mentions :', 'Two subject areas:')));
 const locationText = computed(() => sectionSetting(props.section, 'location_text', 'Ambondrona, Mahajanga'));
 const degreeText = computed(() => sectionSetting(props.section, 'degree_text', tr('Licence · Master', 'Bachelor’s · Master’s')));
 const visualEyebrow = computed(() => sectionSetting(props.section, 'visual_eyebrow', tr('Choisissez votre parcours', 'Choose your programme')));
@@ -49,8 +93,8 @@ const alt = computed(
 );
 
 const programs = computed(() => [
-    sectionSetting(props.section, 'rotating_item_1', tr('Droit privé', 'Private Law')),
-    sectionSetting(props.section, 'rotating_item_2', tr('Science politique', 'Political Science')),
+    sectionSetting(props.section, 'rotating_item_1', tr('Droit', 'Law')),
+    sectionSetting(props.section, 'rotating_item_2', tr('Sciences Politiques', 'Political Science')),
 ]);
 const visualPrograms = computed(() => [
     sectionSetting(props.section, 'visual_program_1', programs.value[0]),
@@ -112,12 +156,29 @@ onBeforeUnmount(() => {
     <section id="accueil" :class="background" class="overflow-hidden border-b border-slate-200 px-4 py-12 sm:px-6 sm:py-16 lg:py-18">
         <div :class="container" class="mx-auto grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
             <div class="min-w-0" :class="alignment === 'center' ? 'text-center lg:text-left' : 'text-left'">
-                <h1
-                    class="max-w-xl text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.12] tracking-[-0.025em]"
-                    :class="[dark ? 'text-white' : 'text-navy', alignment === 'center' ? 'mx-auto lg:mx-0' : '']"
-                >
-                    {{ title }}
-                </h1>
+                <div class="relative max-w-xl" :class="alignment === 'center' ? 'mx-auto lg:mx-0' : ''">
+                    <h1
+                        class="hero-title text-balance font-bold leading-[1.12] tracking-[-0.025em]"
+                        :class="dark ? 'text-white' : 'text-navy'"
+                        :style="{ '--hero-title-size': `${titleFontSize}px` }"
+                    >
+                        <span
+                            v-for="(segment, index) in titleSegments"
+                            :key="`${index}-${segment.text}`"
+                            :class="segment.color ? highlightClasses[segment.color] : undefined"
+                        >{{ segment.text }}</span>
+                    </h1>
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="absolute -right-2 -top-2 grid size-8 place-items-center rounded-full border border-edsp-green/30 bg-white text-edsp-green shadow-sm transition hover:bg-edsp-green hover:text-white dark:bg-slate-800"
+                        aria-label="Modifier le titre et ses couleurs"
+                        title="Modifier le titre et ses mises en évidence"
+                        @click.stop="editField('settings.title_highlight_1')"
+                    >
+                        <Pencil :size="14" aria-hidden="true" />
+                    </button>
+                </div>
                 <p class="mt-5 max-w-xl text-pretty text-base leading-7 sm:text-[1.05rem] sm:leading-8" :class="[dark ? 'text-[#C9D4EE]' : 'text-slate-600', alignment === 'center' ? 'mx-auto lg:mx-0' : '']">
                     {{ content }}
                 </p>
@@ -125,8 +186,28 @@ onBeforeUnmount(() => {
                 <div class="mt-6 flex min-h-7 items-center gap-2 text-sm font-semibold" :class="[dark ? 'text-white' : 'text-slate-700', alignment === 'center' ? 'justify-center lg:justify-start' : '']">
                     <span class="size-1.5 flex-none rounded-full bg-edsp-green" aria-hidden="true" />
                     <span>{{ kickerText }}</span>
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="grid size-7 flex-none place-items-center rounded-full border border-edsp-green/30 bg-white text-edsp-green shadow-sm transition hover:bg-edsp-green hover:text-white dark:bg-slate-800"
+                        aria-label="Modifier le texte Deux parcours"
+                        title="Modifier le texte fixe"
+                        @click.stop="editField('settings.kicker_text')"
+                    >
+                        <Pencil :size="13" aria-hidden="true" />
+                    </button>
                     <span class="text-edsp-green" aria-hidden="true">{{ displayedProgram }}</span>
                     <span class="h-4 w-px bg-edsp-green motion-safe:animate-pulse" aria-hidden="true" />
+                    <button
+                        v-if="editing"
+                        type="button"
+                        class="grid size-7 flex-none place-items-center rounded-full border border-edsp-green/30 bg-white text-edsp-green shadow-sm transition hover:bg-edsp-green hover:text-white dark:bg-slate-800"
+                        aria-label="Modifier les deux parcours animés"
+                        title="Modifier les textes animés"
+                        @click.stop="editField('settings.rotating_item_1')"
+                    >
+                        <Pencil :size="13" aria-hidden="true" />
+                    </button>
                     <span class="sr-only">{{ programs.join(tr(' et ', ' and ')) }}</span>
                 </div>
 
@@ -214,3 +295,53 @@ onBeforeUnmount(() => {
         </div>
     </section>
 </template>
+
+<style scoped>
+.hero-title {
+    font-size: var(--hero-title-size, 3rem);
+}
+
+.hero-title-highlight {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    background-image: linear-gradient(
+        to bottom,
+        transparent 64%,
+        var(--hero-highlight-color) 64%,
+        var(--hero-highlight-color) 90%,
+        transparent 90%
+    );
+    background-repeat: no-repeat;
+    color: inherit;
+}
+
+.hero-title-highlight--green {
+    --hero-highlight-color: rgb(7 139 62 / 22%);
+}
+
+.hero-title-highlight--blue {
+    --hero-highlight-color: rgb(21 58 138 / 20%);
+}
+
+.hero-title-highlight--gold {
+    --hero-highlight-color: rgb(245 183 49 / 26%);
+}
+
+:global(html.dark) .hero-title-highlight--green {
+    --hero-highlight-color: rgb(34 197 94 / 34%);
+}
+
+:global(html.dark) .hero-title-highlight--blue {
+    --hero-highlight-color: rgb(96 165 250 / 32%);
+}
+
+:global(html.dark) .hero-title-highlight--gold {
+    --hero-highlight-color: rgb(245 183 49 / 36%);
+}
+
+@media (max-width: 639px) {
+    .hero-title {
+        font-size: min(var(--hero-title-size, 3rem), 2.5rem);
+    }
+}
+</style>

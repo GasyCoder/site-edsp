@@ -14,9 +14,10 @@ class PageSection extends Model
     use HasLocalizedContent;
 
     protected array $translatable = ['title', 'subtitle', 'content', 'button_text', 'settings'];
+
     protected $guarded = [];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'secondary_image_url', 'tertiary_image_url'];
 
     protected function casts(): array
     {
@@ -55,6 +56,23 @@ class PageSection extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image?->image_url;
+    }
+
+    public function getSecondaryImageUrlAttribute(): ?string
+    {
+        return $this->settingMediaUrl('secondary_media_id');
+    }
+
+    public function getTertiaryImageUrlAttribute(): ?string
+    {
+        return $this->settingMediaUrl('tertiary_media_id');
+    }
+
+    private function settingMediaUrl(string $key): ?string
+    {
+        $mediaId = $this->settings[$key] ?? null;
+
+        return is_numeric($mediaId) ? Media::query()->find((int) $mediaId)?->image_url : null;
     }
 
     public function revisions(): MorphMany
