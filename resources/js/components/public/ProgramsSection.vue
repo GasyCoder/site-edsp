@@ -31,7 +31,8 @@ const background = computed(() => sectionBackgroundClass(props.section, 'light')
 const container = computed(() => sectionContainerClass(props.section));
 const alignment = computed(() => sectionAlignment(props.section, 'center'));
 const dark = computed(() => isDarkSection(props.section, 'light'));
-const footerLabel = computed(() => sectionSetting(props.section, 'footer_label', tr('Diplômes et niveaux proposés :', 'Qualifications and levels:')));
+const footerLabel = computed(() => sectionSetting(props.section, 'footer_label', tr('Diplômes délivrés :', 'Degrees awarded:')));
+const degreeBadges = computed(() => [tr('Licence (L3)', "Bachelor's degree (L3)"), tr('Master (M2)', "Master's degree (M2)")]);
 </script>
 
 <template>
@@ -49,11 +50,11 @@ const footerLabel = computed(() => sectionSetting(props.section, 'footer_label',
             >
                 <span class="font-heading text-sm font-semibold text-navy">{{ footerLabel }}</span>
                 <span
-                    v-for="program in programs"
-                    :key="`level-${program.id}`"
+                    v-for="degree in degreeBadges"
+                    :key="`degree-${degree}`"
                     class="w-fit rounded bg-institutional/10 px-3.5 py-1.5 text-xs font-semibold text-institutional"
                 >
-                    {{ program.level }}
+                    {{ degree }}
                 </span>
                 <SmartLink :href="section?.button_url || '/formations'" class="inline-flex items-center gap-2 font-heading text-sm font-semibold text-edsp-green sm:ml-auto">
                     {{ section?.button_text || tr('Toutes les formations', 'All programmes') }}

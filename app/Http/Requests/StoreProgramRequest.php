@@ -30,10 +30,10 @@ class StoreProgramRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
+            'mention_id' => ['required', 'integer', 'exists:mentions,id'],
             'title' => ['required', 'string', 'max:180'],
             'slug' => ['required', new PublicSlug, 'max:180', 'unique:programs,slug'],
-            'level' => ['required', 'string', 'max:100'],
+            'level' => ['sometimes', 'string', 'max:100'],
             'domain' => ['nullable', 'string', 'max:180'],
             'mention' => ['nullable', 'string', 'max:180'],
             'track' => ['nullable', 'string', 'max:180'],

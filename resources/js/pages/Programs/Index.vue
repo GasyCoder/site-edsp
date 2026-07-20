@@ -1,58 +1,34 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import {
-    ArrowLeft,
-    ArrowRight,
-    BookOpen,
-    ChevronRight,
-    Clock3,
-    GraduationCap,
-} from 'lucide-vue-next';
+import { ArrowRight, BookOpen, ChevronRight, GraduationCap, Layers3 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import PublicLayout from '../../layouts/PublicLayout.vue';
 import SeoHead from '../../components/public/SeoHead.vue';
-import type { SeoData } from '../../types';
-import type { Program } from '../../types';
+import type { AcademicMention, AcademicPathway, AcademicPathwayLevel, Program, SeoData } from '../../types';
+import { pathwayLevels } from '../../lib/academic-offer';
 import { useI18n } from '../../lib/i18n';
 
-type ProgramListItem = Program & {
-    domain?: string | null;
-    mention?: string | null;
-    track?: string | null;
-};
-
-type Paginator<T> = {
-    current_page: number;
-    data: T[];
-    from: number | null;
-    last_page: number;
-    next_page_url: string | null;
-    prev_page_url: string | null;
-    to: number | null;
-    total: number;
-};
-
-defineProps<{ programs: Paginator<ProgramListItem>; seo?: SeoData }>();
+const props = defineProps<{ mentions: AcademicMention[]; seo?: SeoData }>();
 const { tr } = useI18n();
+
+const pathwayCount = computed(() => props.mentions.reduce((total, mention) => total + (mention.parcours?.length ?? 0), 0));
+const pageForMention = (mention: AcademicMention): Program | undefined => mention.programs?.[0];
+const levels = (pathway: AcademicPathway): AcademicPathwayLevel[] => pathwayLevels(pathway);
+const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.code.toLowerCase()}`;
 </script>
 
 <template>
     <SeoHead
         :title="seo?.title || tr('Formations | EDSP', 'Degree programmes | EDSP')"
-        :description="seo?.description || tr('Découvrez les parcours de formation proposés par l’École de Droit et Science Politique de l’Université de Mahajanga.', 'Explore degree programmes offered by the University of Mahajanga School of Law and Political Science.')"
+        :description="seo?.description || tr('Découvrez les deux mentions et les parcours proposés par l’EDSP, de la L1 au M2.', 'Explore EDSP’s two subject areas and their pathways from L1 to M2.')"
         :canonical-url="seo?.canonical"
         :structured-data="seo?.schema"
     />
 
     <PublicLayout>
         <header class="relative isolate overflow-hidden bg-soft">
-            <div
-                class="absolute inset-y-0 right-0 -z-10 hidden w-[32%] bg-navy lg:block"
-                aria-hidden="true"
-            />
-            <div
-                class="absolute -left-24 -top-32 -z-10 h-80 w-80 rounded-full bg-edsp-green/10 blur-3xl"
-                aria-hidden="true"
-            />
+            <div class="absolute inset-y-0 right-0 -z-10 hidden w-[30%] bg-navy lg:block" aria-hidden="true" />
+            <div class="absolute -left-24 -top-32 -z-10 h-80 w-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
 
             <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
                 <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
@@ -65,141 +41,129 @@ const { tr } = useI18n();
 
                 <div class="max-w-3xl">
                     <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
-                        {{ tr('Formations', 'Programmes') }}
+                        {{ tr('Offre académique', 'Academic offering') }}
                     </p>
                     <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
-                        {{ tr('Nos parcours de formation', 'Our degree programmes') }}
+                        {{ tr('Deux mentions, des parcours adaptés à chaque niveau', 'Two subject areas, pathways tailored to every level') }}
                     </h1>
                     <p class="mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-                        {{ tr('Explorez les formations publiées par l’EDSP et trouvez le parcours qui correspond à votre projet universitaire.', 'Explore EDSP degree programmes and find the pathway that matches your academic goals.') }}
+                        {{ tr('Le parcours évolue progressivement de la L1 au M2. Les affectations ci-dessous reprennent directement le référentiel officiel de la scolarité.', 'Pathways progress from L1 to M2. The structure below comes directly from EDSP’s official academic records.') }}
                     </p>
+
+                    <dl class="mt-7 flex flex-wrap gap-3 text-sm">
+                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 text-slate-700">
+                            <dt class="sr-only">{{ tr('Mentions', 'Subject areas') }}</dt>
+                            <dd><strong class="text-navy">{{ mentions.length }}</strong> {{ tr('mentions', 'subject areas') }}</dd>
+                        </div>
+                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 text-slate-700">
+                            <dt class="sr-only">{{ tr('Parcours', 'Pathways') }}</dt>
+                            <dd><strong class="text-navy">{{ pathwayCount }}</strong> {{ tr('parcours', 'pathways') }}</dd>
+                        </div>
+                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 font-semibold text-navy">L1 → M2</div>
+                    </dl>
                 </div>
             </div>
         </header>
 
-        <div class="bg-white">
-            <section class="mx-auto max-w-7xl px-6 py-16 sm:py-20" aria-labelledby="programs-heading">
-                <div class="mb-9 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
-                            {{ tr('Catalogue', 'Programme catalogue') }}
-                        </p>
-                        <h2 id="programs-heading" class="mt-2 text-2xl font-bold text-navy sm:text-3xl">
-                            {{ tr('Formations disponibles', 'Available programmes') }}
-                        </h2>
-                    </div>
-                    <p v-if="programs.total" class="text-sm text-gray-500">
-                        {{ programs.total }} {{ tr(programs.total > 1 ? 'formations publiées' : 'formation publiée', programs.total > 1 ? 'programmes' : 'programme') }}
-                    </p>
-                </div>
-
-                <div v-if="programs.data.length" class="grid gap-6 md:grid-cols-2 xl:gap-8">
-                    <article
-                        v-for="program in programs.data"
-                        :key="program.id"
-                        class="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-edsp-green/30 hover:shadow-xl sm:p-8"
+        <main class="bg-white">
+            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-20">
+                <nav v-if="mentions.length" :aria-label="tr('Accès rapide aux mentions', 'Subject-area shortcuts')" class="mb-10 flex flex-wrap gap-3">
+                    <a
+                        v-for="mention in mentions"
+                        :key="`nav-${mention.id}`"
+                        :href="`#${mentionAnchor(mention)}`"
+                        class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-soft px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
                     >
-                        <div class="absolute inset-y-0 left-0 w-1 bg-edsp-green" aria-hidden="true" />
+                        <GraduationCap :size="17" aria-hidden="true" />
+                        {{ mention.nom }}
+                    </a>
+                </nav>
 
-                        <div class="flex items-start justify-between gap-5">
-                            <div
-                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-institutional/10 text-institutional"
-                                aria-hidden="true"
-                            >
-                                <GraduationCap :size="24" />
-                            </div>
-                            <span class="rounded-full bg-edsp-green/10 px-3 py-1 text-xs font-bold text-edsp-green">
-                                {{ program.level }}
-                            </span>
-                        </div>
-
-                        <div class="mt-6 flex-1">
-                            <p
-                                v-if="program.domain || program.mention"
-                                class="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-gray-500"
-                            >
-                                {{ program.domain || program.mention }}
-                            </p>
-                            <h3 class="text-xl font-bold leading-snug text-navy sm:text-2xl">
-                                <Link
-                                    :href="`/formations/${program.slug}`"
-                                    class="after:absolute after:inset-0 focus-visible:rounded"
+                <div v-if="mentions.length" class="space-y-12">
+                    <section
+                        v-for="(mention, mentionIndex) in mentions"
+                        :id="mentionAnchor(mention)"
+                        :key="mention.id"
+                        class="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_35px_rgba(11,31,85,0.07)]"
+                        :aria-labelledby="`mention-title-${mention.id}`"
+                    >
+                        <div class="grid gap-6 border-b border-slate-200 bg-soft px-6 py-7 sm:px-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                            <div class="flex items-start gap-4">
+                                <span
+                                    class="grid size-12 shrink-0 place-items-center rounded-xl text-lg font-extrabold"
+                                    :class="mentionIndex % 2 === 0 ? 'bg-edsp-green text-white' : 'bg-institutional text-white'"
                                 >
-                                    {{ program.title }}
-                                </Link>
-                            </h3>
-                            <p class="mt-4 line-clamp-4 leading-7 text-gray-600">
-                                {{ program.description }}
-                            </p>
+                                    {{ String(mentionIndex + 1).padStart(2, '0') }}
+                                </span>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">
+                                        {{ tr('Mention', 'Subject area') }} · {{ mention.code }}
+                                    </p>
+                                    <h2 :id="`mention-title-${mention.id}`" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">
+                                        {{ mention.nom }}
+                                    </h2>
+                                    <p v-if="mention.description" class="mt-2 max-w-3xl leading-7 text-slate-600">
+                                        {{ mention.description }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Link
+                                v-if="pageForMention(mention)"
+                                :href="`/formations/${pageForMention(mention)?.slug}`"
+                                class="inline-flex w-fit items-center gap-2 rounded-md border border-navy/20 bg-white px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
+                            >
+                                {{ tr('Voir la fiche complète', 'View full details') }}
+                                <ArrowRight :size="16" aria-hidden="true" />
+                            </Link>
                         </div>
 
-                        <div
-                            v-if="program.duration || program.track"
-                            class="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-gray-100 pt-5 text-sm text-gray-600"
-                        >
-                            <span v-if="program.duration" class="inline-flex items-center gap-2">
-                                <Clock3 :size="16" class="text-edsp-green" aria-hidden="true" />
-                                {{ program.duration }}
-                            </span>
-                            <span v-if="program.track" class="inline-flex items-center gap-2">
-                                <BookOpen :size="16" class="text-edsp-green" aria-hidden="true" />
-                                {{ program.track }}
-                            </span>
-                        </div>
+                        <div class="grid gap-5 p-6 sm:p-8 lg:grid-cols-3">
+                            <article
+                                v-for="pathway in mention.parcours"
+                                :key="pathway.id"
+                                class="flex min-w-0 flex-col rounded-xl border border-slate-200 p-5 transition hover:border-edsp-green/40 hover:shadow-[0_10px_28px_rgba(11,31,85,0.08)] sm:p-6"
+                            >
+                                <div class="flex items-start justify-between gap-4">
+                                    <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-edsp-green/10 text-edsp-green">
+                                        <Layers3 :size="20" aria-hidden="true" />
+                                    </span>
+                                    <span class="rounded bg-soft px-2 py-1 text-xs font-bold tracking-wide text-slate-500">{{ pathway.code }}</span>
+                                </div>
+                                <h3 class="mt-5 text-lg font-bold text-navy">{{ pathway.nom }}</h3>
+                                <p v-if="pathway.description" class="mt-2 flex-1 text-sm leading-6 text-slate-600">
+                                    {{ pathway.description }}
+                                </p>
 
-                        <span class="mt-6 inline-flex items-center gap-2 font-heading text-sm font-semibold text-institutional">
-                            {{ tr('Découvrir la formation', 'Explore this programme') }}
-                            <ArrowRight
-                                :size="17"
-                                class="transition-transform group-hover:translate-x-1"
-                                aria-hidden="true"
-                            />
-                        </span>
-                    </article>
+                                <div class="mt-5 border-t border-slate-100 pt-4">
+                                    <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                                        {{ tr('Niveaux concernés', 'Available levels') }}
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span
+                                            v-for="link in levels(pathway)"
+                                            :key="link.id"
+                                            class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold"
+                                            :class="link.is_common_core ? 'border-gold/50 bg-gold/15 text-[#795707]' : 'border-edsp-green/20 bg-edsp-green/8 text-edsp-green'"
+                                        >
+                                            {{ link.level?.code }}
+                                            <span v-if="link.is_common_core">· {{ tr('Tronc commun', 'Common core') }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
                 </div>
 
                 <div v-else class="rounded-xl border border-dashed border-gray-300 bg-soft px-6 py-16 text-center">
                     <BookOpen :size="36" class="mx-auto text-institutional" aria-hidden="true" />
-                    <h3 class="mt-5 text-xl font-bold text-navy">{{ tr('Aucune formation publiée', 'No programmes published') }}</h3>
+                    <h2 class="mt-5 text-xl font-bold text-navy">{{ tr('Aucune offre académique publiée', 'No academic offering published') }}</h2>
                     <p class="mx-auto mt-2 max-w-lg leading-7 text-gray-600">
-                        {{ tr('Le catalogue des formations sera mis à jour prochainement.', 'The programme catalogue will be updated soon.') }}
+                        {{ tr('Les mentions et parcours seront publiés prochainement.', 'Subject areas and pathways will be published soon.') }}
                     </p>
                 </div>
-
-                <nav
-                    v-if="programs.last_page > 1"
-                    class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-7 sm:flex-row"
-                    :aria-label="tr('Pagination des formations', 'Programme pagination')"
-                >
-                    <component
-                        :is="programs.prev_page_url ? Link : 'span'"
-                        :href="programs.prev_page_url || undefined"
-                        preserve-scroll
-                        :aria-disabled="!programs.prev_page_url"
-                        class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2.5 text-sm font-semibold text-navy transition"
-                        :class="programs.prev_page_url ? 'hover:border-institutional hover:text-institutional' : 'cursor-not-allowed opacity-40'"
-                    >
-                        <ArrowLeft :size="16" aria-hidden="true" />
-                        {{ tr('Précédent', 'Previous') }}
-                    </component>
-
-                    <p class="text-sm text-gray-600" aria-live="polite">
-                        {{ tr('Page', 'Page') }} <strong class="text-navy">{{ programs.current_page }}</strong> {{ tr('sur', 'of') }} {{ programs.last_page }}
-                    </p>
-
-                    <component
-                        :is="programs.next_page_url ? Link : 'span'"
-                        :href="programs.next_page_url || undefined"
-                        preserve-scroll
-                        :aria-disabled="!programs.next_page_url"
-                        class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2.5 text-sm font-semibold text-navy transition"
-                        :class="programs.next_page_url ? 'hover:border-institutional hover:text-institutional' : 'cursor-not-allowed opacity-40'"
-                    >
-                        {{ tr('Suivant', 'Next') }}
-                        <ArrowRight :size="16" aria-hidden="true" />
-                    </component>
-                </nav>
-            </section>
-        </div>
+            </div>
+        </main>
     </PublicLayout>
 </template>

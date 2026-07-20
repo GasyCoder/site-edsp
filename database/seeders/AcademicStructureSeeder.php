@@ -18,7 +18,7 @@ class AcademicStructureSeeder extends Seeder
 
         $now = now();
         $links = [
-            ['id' => 1, 'parcours_id' => 1, 'level_id' => 1],
+            ['id' => 1, 'parcours_id' => 1, 'level_id' => 1, 'is_common_core' => true],
             ['id' => 2, 'parcours_id' => 1, 'level_id' => 2],
             ['id' => 3, 'parcours_id' => 2, 'level_id' => 3],
             ['id' => 4, 'parcours_id' => 3, 'level_id' => 4],
@@ -33,7 +33,7 @@ class AcademicStructureSeeder extends Seeder
         foreach ($links as $link) {
             DB::table('parcours_levels')->updateOrInsert(
                 ['id' => $link['id']],
-                [...$link, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+                [...$link, 'is_active' => true, 'is_common_core' => $link['is_common_core'] ?? false, 'created_at' => $now, 'updated_at' => $now],
             );
         }
 
@@ -74,11 +74,11 @@ class AcademicStructureSeeder extends Seeder
                 'M1' => 'Master 1', 'M2' => 'Master 2',
             ],
             'mentions' => [
-                'DROIT' => 'Law', 'SP' => 'Political Science', 'SCIENCE-POLITIQUE' => 'Political Science',
+                'DROIT' => 'Law', 'SCPO' => 'Political Science',
             ],
             'parcours' => [
-                'DROIT-PRIVE' => 'Private Law', 'DP' => 'Private Law',
-                'SCIENCE-POLITIQUE' => 'Political Science', 'SP' => 'Political Science',
+                'DROI' => 'Law', 'DPRI' => 'Private Law', 'DAFF' => 'Business Law',
+                'SCPO' => 'Political Science', 'ETPO' => 'Political Studies',
             ],
         ];
 

@@ -60,7 +60,14 @@ class ParcoursResource extends Resource
             TextColumn::make('code')->label('Code')->badge()->searchable()->sortable(),
             TextColumn::make('nom')->label('Parcours')->searchable()->sortable(),
             TextColumn::make('mention.nom')->label('Mention')->badge()->sortable(),
-            TextColumn::make('level_links_count')->label('Niveaux')->counts('levelLinks'),
+            TextColumn::make('levelLinks.level.code')
+                ->label('Niveaux proposés')
+                ->badge()
+                ->separator(', '),
+            TextColumn::make('description')
+                ->label('Organisation pédagogique')
+                ->wrap()
+                ->limit(90),
         ])->filters([
             SelectFilter::make('mention')->relationship('mention', 'nom'),
         ])->recordActions([

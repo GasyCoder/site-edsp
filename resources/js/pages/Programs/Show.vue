@@ -13,6 +13,7 @@ import {
     FileText,
     GraduationCap,
     Landmark,
+    Layers3,
     Target,
     UserPlus,
     UserRound,
@@ -25,6 +26,7 @@ import RichText from '../../components/public/RichText.vue';
 import { mediaUrl, safePublicUrl } from '../../lib/public-content';
 import type { Program, PublicDocument, SeoData } from '../../types';
 import { useI18n } from '../../lib/i18n';
+import { pathwayLevels, programLevelLabel, programPathwayLabel, programPathways } from '../../lib/academic-offer';
 
 type ProgramDetails = Program & {
     admission_requirements?: string | null;
@@ -48,6 +50,10 @@ const programImageAlt = computed(
     () => props.program.image?.alt_text || tr(`Illustration de la formation : ${props.program.title}`, `Programme illustration: ${props.program.title}`),
 );
 const documentUrl = (document: PublicDocument): string | null => safePublicUrl(document.download_url);
+const levelLabel = computed(() => programLevelLabel(props.program));
+const mentionLabel = computed(() => props.program.mention_record?.nom || props.program.mention || props.program.domain);
+const pathwayLabel = computed(() => programPathwayLabel(props.program));
+const pathways = computed(() => programPathways(props.program));
 
 const formatFileSize = (bytes?: number | null): string | null => {
     if (!bytes || bytes < 1) {
@@ -100,7 +106,7 @@ const formatFileSize = (bytes?: number | null): string | null => {
 
                 <div class="max-w-4xl">
                     <span class="inline-flex rounded-full bg-gold px-3 py-1 text-xs font-bold text-navy">
-                        {{ program.level }}
+                        {{ levelLabel }}
                     </span>
                     <h1 class="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
                         {{ program.title }}
@@ -142,6 +148,38 @@ const formatFileSize = (bytes?: number | null): string | null => {
                             </div>
                         </div>
                         <RichText :html="program.objectives" class="mt-6 text-gray-600" />
+                    </section>
+
+                    <section v-if="pathways.length" aria-labelledby="pathways-title" class="border-b border-gray-200 py-12">
+                        <div class="flex gap-4">
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-institutional/10 text-institutional">
+                                <Layers3 :size="22" aria-hidden="true" />
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.15em] text-edsp-green">{{ tr('Organisation des études', 'Programme structure') }}</p>
+                                <h2 id="pathways-title" class="mt-1 text-2xl font-bold text-navy sm:text-3xl">{{ tr('Parcours selon le niveau', 'Pathways by level') }}</h2>
+                            </div>
+                        </div>
+
+                        <div class="mt-7 grid gap-4 sm:grid-cols-2">
+                            <article v-for="pathway in pathways" :key="pathway.id" class="rounded-xl border border-gray-200 bg-soft p-5">
+                                <div class="flex items-start justify-between gap-3">
+                                    <h3 class="font-bold text-navy">{{ pathway.nom }}</h3>
+                                    <span class="rounded bg-white px-2 py-1 text-xs font-bold text-slate-500">{{ pathway.code }}</span>
+                                </div>
+                                <p v-if="pathway.description" class="mt-2 text-sm leading-6 text-gray-600">{{ pathway.description }}</p>
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    <span
+                                        v-for="link in pathwayLevels(pathway)"
+                                        :key="link.id"
+                                        class="rounded-full border px-3 py-1 text-xs font-bold"
+                                        :class="link.is_common_core ? 'border-gold/50 bg-gold/15 text-[#795707]' : 'border-edsp-green/20 bg-edsp-green/10 text-edsp-green'"
+                                    >
+                                        {{ link.level?.code }}<template v-if="link.is_common_core"> · {{ tr('Tronc commun', 'Common core') }}</template>
+                                    </span>
+                                </div>
+                            </article>
+                        </div>
                     </section>
 
                     <section
@@ -275,7 +313,7 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                 <GraduationCap :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
                                     <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Niveau', 'Level') }}</dt>
-                                    <dd class="mt-1 font-semibold text-navy">{{ program.level }}</dd>
+                                    <dd class="mt-1 font-semibold text-navy">{{ levelLabel }}</dd>
                                 </div>
                             </div>
                             <div v-if="program.duration" class="flex gap-3 py-4">
@@ -285,13 +323,18 @@ const formatFileSize = (bytes?: number | null): string | null => {
                                     <dd class="mt-1 font-semibold text-navy">{{ program.duration }}</dd>
                                 </div>
                             </div>
-                            <div v-if="program.domain || program.mention || program.track" class="flex gap-3 py-4">
+                            <div v-if="mentionLabel" class="flex gap-3 py-4">
                                 <Landmark :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
                                 <div>
-                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Parcours', 'Pathway') }}</dt>
-                                    <dd class="mt-1 font-semibold leading-6 text-navy">
-                                        {{ program.track || program.mention || program.domain }}
-                                    </dd>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Mention', 'Subject area') }}</dt>
+                                    <dd class="mt-1 font-semibold leading-6 text-navy">{{ mentionLabel }}</dd>
+                                </div>
+                            </div>
+                            <div v-if="pathwayLabel" class="flex gap-3 py-4">
+                                <BookOpen :size="19" class="mt-0.5 shrink-0 text-edsp-green" aria-hidden="true" />
+                                <div>
+                                    <dt class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ tr('Parcours', 'Pathways') }}</dt>
+                                    <dd class="mt-1 font-semibold leading-6 text-navy">{{ pathwayLabel }}</dd>
                                 </div>
                             </div>
                             <div v-if="program.manager" class="flex gap-3 py-4">

@@ -24,4 +24,9 @@ class Mention extends Model
     {
         return $this->hasMany(Parcours::class);
     }
+
+    public function programs(): HasMany
+    {
+        return $this->hasMany(Program::class);
+    }
 }

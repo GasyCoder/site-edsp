@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\TeamMembers;
 
+use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Resources\TeamMembers\Pages\ManageTeamMembers;
+use App\Models\Media;
 use App\Models\TeamMember;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -10,6 +12,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,6 +20,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -63,26 +67,28 @@ class TeamMemberResource extends Resource
                                 ->label('Fonction')
                                 ->required()
                                 ->maxLength(255),
-                            Select::make('department_id')
-                                ->label('Département')
-                                ->relationship('department', 'name')
-                                ->searchable()
-                                ->preload(),
-                            Select::make('photo_id')
-                                ->label('Photo')
-                                ->relationship(
-                                    name: 'photo',
-                                    titleAttribute: 'original_name',
-                                    modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
-                                )
-                                ->searchable()
-                                ->preload(),
                             TextInput::make('display_order')
                                 ->label('Ordre d’affichage')
                                 ->numeric()
                                 ->minValue(0)
                                 ->default(0)
                                 ->required(),
+                            Select::make('photo_id')
+                                ->label('Photo')
+                                ->helperText('La vignette dans la liste et l’aperçu permettent de vérifier la photo avant d’enregistrer.')
+                                ->relationship(
+                                    name: 'photo',
+                                    titleAttribute: 'original_name',
+                                    modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
+                                )
+                                ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                ->allowHtml()
+                                ->live()
+                                ->searchable()
+                                ->preload(),
+                            Placeholder::make('photo_preview')
+                                ->label('Aperçu de la photo')
+                                ->content(fn (Get $get) => MediaImagePreview::render($get->integer('photo_id'), 'Aucune photo sélectionnée.')),
                         ]),
                         Textarea::make('biography')
                             ->label('Biographie')
@@ -149,11 +155,6 @@ class TeamMemberResource extends Resource
                     ->description(fn (TeamMember $record): string => $record->position)
                     ->searchable(['first_name', 'last_name', 'position'])
                     ->sortable(),
-                TextColumn::make('department.name')
-                    ->label('Département')
-                    ->badge()
-                    ->placeholder('—')
-                    ->sortable(),
                 TextColumn::make('email')
                     ->label('E-mail')
                     ->searchable()
@@ -178,9 +179,6 @@ class TeamMemberResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('department_id')
-                    ->label('Département')
-                    ->relationship('department', 'name'),
                 SelectFilter::make('status')
                     ->label('Statut')
                     ->options(self::statusOptions()),

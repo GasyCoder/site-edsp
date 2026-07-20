@@ -59,7 +59,12 @@ class MentionResource extends Resource
         return $table->columns([
             TextColumn::make('code')->label('Code')->badge()->searchable()->sortable(),
             TextColumn::make('nom')->label('Mention')->searchable()->sortable(),
-            TextColumn::make('parcours_count')->label('Parcours')->counts('parcours'),
+            TextColumn::make('parcours.nom')
+                ->label('Parcours rattachés')
+                ->listWithLineBreaks()
+                ->bulleted()
+                ->limitList(4)
+                ->expandableLimitedList(),
             IconColumn::make('is_active')->label('Active')->boolean(),
         ])->recordActions([
             EditAction::make(),

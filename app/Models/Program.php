@@ -42,6 +42,16 @@ class Program extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function mentionRecord(): BelongsTo
+    {
+        return $this->belongsTo(Mention::class, 'mention_id');
+    }
+
+    public function parcoursLevels(): BelongsToMany
+    {
+        return $this->belongsToMany(ParcoursLevel::class, 'program_parcours_level');
+    }
+
     public function image(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'image_id');

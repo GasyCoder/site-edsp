@@ -24,6 +24,8 @@ export interface PublicDocument {
     mime_type?: Nullable<string>;
     size?: Nullable<number>;
     download_url?: Nullable<string>;
+    preview_url?: Nullable<string>;
+    published_at?: Nullable<string>;
 }
 
 export interface GalleryImage {
@@ -38,7 +40,10 @@ export interface GalleryImage {
 export interface PublicGallery {
     id: number;
     title: string;
+    slug?: string;
     description?: Nullable<string>;
+    cover_image?: Nullable<MediaAsset>;
+    cover_image_url?: Nullable<string>;
     is_visible?: boolean;
     images?: GalleryImage[];
 }
@@ -63,6 +68,8 @@ export interface Section {
     image_id?: Nullable<number>;
     image?: Nullable<MediaAsset>;
     image_url?: Nullable<string>;
+    secondary_image_url?: Nullable<string>;
+    tertiary_image_url?: Nullable<string>;
     button_text: Nullable<string>;
     button_url: Nullable<string>;
     settings: SectionSettings | null;
@@ -87,6 +94,37 @@ export interface Page {
     sections: Section[];
 }
 
+export interface AcademicLevel {
+    id: number;
+    code: string;
+    nom: string;
+    ordre?: number;
+}
+
+export interface AcademicPathwayLevel {
+    id: number;
+    is_active: boolean;
+    is_common_core?: boolean;
+    level?: Nullable<AcademicLevel>;
+}
+
+export interface AcademicPathway {
+    id: number;
+    code: string;
+    nom: string;
+    description?: Nullable<string>;
+    level_links?: AcademicPathwayLevel[];
+}
+
+export interface AcademicMention {
+    id: number;
+    code: string;
+    nom: string;
+    description?: Nullable<string>;
+    parcours?: AcademicPathway[];
+    programs?: Program[];
+}
+
 export interface Program {
     id: number;
     title: string;
@@ -109,6 +147,21 @@ export interface Program {
     meta_title?: Nullable<string>;
     meta_description?: Nullable<string>;
     documents?: PublicDocument[];
+    mention_record?: Nullable<AcademicMention>;
+    parcours_levels?: Array<{
+        id: number;
+        label?: string;
+        parcours?: Nullable<{
+            id: number;
+            code: string;
+            nom: string;
+        }>;
+        level?: Nullable<{
+            id: number;
+            code: string;
+            nom: string;
+        }>;
+    }>;
 }
 
 export interface NewsCategory {
@@ -145,7 +198,6 @@ export interface TeamMember {
     biography?: Nullable<string>;
     email?: Nullable<string>;
     phone?: Nullable<string>;
-    department?: Nullable<{ id?: number; name: string }>;
     photo?: Nullable<MediaAsset>;
     photo_url?: Nullable<string>;
 }
@@ -201,6 +253,8 @@ export interface SiteSettings {
     library_url?: Nullable<string>;
     linkedin?: Nullable<string>;
     logo_url?: Nullable<string>;
+    ministerial_reference?: Nullable<string>;
+    ministerial_reference_label?: Nullable<string>;
     phone?: Nullable<string>;
     phone_secondary?: Nullable<string>;
     site_description?: Nullable<string>;
@@ -233,6 +287,7 @@ export interface SharedPageProps {
         user: Nullable<{ id: number; name: string; email: string }>;
         canAccessAdmin?: boolean;
         canEdit?: boolean;
+        canEditSettings?: boolean;
     };
     flash?: {
         newsletter?: Nullable<{
@@ -242,6 +297,11 @@ export interface SharedPageProps {
         success?: Nullable<string>;
     };
     settings?: SiteSettings;
+    navigationBrochures?: Array<{
+        id: number;
+        title: string;
+        url: string;
+    }>;
     locale?: 'fr' | 'en';
     locales?: Array<{
         code: 'fr' | 'en';

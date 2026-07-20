@@ -25,12 +25,6 @@ const image = computed(() => mediaThumbnailUrl(props.member.photo) || props.memb
                 :label="tr(`Portrait de ${fullName}`, `Portrait of ${fullName}`)"
             />
         </div>
-        <span
-            v-if="member.department?.name"
-            class="inline-block rounded bg-institutional/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-institutional"
-        >
-            {{ member.department.name }}
-        </span>
         <h3 class="mt-3 text-lg font-semibold text-navy">{{ fullName }}</h3>
         <p class="mt-1 text-sm font-semibold text-edsp-green">{{ member.position }}</p>
         <p v-if="member.biography" class="mt-3 line-clamp-4 text-sm leading-6 text-slate-600">

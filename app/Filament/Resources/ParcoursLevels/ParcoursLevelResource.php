@@ -45,6 +45,10 @@ class ParcoursLevelResource extends Resource
                     Select::make('level_id')->label('Niveau')->relationship('level', 'nom')->searchable()->preload()->required(),
                 ]),
                 Toggle::make('is_active')->label('Association active')->default(true),
+                Toggle::make('is_common_core')
+                    ->label('Tronc commun')
+                    ->helperText('Activez uniquement lorsqu’un niveau constitue le tronc commun de la mention.')
+                    ->default(false),
             ]),
         ]);
     }
@@ -55,6 +59,9 @@ class ParcoursLevelResource extends Resource
             TextColumn::make('parcours.nom')->label('Parcours')->searchable()->sortable(),
             TextColumn::make('parcours.mention.nom')->label('Mention')->badge(),
             TextColumn::make('level.code')->label('Niveau')->badge()->sortable(),
+            IconColumn::make('is_common_core')
+                ->label('Tronc commun')
+                ->boolean(),
             TextColumn::make('teaching_units_count')->label('UE')->counts('teachingUnits'),
             IconColumn::make('is_active')->label('Active')->boolean(),
         ])->filters([
