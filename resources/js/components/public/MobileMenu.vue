@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ArrowRight, LayoutDashboard, UserPlus, X } from 'lucide-vue-next';
+import { ArrowRight, FileText, LayoutDashboard, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import type { SharedPageProps } from '../../types';
 import DisplayPreferences from './DisplayPreferences.vue';
@@ -17,6 +17,7 @@ const emit = defineEmits<{
 const page = usePage();
 const shared = computed(() => page.props as SharedPageProps);
 const canAccessAdmin = computed(() => shared.value.auth?.canAccessAdmin === true);
+const brochures = computed(() => shared.value.navigationBrochures ?? []);
 const { tr } = useI18n();
 const panel = ref<HTMLElement | null>(null);
 const closeButton = ref<HTMLButtonElement | null>(null);
@@ -127,16 +128,32 @@ onBeforeUnmount(() => {
 
                     <div class="mt-4 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
                         <p class="nav-group-label mt-1">{{ tr("L'École", 'The School') }}</p>
-                        <Link href="/presentation" class="mobile-nav-sublink block" @click="close">{{ tr('Présentation', 'About us') }}</Link>
+                        <Link href="/presentation" class="mobile-nav-sublink block" @click="close">{{ tr('Mot du directeur', "Director's message") }}</Link>
                         <Link href="/historique" class="mobile-nav-sublink block" @click="close">{{ tr('Historique', 'History') }}</Link>
                         <Link href="/missions-et-valeurs" class="mobile-nav-sublink block" @click="close">{{ tr('Missions et valeurs', 'Mission and values') }}</Link>
                         <Link href="/equipe" class="mobile-nav-sublink block" @click="close">{{ tr('Direction et équipe', 'Leadership and team') }}</Link>
+                        <Link href="/documents" class="mobile-nav-sublink block" @click="close">{{ tr('Documents publics', 'Public documents') }}</Link>
                     </div>
 
                     <div class="mt-3 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
                         <p class="nav-group-label mt-1">{{ tr('Formations', 'Programmes') }}</p>
                         <Link href="/formations" class="mobile-nav-sublink block" @click="close">{{ tr('Nos parcours', 'Our programmes') }}</Link>
                         <Link href="/admissions" class="mobile-nav-sublink block" @click="close">{{ tr('Admissions', 'Admissions') }}</Link>
+                        <template v-if="brochures.length">
+                            <p class="nav-group-label border-t border-slate-200 pt-3 dark:border-slate-700">{{ tr('Brochures', 'Brochures') }}</p>
+                            <a
+                                v-for="brochure in brochures"
+                                :key="brochure.id"
+                                :href="brochure.url"
+                                target="_blank"
+                                rel="noopener"
+                                class="mobile-nav-sublink flex items-center gap-2"
+                                @click="close"
+                            >
+                                <FileText :size="16" class="flex-none text-edsp-green" aria-hidden="true" />
+                                <span class="min-w-0 truncate">{{ brochure.title }}</span>
+                            </a>
+                        </template>
                     </div>
 
                     <div class="mt-4 grid grid-cols-2 gap-2">

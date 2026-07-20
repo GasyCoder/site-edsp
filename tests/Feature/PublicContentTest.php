@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Gallery;
+use App\Models\Media;
 use App\Models\News;
 use App\Models\Page;
 use App\Models\Program;
@@ -183,6 +185,56 @@ test('every home block including statistics is an editable page section', functi
             ->has('page.sections', 12)
             ->where('page.sections.3.section_key', 'stats')
             ->where('page.sections.3.section_type', 'stats'));
+});
+
+test('the public gallery page receives published albums and visible images', function (): void {
+    Page::query()->create([
+        'title' => 'Galerie',
+        'slug' => 'galerie',
+        'status' => 'published',
+        'template' => 'default',
+        'published_at' => now(),
+    ]);
+    $gallery = Gallery::query()->create([
+        'title' => 'Vie étudiante',
+        'slug' => 'vie-etudiante-test',
+        'description' => 'Les temps forts de la vie étudiante.',
+        'status' => 'published',
+        'is_visible' => true,
+        'published_at' => now(),
+    ]);
+    $media = collect(['visible', 'masquee'])->map(fn (string $name): Media => Media::query()->create([
+        'disk' => 'public',
+        'path' => "media/galerie-{$name}.jpg",
+        'filename' => "galerie-{$name}.jpg",
+        'original_name' => "galerie-{$name}.jpg",
+        'mime_type' => 'image/jpeg',
+        'extension' => 'jpg',
+        'size' => 10,
+        'alt_text' => "Photo {$name}",
+    ]));
+    $gallery->images()->create([
+        'media_id' => $media[0]->id,
+        'title' => 'Conférence des étudiants',
+        'position' => 1,
+        'is_visible' => true,
+    ]);
+    $gallery->images()->create([
+        'media_id' => $media[1]->id,
+        'title' => 'Photo masquée',
+        'position' => 2,
+        'is_visible' => false,
+    ]);
+
+    $this->get('/galerie')
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->component('Page')
+            ->where('page.slug', 'galerie')
+            ->has('galleries', 1)
+            ->where('galleries.0.title', 'Vie étudiante')
+            ->has('galleries.0.images', 1)
+            ->where('galleries.0.images.0.title', 'Conférence des étudiants'));
 });
 
 test('draft and future content is not publicly accessible', function (): void {

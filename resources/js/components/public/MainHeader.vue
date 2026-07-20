@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronDown, LayoutDashboard, Menu, UserPlus, X } from 'lucide-vue-next';
+import { ChevronDown, FileText, LayoutDashboard, Menu, UserPlus, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../../types';
 import { setting } from '../../lib/public-content';
@@ -16,6 +16,7 @@ const props = defineProps<{
 const page = usePage();
 const shared = computed(() => page.props as SharedPageProps);
 const canAccessAdmin = computed(() => shared.value.auth?.canAccessAdmin === true);
+const brochures = computed(() => shared.value.navigationBrochures ?? []);
 const header = ref<HTMLElement | null>(null);
 const menuButton = ref<HTMLButtonElement | null>(null);
 const menuOpen = ref(false);
@@ -125,7 +126,7 @@ onBeforeUnmount(() => {
                     <button
                         type="button"
                         class="desktop-nav-link inline-flex items-center gap-1"
-                        :class="{ 'text-edsp-green': isCurrent('/presentation') || isCurrent('/equipe') || isCurrent('/bibliotheque') }"
+                        :class="{ 'text-edsp-green': isCurrent('/presentation') || isCurrent('/equipe') || isCurrent('/bibliotheque') || isCurrent('/documents') }"
                         :aria-expanded="activeDropdown === 'school'"
                         aria-controls="school-navigation"
                         @click.stop="toggleDropdown('school')"
@@ -143,13 +144,14 @@ onBeforeUnmount(() => {
                             id="school-navigation"
                             class="nav-dropdown left-[-0.75rem]"
                         >
-                            <Link href="/presentation" class="nav-dropdown-link" @click="closeMenus">{{ tr('Présentation', 'About us') }}</Link>
+                            <Link href="/presentation" class="nav-dropdown-link" @click="closeMenus">{{ tr('Mot du directeur', "Director's message") }}</Link>
                             <Link href="/historique" class="nav-dropdown-link" @click="closeMenus">{{ tr('Historique', 'History') }}</Link>
                             <Link href="/missions-et-valeurs" class="nav-dropdown-link" @click="closeMenus">
                                 {{ tr('Missions et valeurs', 'Mission and values') }}
                             </Link>
                             <Link href="/equipe" class="nav-dropdown-link" @click="closeMenus">{{ tr('Direction et équipe', 'Leadership and team') }}</Link>
                             <Link href="/bibliotheque" class="nav-dropdown-link" @click="closeMenus">{{ tr('Bibliothèque', 'Library') }}</Link>
+                            <Link href="/documents" class="nav-dropdown-link" @click="closeMenus">{{ tr('Documents publics', 'Public documents') }}</Link>
                         </div>
                     </Transition>
                 </div>
@@ -184,6 +186,21 @@ onBeforeUnmount(() => {
                         >
                             <Link href="/formations" class="nav-dropdown-link" @click="closeMenus">{{ tr('Nos parcours', 'Our programmes') }}</Link>
                             <Link href="/admissions" class="nav-dropdown-link" @click="closeMenus">{{ tr('Admissions', 'Admissions') }}</Link>
+                            <template v-if="brochures.length">
+                                <p class="nav-group-label border-t border-slate-200 pt-3 dark:border-slate-700">{{ tr('Brochures', 'Brochures') }}</p>
+                                <a
+                                    v-for="brochure in brochures"
+                                    :key="brochure.id"
+                                    :href="brochure.url"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="nav-dropdown-link flex items-center gap-2"
+                                    @click="closeMenus"
+                                >
+                                    <FileText :size="16" class="flex-none text-edsp-green" aria-hidden="true" />
+                                    <span class="min-w-0 truncate">{{ brochure.title }}</span>
+                                </a>
+                            </template>
                         </div>
                     </Transition>
                 </div>

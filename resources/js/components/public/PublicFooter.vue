@@ -190,7 +190,7 @@ const submitNewsletter = (): void => {
                     <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Le site', 'Explore') }}</h2>
                     <ul class="space-y-2.5 text-sm">
                         <li><Link href="/" class="footer-link">{{ tr('Accueil', 'Home') }}</Link></li>
-                        <li><Link href="/presentation" class="footer-link">{{ tr('Présentation', 'About us') }}</Link></li>
+                        <li><Link href="/presentation" class="footer-link">{{ tr('Mot du directeur', "Director's message") }}</Link></li>
                         <li><Link href="/formations" class="footer-link">{{ tr('Formations', 'Programmes') }}</Link></li>
                         <li><Link href="/admissions" class="footer-link">{{ tr('Admissions', 'Admissions') }}</Link></li>
                         <li><Link href="/actualites" class="footer-link">{{ tr('Actualités', 'News') }}</Link></li>
@@ -202,6 +202,7 @@ const submitNewsletter = (): void => {
                     <ul class="space-y-2.5 text-sm">
                         <li><Link href="/vie-etudiante" class="footer-link">{{ tr('Vie étudiante', 'Student life') }}</Link></li>
                         <li><SmartLink :href="libraryUrl" class="footer-link">{{ tr('Bibliothèque', 'Library') }}</SmartLink></li>
+                        <li><Link href="/documents" class="footer-link">{{ tr('Documents publics', 'Public documents') }}</Link></li>
                         <li><Link href="/galerie" class="footer-link">{{ tr('Galerie', 'Gallery') }}</Link></li>
                         <li><Link href="/contact" class="footer-link">Contact</Link></li>
                         <li><Link href="/mentions-legales" class="footer-link">{{ tr('Mentions légales', 'Legal notice') }}</Link></li>

@@ -61,14 +61,14 @@ const { tr } = useI18n();
             </Link>
 
             <Link
-                href="/bibliotheque"
+                href="/documents"
                 class="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition"
-                :class="isCurrent('/bibliotheque') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
-                :aria-current="isCurrent('/bibliotheque') ? 'page' : undefined"
+                :class="isCurrent('/documents') ? 'bg-edsp-green/10 text-edsp-green dark:bg-edsp-green/15 dark:text-emerald-300' : 'text-slate-500 hover:bg-soft hover:text-navy dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'"
+                :aria-current="isCurrent('/documents') ? 'page' : undefined"
                 @click="emit('close')"
             >
                 <BookOpen :size="20" aria-hidden="true" />
-                <span class="max-w-full truncate">{{ tr('Bibliothèque', 'Library') }}</span>
+                <span class="max-w-full truncate">{{ tr('Documents', 'Documents') }}</span>
             </Link>
 
             <button

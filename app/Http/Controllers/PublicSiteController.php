@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdmissionCampaign;
 use App\Models\Document;
 use App\Models\Gallery;
+use App\Models\Mention;
 use App\Models\News;
 use App\Models\Page;
 use App\Models\Partner;
@@ -26,13 +27,19 @@ class PublicSiteController extends Controller
             'sections' => fn ($query) => $query->when(! $canEdit, fn ($query) => $query->where('is_visible', true))->with('image')->orderBy('position'),
         ])->where('slug', 'accueil')->firstOrFail();
         $publicSettings = $settings->public();
+        $directorMessage = Page::published()
+            ->with(['mainSection' => fn ($query) => $query->where('is_visible', true)->with('image')])
+            ->where('slug', 'presentation')
+            ->first()
+            ?->mainSection;
 
         return Inertia::render('Home', [
             'page' => $page,
-            'programs' => Program::published()->with(['department', 'image'])->orderBy('position')->limit(2)->get(),
+            'directorMessage' => $directorMessage,
+            'programs' => Program::published()->with($this->programRelations())->orderBy('position')->limit(2)->get(),
             'news' => News::published()->with(['category', 'featuredImage'])->latest('published_at')->limit(3)->get(),
             'campaign' => $this->campaignForFrontend(),
-            'teamMembers' => TeamMember::published()->with(['department', 'photo'])->orderBy('display_order')->limit(4)->get(),
+            'teamMembers' => TeamMember::published()->with('photo')->orderBy('display_order')->limit(4)->get(),
             'testimonials' => Testimonial::query()->where('is_visible', true)->with('photo')->latest()->limit(3)->get(),
             'partners' => Partner::query()->where('is_visible', true)->with('logo')->orderBy('position')->limit(6)->get(),
             'settings' => $publicSettings,
@@ -55,7 +62,7 @@ class PublicSiteController extends Controller
         $props = ['page' => $page, 'seo' => $seo->for($page, $settings->public()), 'canEdit' => $canEdit];
 
         if ($slug === 'equipe') {
-            $props['teamMembers'] = TeamMember::published()->with(['department', 'photo'])->orderBy('display_order')->get();
+            $props['teamMembers'] = TeamMember::published()->with('photo')->orderBy('display_order')->get();
         } elseif ($slug === 'galerie') {
             $props['galleries'] = Gallery::published()->with(['coverImage', 'images' => fn ($query) => $query->where('is_visible', true)->with('media')->orderBy('position')])->orderBy('position')->get();
         } elseif ($slug === 'partenaires') {
@@ -74,7 +81,16 @@ class PublicSiteController extends Controller
         $english = app()->isLocale('en');
 
         return Inertia::render('Programs/Index', [
-            'programs' => Program::published()->with(['department', 'image'])->orderBy('position')->paginate(12),
+            'mentions' => Mention::query()
+                ->where('is_active', true)
+                ->with([
+                    'programs' => fn ($query) => $query->published()->orderBy('position'),
+                    'parcours' => fn ($query) => $query->orderBy('id')->with([
+                        'levelLinks' => fn ($query) => $query->where('is_active', true)->with('level'),
+                    ]),
+                ])
+                ->orderBy('id')
+                ->get(),
             'seo' => $seo->forListing(
                 $english ? 'Degree programmes — EDSP' : 'Formations — EDSP',
                 $english ? 'Explore degree programmes offered by the School of Law and Political Science.' : 'Découvrez les parcours de formation proposés par l’École de Droit et Science Politique.',
@@ -86,7 +102,11 @@ class PublicSiteController extends Controller
     {
         abort_unless(Program::published()->whereKey($program)->exists(), 404);
 
-        $program->load(['department', 'image', 'ogImage', 'documents' => fn ($query) => $query->published()->where('is_public', true)->orderBy('position')]);
+        $program->load([
+            ...$this->programRelations(),
+            'ogImage',
+            'documents' => fn ($query) => $query->published()->where('is_public', true)->orderBy('position'),
+        ]);
 
         return Inertia::render('Programs/Show', [
             'program' => $program,
@@ -103,6 +123,48 @@ class PublicSiteController extends Controller
             'seo' => $seo->forListing(
                 $english ? 'News — EDSP' : 'Actualités — EDSP',
                 $english ? 'Read news and announcements from the School of Law and Political Science.' : 'Consultez les actualités et communiqués publiés par l’École de Droit et Science Politique.',
+            ),
+        ]);
+    }
+
+    public function documents(Request $request, SeoService $seo)
+    {
+        $search = trim((string) $request->query('q', ''));
+        $category = trim((string) $request->query('category', ''));
+        $baseQuery = Document::published()->where('is_public', true);
+        $categories = (clone $baseQuery)
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category')
+            ->values();
+
+        $documents = $baseQuery
+            ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search): void {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('original_name', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%");
+            }))
+            ->when($category !== '', fn ($query) => $query->where('category', $category))
+            ->orderBy('position')
+            ->latest('published_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        $english = app()->isLocale('en');
+
+        return Inertia::render('Documents/Index', [
+            'documents' => $documents,
+            'categories' => $categories,
+            'filters' => ['q' => $search, 'category' => $category],
+            'seo' => $seo->forListing(
+                $english ? 'Public documents — EDSP' : 'Documents publics — EDSP',
+                $english
+                    ? 'Find and consult official documents published by the School of Law and Political Science.'
+                    : 'Recherchez et consultez les documents officiels publiés par l’École de Droit et Science Politique.',
+                'CollectionPage',
             ),
         ]);
     }
@@ -129,6 +191,12 @@ class PublicSiteController extends Controller
             'article' => $article,
             'seo' => $seo->for($article, $settings->public()),
         ]);
+    }
+
+    /** @return array<int, string> */
+    private function programRelations(): array
+    {
+        return ['image', 'mentionRecord.parcours.levelLinks.level'];
     }
 
     private function campaignForFrontend(): ?AdmissionCampaign

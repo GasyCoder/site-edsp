@@ -6,8 +6,8 @@ use App\Http\Controllers\ApplicationStatusController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentRevisionController;
 use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\MediaController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\NewsletterCampaignAttachmentController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\PageSectionController;
@@ -40,6 +40,8 @@ Route::post('/contact', [ContactController::class, 'store'])->middleware('thrott
 Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:5,10')->name('newsletter.store');
 Route::get('/newsletter/confirmer/{subscriber}', [NewsletterSubscriptionController::class, 'verify'])->middleware('throttle:20,1')->name('newsletter.verify');
 Route::get('/newsletter/desinscription/{subscriber}', [NewsletterSubscriptionController::class, 'unsubscribe'])->middleware('throttle:20,1')->name('newsletter.unsubscribe');
+Route::get('/documents', [PublicSiteController::class, 'documents'])->name('documents.index');
+Route::get('/documents/{document}/consulter', [DocumentController::class, 'preview'])->middleware('throttle:60,1')->name('documents.preview');
 Route::get('/documents/{document}/telecharger', [DocumentController::class, 'download'])->middleware('throttle:60,1')->name('documents.download');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
@@ -48,6 +50,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/administration/newsletters/{campaign}/piece-jointe', [NewsletterCampaignAttachmentController::class, 'download'])
         ->name('newsletter-campaigns.attachment.download');
     Route::patch('/edition/sections/{section}', [PageSectionController::class, 'update'])->name('sections.update');
+    Route::patch('/edition/reference-ministerielle', [SettingController::class, 'updateInstitutionalReference'])
+        ->name('settings.institutional-reference.update');
     Route::patch('/administration/candidatures/{application}/statut', [ApplicationStatusController::class, 'update'])->name('applications.status.update');
     Route::get('/administration/documents-candidature/{document}/apercu', [ApplicationDocumentController::class, 'preview'])
         ->middleware('throttle:120,1')

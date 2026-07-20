@@ -20,7 +20,7 @@ class Document extends Model
 
     protected $hidden = ['disk', 'path'];
 
-    protected $appends = ['download_url'];
+    protected $appends = ['download_url', 'preview_url'];
 
     protected function casts(): array
     {
@@ -36,9 +36,23 @@ class Document extends Model
 
     public function getDownloadUrlAttribute(): ?string
     {
-        return $this->is_public && $this->status === 'published'
+        return $this->isPubliclyAvailable()
             ? route('documents.download', $this)
             : null;
+    }
+
+    public function getPreviewUrlAttribute(): ?string
+    {
+        return $this->isPubliclyAvailable() && $this->mime_type === 'application/pdf'
+            ? route('documents.preview', $this)
+            : null;
+    }
+
+    public function isPubliclyAvailable(): bool
+    {
+        return $this->is_public
+            && $this->status === 'published'
+            && ($this->published_at === null || $this->published_at->isPast());
     }
 
     public function uploadedBy(): BelongsTo

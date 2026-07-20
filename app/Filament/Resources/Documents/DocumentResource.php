@@ -27,7 +27,6 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -87,12 +86,14 @@ class DocumentResource extends Resource
                         TextInput::make('category')
                             ->label('Catégorie')
                             ->datalist([
+                                'Brochures',
                                 'Admissions',
                                 'Formations',
                                 'Règlements',
                                 'Recherche',
                                 'Vie étudiante',
                             ])
+                            ->helperText('Les documents de catégorie « Brochures » apparaissent automatiquement dans le menu Formations du site public.')
                             ->maxLength(255),
                         Textarea::make('description')
                             ->label('Description')
@@ -187,10 +188,21 @@ class DocumentResource extends Resource
                         default => 'warning',
                     })
                     ->sortable(),
-                IconColumn::make('is_public')
-                    ->label('Public')
-                    ->boolean()
-                    ->sortable(),
+                TextColumn::make('public_availability')
+                    ->label('Sur le site')
+                    ->getStateUsing(fn (Document $record): string => match (true) {
+                        ! $record->is_public => 'Privé',
+                        $record->status !== 'published' => 'Non publié',
+                        $record->published_at?->isFuture() => 'Programmé',
+                        default => 'Visible',
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Visible' => 'success',
+                        'Programmé' => 'info',
+                        'Privé' => 'danger',
+                        default => 'warning',
+                    }),
                 TextColumn::make('size')
                     ->label('Taille')
                     ->formatStateUsing(fn (?int $state): string => Number::fileSize((int) $state))
