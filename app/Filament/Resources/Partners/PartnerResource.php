@@ -2,18 +2,22 @@
 
 namespace App\Filament\Resources\Partners;
 
+use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Resources\Partners\Pages\ManagePartners;
+use App\Models\Media;
 use App\Models\Partner;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -57,13 +61,20 @@ class PartnerResource extends Resource
                             ->maxLength(255),
                         Select::make('logo_id')
                             ->label('Logo')
+                            ->helperText('Vérifiez le logo sélectionné dans l’aperçu avant l’enregistrement.')
                             ->relationship(
                                 name: 'logo',
                                 titleAttribute: 'original_name',
                                 modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                             )
+                            ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                            ->allowHtml()
+                            ->live()
                             ->searchable()
                             ->preload(),
+                        Placeholder::make('logo_preview')
+                            ->label('Aperçu du logo')
+                            ->content(fn (Get $get) => MediaImagePreview::render($get->integer('logo_id'), 'Aucun logo sélectionné.')),
                         TextInput::make('position')
                             ->label('Ordre d’affichage')
                             ->numeric()

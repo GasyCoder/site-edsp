@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Galleries;
 
+use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Resources\Galleries\Pages\ManageGalleries;
 use App\Models\Gallery;
+use App\Models\Media;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -15,6 +17,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -23,6 +26,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -73,13 +77,20 @@ class GalleryResource extends Resource
                                 ->maxLength(255),
                             Select::make('cover_image_id')
                                 ->label('Image de couverture')
+                                ->helperText('Cette image représente la galerie dans les listes publiques.')
                                 ->relationship(
                                     name: 'coverImage',
                                     titleAttribute: 'original_name',
                                     modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                                 )
+                                ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                ->allowHtml()
+                                ->live()
                                 ->searchable()
                                 ->preload(),
+                            Placeholder::make('cover_image_preview')
+                                ->label('Aperçu de la couverture')
+                                ->content(fn (Get $get) => MediaImagePreview::render($get->integer('cover_image_id'), 'Aucune couverture sélectionnée.')),
                             TextInput::make('position')
                                 ->label('Ordre d’affichage')
                                 ->numeric()
@@ -108,10 +119,16 @@ class GalleryResource extends Resource
                                         titleAttribute: 'original_name',
                                         modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                                     )
+                                    ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                    ->allowHtml()
+                                    ->live()
                                     ->searchable()
                                     ->preload()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                     ->required(),
+                                Placeholder::make('media_preview')
+                                    ->label('Aperçu de l’image')
+                                    ->content(fn (Get $get) => MediaImagePreview::render($get->integer('media_id'), 'Sélectionnez une image pour afficher son aperçu.')),
                                 TextInput::make('title')
                                     ->label('Titre')
                                     ->maxLength(255),

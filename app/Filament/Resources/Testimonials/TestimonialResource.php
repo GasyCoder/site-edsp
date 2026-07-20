@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Testimonials;
 
+use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Resources\Testimonials\Pages\ManageTestimonials;
+use App\Models\Media;
 use App\Models\Testimonial;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +19,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -59,13 +63,20 @@ class TestimonialResource extends Resource
                                 ->maxLength(255),
                             Select::make('photo_id')
                                 ->label('Photo')
+                                ->helperText('Vérifiez le portrait sélectionné dans l’aperçu avant l’enregistrement.')
                                 ->relationship(
                                     name: 'photo',
                                     titleAttribute: 'original_name',
                                     modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
                                 )
+                                ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                ->allowHtml()
+                                ->live()
                                 ->searchable()
                                 ->preload(),
+                            Placeholder::make('photo_preview')
+                                ->label('Aperçu du portrait')
+                                ->content(fn (Get $get) => MediaImagePreview::render($get->integer('photo_id'), 'Aucune photo sélectionnée.')),
                             Toggle::make('is_visible')
                                 ->label('Afficher sur le site')
                                 ->default(true),
