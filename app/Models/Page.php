@@ -7,6 +7,7 @@ use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -37,6 +38,11 @@ class Page extends Model
     public function sections(): HasMany
     {
         return $this->hasMany(PageSection::class)->orderBy('position');
+    }
+
+    public function mainSection(): HasOne
+    {
+        return $this->hasOne(PageSection::class)->where('section_key', 'main');
     }
 
     public function ogImage(): BelongsTo

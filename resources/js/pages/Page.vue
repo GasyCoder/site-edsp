@@ -6,7 +6,6 @@ import {
     ArrowRight,
     ChevronRight,
     Download,
-    Images,
     Mail,
     Send,
     UserPlus,
@@ -16,11 +15,13 @@ import PublicLayout from '../layouts/PublicLayout.vue';
 import SeoHead from '../components/public/SeoHead.vue';
 import RichText from '../components/public/RichText.vue';
 import EditableSection from '../components/public/EditableSection.vue';
+import DirectorMessageSection from '../components/public/DirectorMessageSection.vue';
 import EditModeToggle from '../components/public/EditModeToggle.vue';
 import MediaPlaceholder from '../components/public/MediaPlaceholder.vue';
+import GalleryCollection from '../components/public/GalleryCollection.vue';
 import SmartLink from '../components/public/SmartLink.vue';
 import TeamMemberCard from '../components/public/TeamMemberCard.vue';
-import type { AdmissionCampaign, MediaAsset, Page, Section, SeoData, TeamMember } from '../types';
+import type { AdmissionCampaign, MediaAsset, Page, PublicGallery, Section, SeoData, TeamMember } from '../types';
 import { mediaUrl, safePublicUrl } from '../lib/public-content';
 import { useI18n } from '../lib/i18n';
 
@@ -28,13 +29,6 @@ type CmsPage = Page & {
     canonical_url?: string | null;
     robots_follow?: boolean;
     robots_index?: boolean;
-};
-
-type Gallery = {
-    id: number;
-    title: string;
-    description?: string | null;
-    images?: Array<{ id: number; caption?: string | null; media?: MediaAsset | null }>;
 };
 
 type Partner = {
@@ -57,7 +51,7 @@ const props = withDefaults(defineProps<{
     campaign?: AdmissionCampaign | null;
     canEdit?: boolean;
     documents?: PublicDocument[];
-    galleries?: Gallery[];
+    galleries?: PublicGallery[];
     page: CmsPage;
     partners?: Partner[];
     seo?: SeoData;
@@ -91,6 +85,10 @@ const visibleSections = computed<Section[]>(() =>
         .filter((section) => section.is_visible || (props.canEdit && editing.value))
         .sort((left, right) => (left.position ?? 0) - (right.position ?? 0)),
 );
+const galleryHeroImages = computed(() => props.galleries
+    .flatMap((gallery) => gallery.images ?? [])
+    .filter((image) => mediaUrl(image.media))
+    .slice(0, 3));
 
 const sectionBackground = (section: Section): string => {
     const backgrounds: Record<string, string> = {
@@ -140,9 +138,13 @@ const submitContact = (): void => {
         :no-follow="seo.robots?.includes('nofollow') || page.robots_follow === false"
     />
 
-    <PublicLayout>
-        <header class="relative isolate overflow-hidden bg-soft">
+    <PublicLayout :editing="editing">
+        <header
+            class="relative isolate overflow-hidden"
+            :class="page.slug === 'galerie' ? 'bg-navy' : 'bg-soft'"
+        >
             <div
+                v-if="page.slug !== 'galerie'"
                 class="absolute inset-y-0 right-0 -z-10 hidden w-1/3 bg-navy lg:block"
                 aria-hidden="true"
             />
@@ -150,28 +152,69 @@ const submitContact = (): void => {
                 class="absolute -left-28 -top-36 -z-10 h-80 w-80 rounded-full bg-edsp-green/10 blur-3xl"
                 aria-hidden="true"
             />
+            <div
+                v-if="page.slug === 'galerie'"
+                class="absolute -right-28 -top-32 -z-10 size-96 rounded-full bg-institutional/30 blur-3xl"
+                aria-hidden="true"
+            />
 
             <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
                 <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
-                    <ol class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                    <ol class="flex flex-wrap items-center gap-2 text-sm" :class="page.slug === 'galerie' ? 'text-slate-300' : 'text-gray-500'">
                         <li>
-                            <Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link>
+                            <Link href="/" class="transition" :class="page.slug === 'galerie' ? 'hover:text-white' : 'hover:text-edsp-green'">{{ tr('Accueil', 'Home') }}</Link>
                         </li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
-                        <li class="font-semibold text-navy" aria-current="page">{{ page.title }}</li>
+                        <li class="font-semibold" :class="page.slug === 'galerie' ? 'text-white' : 'text-navy'" aria-current="page">{{ page.title }}</li>
                     </ol>
                 </nav>
 
-                <div class="max-w-3xl">
-                    <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
-                        {{ tr('École de Droit et Science Politique', 'School of Law and Political Science') }}
-                    </p>
-                    <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
-                        {{ page.title }}
-                    </h1>
-                    <p v-if="page.meta_description" class="mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-                        {{ page.meta_description }}
-                    </p>
+                <div :class="page.slug === 'galerie' ? 'grid items-center gap-10 lg:grid-cols-[0.82fr_1.18fr]' : 'max-w-3xl'">
+                    <div>
+                        <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
+                            {{ tr('École de Droit et Science Politique', 'School of Law and Political Science') }}
+                        </p>
+                        <h1 class="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl" :class="page.slug === 'galerie' ? 'text-white' : 'text-navy'">
+                            {{ page.title }}
+                        </h1>
+                        <p v-if="page.meta_description" class="mt-5 max-w-2xl text-base leading-7 sm:text-lg" :class="page.slug === 'galerie' ? 'text-slate-300' : 'text-gray-600'">
+                            {{ page.meta_description }}
+                        </p>
+                    </div>
+
+                    <div v-if="page.slug === 'galerie' && galleryHeroImages.length" class="grid h-64 grid-cols-5 grid-rows-2 gap-2 sm:h-72">
+                        <div
+                            class="row-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15"
+                            :class="galleryHeroImages.length === 1 ? 'col-span-5' : 'col-span-3'"
+                        >
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(galleryHeroImages[0]?.media)"
+                                :alt="galleryHeroImages[0]?.alt_text || galleryHeroImages[0]?.media?.alt_text || tr('Vie de l’EDSP', 'Life at EDSP')"
+                                :label="tr('Vie de l’EDSP', 'Life at EDSP')"
+                                eager
+                            />
+                        </div>
+                        <div
+                            v-if="galleryHeroImages[1]"
+                            class="col-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15"
+                            :class="galleryHeroImages.length === 2 && 'row-span-2'"
+                        >
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(galleryHeroImages[1]?.media)"
+                                :alt="galleryHeroImages[1]?.alt_text || galleryHeroImages[1]?.media?.alt_text || tr('Activités de l’EDSP', 'EDSP activities')"
+                                :label="tr('Activités de l’EDSP', 'EDSP activities')"
+                                eager
+                            />
+                        </div>
+                        <div v-if="galleryHeroImages[2]" class="col-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15">
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(galleryHeroImages[2]?.media)"
+                                :alt="galleryHeroImages[2]?.alt_text || galleryHeroImages[2]?.media?.alt_text || tr('Étudiants de l’EDSP', 'EDSP students')"
+                                :label="tr('Étudiants de l’EDSP', 'EDSP students')"
+                                eager
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -184,7 +227,12 @@ const submitContact = (): void => {
                     :section="section"
                     :editing="editing"
                 >
+                    <DirectorMessageSection
+                        v-if="page.slug === 'presentation' && section.section_type === 'director-message'"
+                        :section="section"
+                    />
                     <section
+                        v-else
                         :class="sectionBackground(section)"
                         class="relative border-b border-gray-200 px-6 py-14 sm:py-18"
                         :aria-labelledby="section.title ? `section-${section.id}` : undefined"
@@ -250,30 +298,7 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <section v-if="page.slug === 'galerie' && galleries.length" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="gallery-list-title">
-                <div class="mx-auto max-w-7xl">
-                    <div class="flex items-center gap-3">
-                        <Images :size="25" class="text-edsp-green" aria-hidden="true" />
-                        <h2 id="gallery-list-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Galeries publiées', 'Published galleries') }}</h2>
-                    </div>
-                    <article v-for="gallery in galleries" :key="gallery.id" class="mt-10">
-                        <h3 class="text-xl font-bold text-navy">{{ gallery.title }}</h3>
-                        <p v-if="gallery.description" class="mt-2 text-gray-600">{{ gallery.description }}</p>
-                        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            <figure v-for="image in gallery.images" :key="image.id" class="overflow-hidden rounded-xl bg-white shadow-sm">
-                                <div class="h-64">
-                                    <MediaPlaceholder
-                                        :image-url="mediaUrl(image.media)"
-                                        :alt="image.media?.alt_text || image.caption || gallery.title"
-                                        :label="image.caption || gallery.title"
-                                    />
-                                </div>
-                                <figcaption v-if="image.caption" class="px-4 py-3 text-sm text-gray-600">{{ image.caption }}</figcaption>
-                            </figure>
-                        </div>
-                    </article>
-                </div>
-            </section>
+            <GalleryCollection v-if="page.slug === 'galerie'" :galleries="galleries" />
 
             <section v-if="page.slug === 'partenaires' && partners.length" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="partners-list-title">
                 <div class="mx-auto max-w-7xl">

@@ -34,6 +34,7 @@ const props = withDefaults(
     defineProps<{
         campaign?: AdmissionCampaign | null;
         canEdit?: boolean;
+        directorMessage?: Section | null;
         news?: Article[];
         page?: Page | null;
         partners?: Partner[];
@@ -46,6 +47,7 @@ const props = withDefaults(
     {
         campaign: null,
         canEdit: false,
+        directorMessage: null,
         news: () => [],
         page: null,
         partners: () => [],
@@ -107,11 +109,19 @@ watch(
         :no-follow="seo.robots?.includes('nofollow') || page?.robots_follow === false"
     />
 
-    <PublicLayout :settings="settings">
+    <PublicLayout :settings="settings" :editing="editing">
         <template v-for="section in sections" :key="section.id">
-            <EditableSection :section="section" :editing="editing">
+            <EditableSection
+                :section="section"
+                :editing="editing"
+                :related-section="sectionKind(section) === 'presentation' ? directorMessage : null"
+            >
                 <HeroSection v-if="sectionKind(section) === 'hero'" :section="section" />
-                <PresentationSection v-else-if="sectionKind(section) === 'presentation' || sectionKind(section) === 'content'" :section="section" />
+                <PresentationSection
+                    v-else-if="sectionKind(section) === 'presentation' || sectionKind(section) === 'content'"
+                    :section="section"
+                    :director="directorMessage"
+                />
                 <ProgramsSection v-else-if="sectionKind(section) === 'programs'" :section="section" :programs="programs" />
                 <StatsSection v-else-if="sectionKind(section) === 'stats'" :section="section" :programs="programs" />
                 <AdmissionsSection v-else-if="sectionKind(section) === 'admissions'" :section="section" :campaign="campaign" />

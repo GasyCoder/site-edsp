@@ -5,6 +5,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../types';
 import BackToTopButton from '../components/public/BackToTopButton.vue';
 import MainHeader from '../components/public/MainHeader.vue';
+import InstitutionalReferenceBar from '../components/public/InstitutionalReferenceBar.vue';
 import PageLoadingSkeleton from '../components/public/PageLoadingSkeleton.vue';
 import PublicFooter from '../components/public/PublicFooter.vue';
 import TopBar from '../components/public/TopBar.vue';
@@ -13,9 +14,11 @@ import { useI18n } from '../lib/i18n';
 
 const props = withDefaults(
     defineProps<{
+        editing?: boolean;
         settings?: SiteSettings;
     }>(),
     {
+        editing: false,
         settings: () => ({}),
     },
 );
@@ -27,6 +30,7 @@ const resolvedSettings = computed<SiteSettings>(() => ({
     ...props.settings,
 }));
 const successMessage = computed(() => shared.value.flash?.success || null);
+const canEditSettings = computed(() => shared.value.auth?.canEditSettings === true);
 const { tr } = useI18n();
 const toastVisible = ref(Boolean(successMessage.value));
 let dismissTimer: ReturnType<typeof setTimeout> | null = null;
@@ -120,6 +124,11 @@ onBeforeUnmount(() => {
             </Transition>
         </main>
 
+        <InstitutionalReferenceBar
+            :settings="resolvedSettings"
+            :editing="editing"
+            :can-edit="canEditSettings"
+        />
         <PublicFooter :settings="resolvedSettings" />
         <BackToTopButton />
     </div>

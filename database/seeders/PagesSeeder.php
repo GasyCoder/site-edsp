@@ -9,11 +9,14 @@ class PagesSeeder extends Seeder
 {
     public function run(): void
     {
+        $directorMessage = '<p>Chères étudiantes, chers étudiants,</p><p>C’est avec un réel plaisir que je vous souhaite la bienvenue à l’École de Droit et Science Politique. Notre établissement place l’exigence académique, l’esprit critique et le sens des responsabilités au cœur de chaque formation.</p><p>Notre ambition est de former des juristes et des spécialistes de la science politique capables de comprendre les transformations de notre société, d’éclairer la décision publique et de contribuer avec intégrité au développement de Madagascar.</p><p>À l’EDSP, vous trouverez une équipe pédagogique engagée, des parcours structurés de la Licence au Master et un environnement favorable à la réussite, à l’ouverture professionnelle et à l’engagement citoyen.</p><p>Je vous invite à construire pleinement votre projet universitaire au sein de notre école.</p>';
+        $directorMessageEn = '<p>Dear students,</p><p>It is a genuine pleasure to welcome you to the School of Law and Political Science. Our School places academic excellence, critical thinking and a sense of responsibility at the heart of every programme.</p><p>Our ambition is to educate legal professionals and political science specialists who can understand the transformations affecting our society, inform public decision-making and contribute with integrity to Madagascar’s development.</p><p>At EDSP, you will find a committed teaching team, structured Bachelor’s and Master’s pathways, and an environment that supports achievement, professional development and civic engagement.</p><p>I invite you to build your academic future fully within our School.</p>';
+
         $home = $this->page('accueil', 'Accueil', 'home', 'École de Droit et Science Politique — Université de Mahajanga');
 
         $sections = [
             ['hero', 'hero', 'Comprendre le droit. Agir sur la société.', null, 'L’EDSP vous forme à l’analyse juridique, aux institutions et aux politiques publiques, de la Licence au Master, au cœur de Mahajanga.', 'Découvrir les parcours', '/formations'],
-            ['presentation', 'presentation', 'Bienvenue à l’EDSP', 'L’établissement', 'L’EDSP forme des étudiants capables de comprendre, d’analyser et d’accompagner les transformations juridiques, administratives, sociales et politiques de Madagascar.', 'En savoir plus', '/presentation'],
+            ['presentation', 'presentation', null, null, null, 'Lire le mot du directeur', '/presentation'],
             ['programs', 'programs', 'Nos parcours de formation', 'Formations', 'Deux parcours complémentaires pour comprendre le droit et l’action publique.', 'Voir toutes les formations', '/formations'],
             ['stats', 'stats', null, null, null, null, null],
             ['admissions', 'admissions', 'Admissions et inscriptions', 'Rejoindre l’EDSP', 'Consultez les conditions, préparez vos pièces et déposez votre dossier pendant une campagne ouverte.', 'Commencer l’inscription', '/inscription'],
@@ -27,6 +30,15 @@ class PagesSeeder extends Seeder
         ];
 
         foreach ($sections as $position => [$key, $type, $title, $subtitle, $content, $button, $url]) {
+            $settings = ['background' => in_array($key, ['programs', 'news', 'team'], true) ? 'light' : (in_array($key, ['stats', 'cta'], true) ? 'blue' : 'white'), 'alignment' => in_array($key, ['programs', 'stats', 'admissions', 'team', 'testimonials', 'partners', 'cta'], true) ? 'center' : 'left', 'container' => 'wide'];
+            if ($key === 'hero') {
+                $settings = [...$settings,
+                    'title_highlight_1' => 'droit', 'title_highlight_1_color' => 'green',
+                    'title_highlight_2' => 'science politique', 'title_highlight_2_color' => 'institutional',
+                    'title_font_size' => 48,
+                    'kicker_text' => 'Deux mentions :', 'rotating_item_1' => 'Droit', 'rotating_item_2' => 'Sciences Politiques',
+                ];
+            }
             $home->sections()->updateOrCreate(['section_key' => $key], [
                 'section_type' => $type,
                 'title' => $title,
@@ -34,15 +46,15 @@ class PagesSeeder extends Seeder
                 'content' => $content,
                 'button_text' => $button,
                 'button_url' => $url,
-                'settings' => ['background' => in_array($key, ['programs', 'news', 'team'], true) ? 'light' : (in_array($key, ['stats', 'cta'], true) ? 'blue' : 'white'), 'alignment' => in_array($key, ['programs', 'stats', 'admissions', 'team', 'testimonials', 'partners', 'cta'], true) ? 'center' : 'left', 'container' => 'wide'],
+                'settings' => $settings,
                 'position' => $position + 1,
                 'is_visible' => true,
             ]);
         }
 
         $sectionTranslations = [
-            'hero' => ['title' => 'Understand the law. Shape society.', 'content' => 'EDSP equips you to analyse law, institutions and public policy, from Bachelor’s to Master’s level, in the heart of Mahajanga.', 'button_text' => 'Explore our programmes'],
-            'presentation' => ['title' => 'Welcome to EDSP', 'subtitle' => 'The School', 'content' => 'EDSP educates students to understand, analyse and support Madagascar’s legal, administrative, social and political transformations.', 'button_text' => 'Learn more'],
+            'hero' => ['title' => 'Understand the law. Shape society.', 'content' => 'EDSP equips you to analyse law, institutions and public policy, from Bachelor’s to Master’s level, in the heart of Mahajanga.', 'button_text' => 'Explore our programmes', 'settings' => ['title_highlight_1' => 'law', 'title_highlight_2' => 'political science', 'kicker_text' => 'Two subject areas:', 'rotating_item_1' => 'Law', 'rotating_item_2' => 'Political Science']],
+            'presentation' => ['button_text' => "Read the Director's message"],
             'programs' => ['title' => 'Our degree programmes', 'subtitle' => 'Programmes', 'content' => 'Two complementary pathways for understanding law and public affairs.', 'button_text' => 'View all programmes'],
             'admissions' => ['title' => 'Admissions and applications', 'subtitle' => 'Join EDSP', 'content' => 'Review the requirements, prepare your documents and submit your application during an open admission round.', 'button_text' => 'Start your application'],
             'news' => ['title' => 'News and announcements', 'subtitle' => 'Latest news', 'content' => 'Keep up with academic information and events at the School.', 'button_text' => 'All news'],
@@ -58,7 +70,7 @@ class PagesSeeder extends Seeder
         }
 
         $pages = [
-            ['presentation', 'Présentation de l’EDSP', 'L’EDSP accompagne la formation de juristes et de spécialistes de la science politique au sein de l’Université de Mahajanga.'],
+            ['presentation', 'Le mot du directeur', 'Découvrez la vision et le message du directeur de l’École de Droit et Science Politique aux étudiants et futurs candidats.'],
             ['historique', 'Historique', 'Les repères historiques officiels de l’établissement peuvent être renseignés et mis à jour depuis le CMS.'],
             ['missions-et-valeurs', 'Missions et valeurs', 'Exigence académique, esprit critique, service de l’intérêt général et ouverture sur la société structurent le projet de l’EDSP.'],
             ['equipe', 'Direction et équipe', 'Découvrez la direction, les responsables et l’équipe pédagogique de l’EDSP.'],
@@ -73,16 +85,22 @@ class PagesSeeder extends Seeder
         ];
 
         foreach ($pages as [$slug, $title, $content]) {
-            $page = $this->page($slug, $title);
+            $page = $this->page($slug, $title, 'default', $content);
+            $isDirectorMessage = $slug === 'presentation';
             $page->sections()->updateOrCreate(['section_key' => 'main'], [
-                'section_type' => 'rich-content', 'title' => $title, 'content' => $content,
-                'settings' => ['background' => 'white', 'alignment' => 'left', 'container' => 'narrow'],
+                'section_type' => $isDirectorMessage ? 'director-message' : 'rich-content',
+                'title' => $isDirectorMessage ? 'Pr. Liva Jackson Raharinaivo' : $title,
+                'subtitle' => $isDirectorMessage ? 'Mot du directeur' : null,
+                'content' => $isDirectorMessage ? $directorMessage : $content,
+                'settings' => $isDirectorMessage
+                    ? ['background' => 'white', 'alignment' => 'left', 'container' => 'wide', 'director_position' => 'Directeur de l’EDSP', 'director_signature' => 'Avec tous mes encouragements,', 'alt_text' => 'Portrait du directeur de l’EDSP', 'image_zoom' => 100, 'image_position_x' => 50, 'image_position_y' => 50]
+                    : ['background' => 'white', 'alignment' => 'left', 'container' => 'narrow'],
                 'position' => 1, 'is_visible' => true,
             ]);
         }
 
         $pageTranslations = [
-            'presentation' => ['About EDSP', 'EDSP provides education for legal professionals and political science specialists within the University of Mahajanga.'],
+            'presentation' => ["Director's message", "Discover the Director of the School of Law and Political Science's vision and message to students and prospective applicants."],
             'historique' => ['History', 'The School’s official historical milestones can be managed and updated through the CMS.'],
             'missions-et-valeurs' => ['Mission and values', 'Academic excellence, critical thinking, public service and openness to society shape EDSP’s educational vision.'],
             'equipe' => ['Leadership and team', 'Meet EDSP’s leadership, programme coordinators and teaching staff.'],
@@ -98,7 +116,10 @@ class PagesSeeder extends Seeder
         foreach ($pageTranslations as $slug => [$title, $content]) {
             $page = Page::query()->where('slug', $slug)->first();
             $page?->update(['translations' => ['en' => ['title' => $title, 'meta_title' => $title.' — EDSP', 'meta_description' => $content]]]);
-            $page?->sections()->where('section_key', 'main')->update(['translations' => json_encode(['en' => ['title' => $title, 'content' => $content]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+            $translation = $slug === 'presentation'
+                ? ['en' => ['title' => 'Pr. Liva Jackson Raharinaivo', 'subtitle' => "Director's message", 'content' => $directorMessageEn, 'settings' => ['director_position' => 'Director of EDSP', 'director_signature' => 'With my very best wishes,', 'alt_text' => 'Portrait of the Director of EDSP']]]
+                : ['en' => ['title' => $title, 'content' => $content]];
+            $page?->sections()->where('section_key', 'main')->update(['translations' => json_encode($translation, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
         }
     }
 

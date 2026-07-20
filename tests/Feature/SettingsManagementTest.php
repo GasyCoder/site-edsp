@@ -27,6 +27,8 @@ test('the settings page uses a clear grouped form', function (): void {
         ->assertOk()
         ->assertSee('Paramètres du site')
         ->assertSee('Identité')
+        ->assertSee('Référence officielle')
+        ->assertSee('Modifier la référence officielle')
         ->assertSee('Coordonnées')
         ->assertSee('Réseaux sociaux')
         ->assertSee('SEO et partage')

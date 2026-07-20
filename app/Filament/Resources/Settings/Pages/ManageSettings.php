@@ -126,6 +126,40 @@ class ManageSettings extends Page
                                     maxSize: 1024,
                                 ),
                             ]),
+                        Tab::make('Référence officielle')
+                            ->icon(Heroicon::OutlinedDocumentCheck)
+                            ->schema([
+                                Section::make('Habilitation de l’établissement')
+                                    ->description('Modifiez ici l’arrêté ministériel affiché dans le bandeau institutionnel du site public.')
+                                    ->icon(Heroicon::OutlinedBuildingLibrary)
+                                    ->schema([
+                                        TextInput::make('ministerial_reference_label')
+                                            ->label('Libellé affiché au public')
+                                            ->placeholder('Référence ministérielle')
+                                            ->helperText('Exemple : Référence ministérielle')
+                                            ->required()
+                                            ->maxLength(180),
+                                        Textarea::make('ministerial_reference')
+                                            ->label('Référence de l’arrêté ministériel')
+                                            ->placeholder('Arrêté n°8008/2014-MESupRES du 29 janvier 2014')
+                                            ->helperText('Cette référence concerne l’établissement. Elle reste indépendante du mot du directeur.')
+                                            ->rows(3)
+                                            ->required()
+                                            ->maxLength(500),
+                                    ]),
+                                Section::make('Version anglaise')
+                                    ->description('Texte affiché lorsque la langue du site est English.')
+                                    ->icon(Heroicon::OutlinedLanguage)
+                                    ->schema([
+                                        TextInput::make('ministerial_reference_label_en')
+                                            ->label('Official reference label')
+                                            ->maxLength(180),
+                                        Textarea::make('ministerial_reference_en')
+                                            ->label('Ministerial order reference')
+                                            ->rows(3)
+                                            ->maxLength(500),
+                                    ]),
+                            ]),
                         Tab::make('Coordonnées')
                             ->icon(Heroicon::OutlinedMapPin)
                             ->schema([
@@ -307,6 +341,11 @@ class ManageSettings extends Page
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('official_reference')
+                ->label('Modifier la référence officielle')
+                ->icon(Heroicon::OutlinedDocumentCheck)
+                ->color('primary')
+                ->url(SettingResource::getUrl('index', ['section' => 'reference-officielle'])),
             Action::make('media')
                 ->label('Ouvrir la médiathèque')
                 ->icon(Heroicon::OutlinedPhoto)
@@ -339,6 +378,10 @@ class ManageSettings extends Page
                 'institution_name_en' => $data['institution_name_en'] ?? null,
                 'site_description_en' => $data['site_description_en'] ?? null,
                 'footer_text_en' => $data['footer_text_en'] ?? null,
+                'ministerial_reference_label' => $data['ministerial_reference_label'] ?? null,
+                'ministerial_reference' => $data['ministerial_reference'] ?? null,
+                'ministerial_reference_label_en' => $data['ministerial_reference_label_en'] ?? null,
+                'ministerial_reference_en' => $data['ministerial_reference_en'] ?? null,
                 'academic_year' => $data['academic_year'] ?? null,
                 'contact_email' => $data['contact_email'] ?? null,
                 'email' => $data['contact_email'] ?? null,
@@ -400,6 +443,10 @@ class ManageSettings extends Page
             'institution_name_en' => $settings->get('institution_name_en'),
             'site_description_en' => $settings->get('site_description_en'),
             'footer_text_en' => $settings->get('footer_text_en'),
+            'ministerial_reference_label' => $settings->get('ministerial_reference_label'),
+            'ministerial_reference' => $settings->get('ministerial_reference'),
+            'ministerial_reference_label_en' => $settings->get('ministerial_reference_label_en'),
+            'ministerial_reference_en' => $settings->get('ministerial_reference_en'),
             'academic_year' => $settings->get('academic_year'),
             'contact_email' => $settings->get('contact_email') ?: $settings->get('email'),
             'contact_phone' => $settings->get('contact_phone') ?: $settings->get('phone'),
@@ -640,6 +687,10 @@ class ManageSettings extends Page
             'parent_institution' => ['string', 'general', true],
             'site_description' => ['text', 'general', true],
             'footer_text' => ['text', 'general', true],
+            'ministerial_reference_label' => ['string', 'legal', true],
+            'ministerial_reference' => ['string', 'legal', true],
+            'ministerial_reference_label_en' => ['string', 'legal', true],
+            'ministerial_reference_en' => ['string', 'legal', true],
             'logo_url' => ['string', 'general', true],
             'logo_dark_url' => ['string', 'general', true],
             'favicon_url' => ['string', 'general', true],
