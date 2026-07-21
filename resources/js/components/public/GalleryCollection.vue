@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight, Expand, Images, X } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight, Images, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { GalleryImage, PublicGallery } from '../../types';
 import { mediaUrl } from '../../lib/public-content';
@@ -12,49 +12,75 @@ const props = withDefaults(defineProps<{
     galleries: () => [],
 });
 
-type GalleryFilter = 'all' | number;
-type LightboxItem = {
+type WallItem = {
     gallery: PublicGallery;
     image: GalleryImage;
 };
 
+type AlbumGroup = {
+    key: string;
+    title: string;
+    description: string | null;
+    items: WallItem[];
+};
+
 const { tr } = useI18n();
-const activeGallery = ref<GalleryFilter>('all');
+const activeGroupKey = ref<'all' | string>('all');
+const lightboxItems = ref<WallItem[]>([]);
 const activeImageIndex = ref<number | null>(null);
 const closeButton = ref<HTMLButtonElement | null>(null);
 let previousOverflow = '';
 
 const publishedGalleries = computed(() => props.galleries.filter((gallery) => (gallery.images?.length ?? 0) > 0));
 const totalImages = computed(() => publishedGalleries.value.reduce((total, gallery) => total + (gallery.images?.length ?? 0), 0));
-const visibleGalleries = computed(() => activeGallery.value === 'all'
-    ? publishedGalleries.value
-    : publishedGalleries.value.filter((gallery) => gallery.id === activeGallery.value));
-const lightboxItems = computed<LightboxItem[]>(() => visibleGalleries.value.flatMap((gallery) =>
-    (gallery.images ?? []).map((image) => ({ gallery, image })),
-));
+
+const albumGroups = computed<AlbumGroup[]>(() => {
+    const groups = new Map<string, AlbumGroup>();
+
+    for (const gallery of publishedGalleries.value) {
+        const title = gallery.title.trim();
+        const key = title.toLocaleLowerCase();
+        const items = (gallery.images ?? []).map((image) => ({ gallery, image }));
+        const existing = groups.get(key);
+
+        if (existing) {
+            existing.items.push(...items);
+            existing.description ||= gallery.description ?? null;
+        } else {
+            groups.set(key, { key, title, description: gallery.description ?? null, items });
+        }
+    }
+
+    return [...groups.values()];
+});
+
+const visibleGroups = computed(() => activeGroupKey.value === 'all'
+    ? albumGroups.value
+    : albumGroups.value.filter((group) => group.key === activeGroupKey.value));
+const activeGroupData = computed(() => activeGroupKey.value === 'all'
+    ? null
+    : albumGroups.value.find((group) => group.key === activeGroupKey.value) ?? null);
 const activeItem = computed(() => activeImageIndex.value === null ? null : lightboxItems.value[activeImageIndex.value] ?? null);
 const lightboxOpen = computed(() => activeImageIndex.value !== null);
 
-function imageLabel(gallery: PublicGallery, image: GalleryImage): string {
-    return image.title || image.caption || image.alt_text || image.media?.alt_text || gallery.title;
+function imageLabel(item: WallItem): string {
+    return item.image.title || item.image.caption || item.image.alt_text || item.image.media?.alt_text || item.gallery.title;
 }
 
-function tileClass(index: number): string {
-    if (index % 7 === 0) return 'sm:col-span-2 sm:row-span-2';
-    if (index % 7 === 4) return 'lg:col-span-2';
-
-    return '';
+function groupCover(group: AlbumGroup): WallItem | null {
+    return group.items.find((item) => mediaUrl(item.image.media)) ?? group.items[0] ?? null;
 }
 
-function selectGallery(gallery: GalleryFilter): void {
-    activeGallery.value = gallery;
+function selectGroup(key: 'all' | string): void {
+    activeGroupKey.value = key;
     activeImageIndex.value = null;
 }
 
-function openImage(gallery: PublicGallery, image: GalleryImage): void {
-    const index = lightboxItems.value.findIndex((item) => item.gallery.id === gallery.id && item.image.id === image.id);
+function openGroup(group: AlbumGroup): void {
+    if (!group.items.length) return;
 
-    if (index >= 0) activeImageIndex.value = index;
+    lightboxItems.value = group.items;
+    activeImageIndex.value = 0;
 }
 
 function closeLightbox(): void {
@@ -99,108 +125,97 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <section class="border-t border-slate-200 bg-white px-4 py-14 dark:border-slate-800 dark:bg-slate-950 sm:px-6 sm:py-20" aria-labelledby="gallery-list-title">
-        <div class="mx-auto max-w-7xl">
-            <div class="grid items-end gap-7 border-b border-slate-200 pb-8 dark:border-slate-800 lg:grid-cols-[minmax(0,1fr)_auto]">
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
-                        {{ tr('La vie de l’école en images', 'Life at the School in pictures') }}
-                    </p>
-                    <h2 id="gallery-list-title" class="mt-2 max-w-3xl text-balance text-2xl font-bold leading-tight text-navy dark:text-white sm:text-3xl">
-                        {{ tr('Découvrez les temps forts de l’EDSP', 'Discover the highlights of EDSP') }}
-                    </h2>
-                    <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">
-                        {{ tr('Conférences, activités académiques et moments de la vie étudiante réunis dans nos albums.', 'Conferences, academic activities and student life brought together in our albums.') }}
-                    </p>
-                </div>
+    <section class="border-t border-slate-200 bg-white pb-16 dark:border-slate-800 dark:bg-slate-950 sm:pb-20" aria-labelledby="gallery-list-title">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6">
+            <h2 id="gallery-list-title" class="sr-only">
+                {{ tr('La vie de l’école en images', 'Life at the School in pictures') }}
+            </h2>
 
-                <div class="flex w-fit items-center gap-5 rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
-                    <Images :size="24" class="text-edsp-green" aria-hidden="true" />
-                    <div>
-                        <p class="font-heading text-xl font-bold leading-none text-navy dark:text-white">{{ totalImages }}</p>
-                        <p class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-                            {{ tr(totalImages > 1 ? 'photos publiées' : 'photo publiée', totalImages > 1 ? 'published photos' : 'published photo') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <nav v-if="publishedGalleries.length > 1" :aria-label="tr('Filtrer les galeries', 'Filter galleries')" class="mt-7 overflow-x-auto pb-2">
-                <div class="flex min-w-max gap-2">
-                    <button
-                        type="button"
-                        class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                        :class="activeGallery === 'all'
-                            ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
-                            : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
-                        :aria-pressed="activeGallery === 'all'"
-                        @click="selectGallery('all')"
-                    >
-                        {{ tr('Toutes les galeries', 'All galleries') }}
-                    </button>
-                    <button
-                        v-for="gallery in publishedGalleries"
-                        :key="gallery.id"
-                        type="button"
-                        class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                        :class="activeGallery === gallery.id
-                            ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
-                            : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
-                        :aria-pressed="activeGallery === gallery.id"
-                        @click="selectGallery(gallery.id)"
-                    >
-                        {{ gallery.title }}
-                        <span class="ml-1 opacity-70">{{ gallery.images?.length ?? 0 }}</span>
-                    </button>
+            <nav
+                v-if="totalImages"
+                :aria-label="tr('Filtrer les albums', 'Filter albums')"
+                class="sticky top-[76px] z-20 -mx-4 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 sm:top-[84px] sm:-mx-6 sm:px-6"
+            >
+                <div class="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto">
+                    <template v-if="albumGroups.length > 1">
+                        <button
+                            type="button"
+                            class="flex-none rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            :class="activeGroupKey === 'all'
+                                ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
+                                : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
+                            :aria-pressed="activeGroupKey === 'all'"
+                            @click="selectGroup('all')"
+                        >
+                            {{ tr('Tout voir', 'View all') }}
+                            <span class="ml-1 opacity-70">{{ totalImages }}</span>
+                        </button>
+                        <button
+                            v-for="group in albumGroups"
+                            :key="group.key"
+                            type="button"
+                            class="flex-none rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            :class="activeGroupKey === group.key
+                                ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
+                                : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
+                            :aria-pressed="activeGroupKey === group.key"
+                            @click="selectGroup(group.key)"
+                        >
+                            {{ group.title }}
+                            <span class="ml-1 opacity-70">{{ group.items.length }}</span>
+                        </button>
+                    </template>
+                    <p class="ml-auto inline-flex flex-none items-center gap-2 pl-2 text-sm font-semibold text-navy dark:text-white">
+                        <Images :size="17" class="text-edsp-green" aria-hidden="true" />
+                        {{ totalImages }} {{ tr(totalImages > 1 ? 'photos' : 'photo', totalImages > 1 ? 'photos' : 'photo') }}
+                    </p>
                 </div>
             </nav>
 
-            <div v-if="visibleGalleries.length" class="divide-y divide-slate-200 dark:divide-slate-800">
-                <article v-for="gallery in visibleGalleries" :key="gallery.id" class="py-10 first:pt-9 sm:py-14">
-                    <header class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div class="max-w-3xl">
-                            <h3 class="text-xl font-bold text-navy dark:text-white sm:text-2xl">{{ gallery.title }}</h3>
-                            <p v-if="gallery.description" class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
-                                {{ gallery.description }}
-                            </p>
-                        </div>
-                        <p class="flex-none text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                            {{ gallery.images?.length ?? 0 }} {{ tr((gallery.images?.length ?? 0) > 1 ? 'photos' : 'photo', (gallery.images?.length ?? 0) > 1 ? 'photos' : 'photo') }}
-                        </p>
-                    </header>
+            <div
+                v-if="activeGroupData?.description"
+                class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900"
+            >
+                <h3 class="text-lg font-bold text-navy dark:text-white sm:text-xl">{{ activeGroupData.title }}</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
+                    {{ activeGroupData.description }}
+                </p>
+            </div>
 
-                    <div class="grid auto-rows-[15rem] grid-cols-1 gap-3 sm:grid-cols-2 sm:auto-rows-[12rem] lg:grid-cols-4">
-                        <figure
-                            v-for="(image, index) in gallery.images"
-                            :key="image.id"
-                            class="group relative min-h-60 overflow-hidden rounded-xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10 sm:min-h-0"
-                            :class="tileClass(index)"
+            <div v-if="visibleGroups.length" class="mt-7 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+                <article v-for="group in visibleGroups" :key="group.key" class="group">
+                    <button
+                        type="button"
+                        class="relative block h-64 w-full overflow-hidden rounded-2xl bg-slate-100 text-left shadow-sm ring-1 ring-slate-900/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 dark:bg-slate-900 dark:ring-white/10 sm:h-72"
+                        :aria-label="tr(
+                            `Ouvrir l’album ${group.title} (${group.items.length} photos)`,
+                            `Open the ${group.title} album (${group.items.length} photos)`,
+                        )"
+                        @click="openGroup(group)"
+                    >
+                        <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.03]">
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(groupCover(group)?.image.media)"
+                                :alt="groupCover(group) ? imageLabel(groupCover(group)!) : group.title"
+                                :label="group.title"
+                            />
+                        </span>
+                        <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/15 to-transparent" aria-hidden="true" />
+                        <span
+                            v-if="group.items.length > 1"
+                            class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-navy shadow-md"
                         >
-                            <button
-                                type="button"
-                                class="relative h-full w-full overflow-hidden text-left focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50"
-                                :aria-label="tr(`Agrandir : ${imageLabel(gallery, image)}`, `Enlarge: ${imageLabel(gallery, image)}`)"
-                                @click="openImage(gallery, image)"
-                            >
-                                <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.035]">
-                                    <MediaPlaceholder
-                                        :image-url="mediaUrl(image.media)"
-                                        :alt="image.alt_text || image.media?.alt_text || imageLabel(gallery, image)"
-                                        :label="imageLabel(gallery, image)"
-                                    />
-                                </span>
-                                <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/5 to-transparent opacity-80 transition group-hover:opacity-100" aria-hidden="true" />
-                                <span class="pointer-events-none absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-navy opacity-0 shadow-md transition group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden="true">
-                                    <Expand :size="17" />
-                                </span>
-                                <span v-if="image.title || image.caption" class="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-white">
-                                    <span v-if="image.title" class="block font-heading text-sm font-bold">{{ image.title }}</span>
-                                    <span v-if="image.caption" class="mt-1 block line-clamp-2 text-xs leading-5 text-white/80">{{ image.caption }}</span>
-                                </span>
-                            </button>
-                            <figcaption class="sr-only">{{ imageLabel(gallery, image) }}</figcaption>
-                        </figure>
-                    </div>
+                            <Images :size="14" class="text-edsp-green" aria-hidden="true" />
+                            +{{ group.items.length }} photos
+                        </span>
+                        <span class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-white">
+                            <span class="block truncate font-heading text-base font-bold">{{ group.title }}</span>
+                            <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-white/75">
+                                {{ group.items.length }} {{ tr(group.items.length > 1 ? 'photos' : 'photo', group.items.length > 1 ? 'photos' : 'photo') }}
+                                · {{ tr('Cliquer pour ouvrir', 'Click to open') }}
+                            </span>
+                        </span>
+                    </button>
                 </article>
             </div>
 
@@ -251,8 +266,8 @@ onBeforeUnmount(() => {
                         <div class="h-[70vh] min-h-0 w-full flex-1 overflow-hidden rounded-xl bg-black/20 sm:h-[76vh]">
                             <MediaPlaceholder
                                 :image-url="mediaUrl(activeItem.image.media)"
-                                :alt="activeItem.image.alt_text || activeItem.image.media?.alt_text || imageLabel(activeItem.gallery, activeItem.image)"
-                                :label="imageLabel(activeItem.gallery, activeItem.image)"
+                                :alt="imageLabel(activeItem)"
+                                :label="imageLabel(activeItem)"
                                 fit="contain"
                                 eager
                                 class="rounded-xl shadow-2xl"
