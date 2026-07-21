@@ -71,6 +71,9 @@ class PublicSiteController extends Controller
             $props['documents'] = Document::published()->where('is_public', true)->orderBy('position')->get();
         } elseif ($slug === 'admissions') {
             $props['campaign'] = $this->campaignForFrontend();
+        } elseif ($slug === 'vie-etudiante') {
+            $props['news'] = News::published()->with(['category', 'featuredImage'])->latest('published_at')->limit(3)->get();
+            $props['galleries'] = Gallery::published()->with(['coverImage', 'images' => fn ($query) => $query->where('is_visible', true)->with('media')->orderBy('position')])->orderBy('position')->get();
         }
 
         return Inertia::render('Page', $props);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { Mail, Phone } from 'lucide-vue-next';
 import type { TeamMember } from '../../types';
 import { mediaThumbnailUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
@@ -30,5 +31,23 @@ const image = computed(() => mediaThumbnailUrl(props.member.photo) || props.memb
         <p v-if="member.biography" class="mt-3 line-clamp-4 text-sm leading-6 text-slate-600">
             {{ member.biography }}
         </p>
+        <div v-if="member.email || member.phone" class="mt-4 flex justify-center gap-2">
+            <a
+                v-if="member.email"
+                :href="`mailto:${member.email}`"
+                class="grid size-9 place-items-center rounded-full bg-soft text-navy transition hover:bg-edsp-green hover:text-white"
+                :aria-label="tr(`Écrire à ${fullName}`, `Email ${fullName}`)"
+            >
+                <Mail :size="16" aria-hidden="true" />
+            </a>
+            <a
+                v-if="member.phone"
+                :href="`tel:${member.phone.replace(/\s+/g, '')}`"
+                class="grid size-9 place-items-center rounded-full bg-soft text-navy transition hover:bg-edsp-green hover:text-white"
+                :aria-label="tr(`Appeler ${fullName}`, `Call ${fullName}`)"
+            >
+                <Phone :size="16" aria-hidden="true" />
+            </a>
+        </div>
     </article>
 </template>

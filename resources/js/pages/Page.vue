@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import {
     AlertCircle,
     ArrowRight,
+    CalendarDays,
+    CheckCircle2,
+    ChevronLeft,
     ChevronRight,
+    Clock,
     Download,
+    GraduationCap,
+    Globe,
+    HeartHandshake,
+    Lightbulb,
     Mail,
+    MapPin,
+    Phone,
+    PlayCircle,
     Send,
     UserPlus,
-    Users,
 } from 'lucide-vue-next';
 import PublicLayout from '../layouts/PublicLayout.vue';
 import SeoHead from '../components/public/SeoHead.vue';
@@ -20,9 +30,10 @@ import EditModeToggle from '../components/public/EditModeToggle.vue';
 import MediaPlaceholder from '../components/public/MediaPlaceholder.vue';
 import GalleryCollection from '../components/public/GalleryCollection.vue';
 import SmartLink from '../components/public/SmartLink.vue';
+import NewsCard from '../components/public/NewsCard.vue';
 import TeamMemberCard from '../components/public/TeamMemberCard.vue';
-import type { AdmissionCampaign, MediaAsset, Page, PublicGallery, Section, SeoData, TeamMember } from '../types';
-import { mediaUrl, safePublicUrl } from '../lib/public-content';
+import type { AdmissionCampaign, Article, MediaAsset, Page, PublicGallery, Section, SeoData, SiteSettings, TeamMember } from '../types';
+import { formatPublicDate, mediaThumbnailUrl, mediaUrl, safePublicUrl, setting } from '../lib/public-content';
 import { useI18n } from '../lib/i18n';
 
 type CmsPage = Page & {
@@ -52,6 +63,7 @@ const props = withDefaults(defineProps<{
     canEdit?: boolean;
     documents?: PublicDocument[];
     galleries?: PublicGallery[];
+    news?: Article[];
     page: CmsPage;
     partners?: Partner[];
     seo?: SeoData;
@@ -61,12 +73,13 @@ const props = withDefaults(defineProps<{
     canEdit: false,
     documents: () => [],
     galleries: () => [],
+    news: () => [],
     partners: () => [],
     seo: () => ({}),
     teamMembers: () => [],
 });
 const editing = ref(false);
-const { tr } = useI18n();
+const { languageTag, tr } = useI18n();
 
 const contactForm = useForm({
     first_name: '',
@@ -83,13 +96,23 @@ const contactForm = useForm({
 const visibleSections = computed<Section[]>(() =>
     props.page.sections
         .filter((section) => section.is_visible || (props.canEdit && editing.value))
+        .filter((section) => section.title || section.subtitle || section.content || (props.canEdit && editing.value))
         .sort((left, right) => (left.position ?? 0) - (right.position ?? 0)),
 );
-const galleryHeroImages = computed(() => props.galleries
-    .flatMap((gallery) => gallery.images ?? [])
-    .filter((image) => mediaUrl(image.media))
-    .slice(0, 3));
 
+const heroImage = computed(() => {
+    for (const section of props.page.sections) {
+        if (!section.is_visible) continue;
+
+        const url = mediaUrl(section);
+
+        if (url && !section.title && !section.subtitle && !section.content) {
+            return { alt: section.image?.alt_text || props.page.title, url };
+        }
+    }
+
+    return null;
+});
 const sectionBackground = (section: Section): string => {
     const backgrounds: Record<string, string> = {
         blue: 'bg-navy text-white',
@@ -114,7 +137,70 @@ const sectionAlignment = (section: Section): string => section.settings?.alignme
     ? 'text-center'
     : 'text-left';
 
+const valueIcons = [GraduationCap, Lightbulb, HeartHandshake, Globe];
+
+const directionMembers = computed(() => props.teamMembers.filter((member) => /direction/i.test(member.position ?? '')));
+const otherMembers = computed(() => props.teamMembers.filter((member) => !directionMembers.value.includes(member)));
+
+const sectionsWrapperClass = computed(() => {
+    if (props.page.slug === 'historique') return 'mx-auto max-w-7xl px-6 py-14 sm:py-16';
+    if (props.page.slug === 'missions-et-valeurs') return 'mx-auto grid max-w-7xl gap-6 px-6 py-14 sm:grid-cols-2 sm:py-16';
+
+    return '';
+});
+
 const documentUrl = (document: PublicDocument): string | null => safePublicUrl(document.download_url);
+
+const studentLifePhotos = computed(() => props.galleries
+    .flatMap((gallery) => gallery.images ?? [])
+    .filter((image) => mediaUrl(image.media))
+    .slice(0, 10));
+
+const photoCarousel = ref<HTMLElement | null>(null);
+let carouselTimer: ReturnType<typeof setInterval> | null = null;
+
+const scrollPhotos = (direction: 1 | -1): void => {
+    const element = photoCarousel.value;
+
+    if (!element) return;
+
+    const nearEnd = element.scrollLeft + element.clientWidth >= element.scrollWidth - 16;
+
+    if (direction === 1 && nearEnd) {
+        element.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+    }
+
+    element.scrollBy({ left: direction * element.clientWidth * 0.75, behavior: 'smooth' });
+};
+
+const pausePhotoAutoplay = (): void => {
+    if (carouselTimer !== null) {
+        clearInterval(carouselTimer);
+        carouselTimer = null;
+    }
+};
+
+const startPhotoAutoplay = (): void => {
+    pausePhotoAutoplay();
+
+    if (props.page.slug === 'vie-etudiante' && studentLifePhotos.value.length > 1) {
+        carouselTimer = setInterval(() => scrollPhotos(1), 4500);
+    }
+};
+
+onMounted(startPhotoAutoplay);
+onBeforeUnmount(pausePhotoAutoplay);
+
+const siteSettings = computed(() => (usePage().props as { settings?: SiteSettings }).settings);
+const contactDetails = computed(() => ({
+    address: setting(siteSettings.value, 'address', 'Ambondrona, Mahajanga'),
+    email: setting(siteSettings.value, 'email', 'edsp.mahajanga@gmail.com'),
+    phones: [
+        setting(siteSettings.value, 'phone', '+261 32 05 579 90'),
+        siteSettings.value?.phone_secondary || '+261 32 98 091 18',
+    ].filter((phone, index, list) => phone && list.indexOf(phone) === index),
+}));
 
 const submitContact = (): void => {
     contactForm.post('/contact', {
@@ -169,7 +255,7 @@ const submitContact = (): void => {
                     </ol>
                 </nav>
 
-                <div :class="page.slug === 'galerie' ? 'grid items-center gap-10 lg:grid-cols-[0.82fr_1.18fr]' : 'max-w-3xl'">
+                <div :class="heroImage ? 'grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]' : 'max-w-3xl'">
                     <div>
                         <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
                             {{ tr('École de Droit et Science Politique', 'School of Law and Political Science') }}
@@ -182,47 +268,22 @@ const submitContact = (): void => {
                         </p>
                     </div>
 
-                    <div v-if="page.slug === 'galerie' && galleryHeroImages.length" class="grid h-64 grid-cols-5 grid-rows-2 gap-2 sm:h-72">
-                        <div
-                            class="row-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15"
-                            :class="galleryHeroImages.length === 1 ? 'col-span-5' : 'col-span-3'"
-                        >
-                            <MediaPlaceholder
-                                :image-url="mediaUrl(galleryHeroImages[0]?.media)"
-                                :alt="galleryHeroImages[0]?.alt_text || galleryHeroImages[0]?.media?.alt_text || tr('Vie de l’EDSP', 'Life at EDSP')"
-                                :label="tr('Vie de l’EDSP', 'Life at EDSP')"
-                                eager
-                            />
-                        </div>
-                        <div
-                            v-if="galleryHeroImages[1]"
-                            class="col-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15"
-                            :class="galleryHeroImages.length === 2 && 'row-span-2'"
-                        >
-                            <MediaPlaceholder
-                                :image-url="mediaUrl(galleryHeroImages[1]?.media)"
-                                :alt="galleryHeroImages[1]?.alt_text || galleryHeroImages[1]?.media?.alt_text || tr('Activités de l’EDSP', 'EDSP activities')"
-                                :label="tr('Activités de l’EDSP', 'EDSP activities')"
-                                eager
-                            />
-                        </div>
-                        <div v-if="galleryHeroImages[2]" class="col-span-2 overflow-hidden rounded-2xl ring-1 ring-white/15">
-                            <MediaPlaceholder
-                                :image-url="mediaUrl(galleryHeroImages[2]?.media)"
-                                :alt="galleryHeroImages[2]?.alt_text || galleryHeroImages[2]?.media?.alt_text || tr('Étudiants de l’EDSP', 'EDSP students')"
-                                :label="tr('Étudiants de l’EDSP', 'EDSP students')"
-                                eager
-                            />
-                        </div>
+                    <div v-if="heroImage" class="h-60 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/20 sm:h-72">
+                        <MediaPlaceholder
+                            :image-url="heroImage.url"
+                            :alt="heroImage.alt"
+                            :label="page.title"
+                            eager
+                        />
                     </div>
                 </div>
             </div>
         </header>
 
         <div class="bg-white">
-            <div v-if="visibleSections.length">
+            <div v-if="visibleSections.length" :class="sectionsWrapperClass">
                 <EditableSection
-                    v-for="section in visibleSections"
+                    v-for="(section, sectionIndex) in visibleSections"
                     :key="section.id"
                     :section="section"
                     :editing="editing"
@@ -231,6 +292,59 @@ const submitContact = (): void => {
                         v-if="page.slug === 'presentation' && section.section_type === 'director-message'"
                         :section="section"
                     />
+                    <article
+                        v-else-if="page.slug === 'missions-et-valeurs'"
+                        class="h-full rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition hover:shadow-md"
+                        :aria-labelledby="section.title ? `section-${section.id}` : undefined"
+                    >
+                        <span class="grid size-12 place-items-center rounded-xl bg-edsp-green/10 text-edsp-green" aria-hidden="true">
+                            <component :is="valueIcons[sectionIndex % valueIcons.length]" :size="24" />
+                        </span>
+                        <p v-if="section.subtitle" class="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-edsp-green">
+                            {{ section.subtitle }}
+                        </p>
+                        <h2
+                            v-if="section.title"
+                            :id="`section-${section.id}`"
+                            class="mt-5 text-xl font-bold leading-snug text-navy"
+                        >
+                            {{ section.title }}
+                        </h2>
+                        <RichText
+                            v-if="section.content"
+                            :html="section.content"
+                            class="mt-3 text-base leading-7 text-gray-600"
+                        />
+                    </article>
+                    <article
+                        v-else-if="page.slug === 'historique'"
+                        class="relative ml-3 border-l-2 border-edsp-green/25 pb-12 pl-8 last:pb-0 sm:pl-10"
+                        :aria-labelledby="section.title ? `section-${section.id}` : undefined"
+                    >
+                        <span class="absolute -left-[9px] top-1.5 size-4 rounded-full border-2 border-white bg-edsp-green shadow-md dark:border-slate-950" aria-hidden="true" />
+                        <p v-if="section.subtitle" class="text-sm font-bold uppercase tracking-[0.14em] text-edsp-green">
+                            {{ section.subtitle }}
+                        </p>
+                        <h2
+                            v-if="section.title"
+                            :id="`section-${section.id}`"
+                            class="mt-1.5 text-xl font-bold leading-snug text-navy sm:text-2xl"
+                        >
+                            {{ section.title }}
+                        </h2>
+                        <RichText
+                            v-if="section.content"
+                            :html="section.content"
+                            class="mt-3 text-base leading-7 text-gray-600"
+                        />
+                        <div v-if="mediaUrl(section)" class="mt-5 h-56 overflow-hidden rounded-xl shadow-md sm:h-64">
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(section)"
+                                :alt="section.image?.alt_text || section.title"
+                                :label="section.title || tr('Illustration de l’étape', 'Milestone illustration')"
+                            />
+                        </div>
+                    </article>
                     <section
                         v-else
                         :class="sectionBackground(section)"
@@ -286,14 +400,49 @@ const submitContact = (): void => {
                 </EditableSection>
             </div>
 
-            <section v-if="page.slug === 'equipe' && teamMembers.length" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="team-list-title">
+            <section v-if="page.slug === 'equipe' && teamMembers.length" class="bg-soft px-6 py-14 sm:py-16" aria-labelledby="team-list-title">
                 <div class="mx-auto max-w-7xl">
-                    <div class="flex items-center gap-3">
-                        <Users :size="25" class="text-edsp-green" aria-hidden="true" />
-                        <h2 id="team-list-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Membres de l’équipe', 'Team members') }}</h2>
+                    <h2 id="team-list-title" class="sr-only">{{ tr('Membres de l’équipe', 'Team members') }}</h2>
+
+                    <div v-if="directionMembers.length" class="grid gap-6">
+                        <article
+                            v-for="member in directionMembers"
+                            :key="member.id"
+                            class="flex flex-col items-center gap-7 rounded-2xl bg-white p-7 text-center shadow-sm sm:flex-row sm:p-9 sm:text-left"
+                        >
+                            <div class="size-36 flex-none overflow-hidden rounded-2xl ring-4 ring-soft sm:size-44">
+                                <MediaPlaceholder
+                                    :image-url="mediaThumbnailUrl(member.photo) || member.photo_url"
+                                    :alt="member.photo?.alt_text || `${member.first_name} ${member.last_name}`"
+                                    :label="tr(`Portrait de ${member.first_name} ${member.last_name}`, `Portrait of ${member.first_name} ${member.last_name}`)"
+                                />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">{{ member.position }}</p>
+                                <h3 class="mt-2 text-2xl font-bold text-navy">{{ `${member.first_name} ${member.last_name}`.trim() }}</h3>
+                                <p v-if="member.biography" class="mt-3 leading-7 text-gray-600">{{ member.biography }}</p>
+                                <div v-if="member.email || member.phone" class="mt-5 flex flex-wrap justify-center gap-3 sm:justify-start">
+                                    <a
+                                        v-if="member.email"
+                                        :href="`mailto:${member.email}`"
+                                        class="inline-flex items-center gap-2 rounded-full bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:bg-edsp-green hover:text-white"
+                                    >
+                                        <Mail :size="15" aria-hidden="true" /> {{ member.email }}
+                                    </a>
+                                    <a
+                                        v-if="member.phone"
+                                        :href="`tel:${member.phone.replace(/\s+/g, '')}`"
+                                        class="inline-flex items-center gap-2 rounded-full bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:bg-edsp-green hover:text-white"
+                                    >
+                                        <Phone :size="15" aria-hidden="true" /> {{ member.phone }}
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
                     </div>
-                    <div class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        <TeamMemberCard v-for="member in teamMembers" :key="member.id" :member="member" />
+
+                    <div v-if="otherMembers.length" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" :class="directionMembers.length > 0 && 'mt-8'">
+                        <TeamMemberCard v-for="member in otherMembers" :key="member.id" :member="member" />
                     </div>
                 </div>
             </section>
@@ -340,21 +489,154 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <section v-if="page.slug === 'admissions'" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="campaign-information-title">
-                <div class="mx-auto max-w-5xl rounded-xl bg-white p-7 shadow-sm sm:p-9">
-                    <h2 id="campaign-information-title" class="text-2xl font-bold text-navy">{{ tr('Campagne d’admission', 'Admission round') }}</h2>
+            <section v-if="page.slug === 'admissions'" class="bg-soft px-6 py-14 sm:py-16" aria-labelledby="campaign-information-title">
+                <div class="mx-auto max-w-7xl">
                     <template v-if="campaign">
-                        <p class="mt-4 text-lg font-semibold text-edsp-green">{{ campaign.title }}</p>
-                        <RichText v-if="campaign.instructions" :html="campaign.instructions" class="mt-4 text-gray-600" />
-                        <ul v-if="campaign.required_documents?.length" class="mt-5 list-disc space-y-1 pl-5 text-gray-600">
-                            <li v-for="document in campaign.required_documents" :key="document.key">{{ document.label }}</li>
-                        </ul>
-                        <Link href="/inscription" class="button-primary mt-7">
-                            <UserPlus :size="18" aria-hidden="true" />
-                            {{ tr('Commencer l’inscription', 'Start your application') }}
-                        </Link>
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
+                                    {{ tr('Campagne d’admission', 'Admission round') }}
+                                    <template v-if="campaign.academic_year"> · {{ campaign.academic_year }}</template>
+                                </p>
+                                <h2 id="campaign-information-title" class="mt-2 text-2xl font-bold text-navy sm:text-3xl">{{ campaign.title }}</h2>
+                            </div>
+                            <p
+                                v-if="campaign.closes_at"
+                                class="inline-flex items-center gap-2 rounded-full border border-edsp-green/30 bg-edsp-green/10 px-4 py-2 text-sm font-bold text-edsp-green"
+                            >
+                                <CalendarDays :size="16" aria-hidden="true" />
+                                {{ tr('Ouverte jusqu’au', 'Open until') }} {{ formatPublicDate(campaign.closes_at, languageTag) }}
+                            </p>
+                        </div>
+
+                        <div class="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+                            <article class="rounded-2xl bg-white p-7 shadow-sm sm:p-9">
+                                <h3 class="text-xl font-bold text-navy">{{ tr('Comment candidater', 'How to apply') }}</h3>
+                                <RichText v-if="campaign.instructions" :html="campaign.instructions" class="mt-4 leading-7 text-gray-600" />
+                                <div class="mt-7 flex flex-wrap gap-3">
+                                    <Link href="/inscription" class="button-primary">
+                                        <UserPlus :size="18" aria-hidden="true" />
+                                        {{ tr('Commencer l’inscription', 'Start your application') }}
+                                    </Link>
+                                    <SmartLink
+                                        v-if="safePublicUrl(campaign.tutorial_video_url)"
+                                        :href="safePublicUrl(campaign.tutorial_video_url)!"
+                                        class="button-secondary"
+                                    >
+                                        <PlayCircle :size="18" aria-hidden="true" />
+                                        {{ tr('Voir le tutoriel vidéo', 'Watch the video tutorial') }}
+                                    </SmartLink>
+                                </div>
+                            </article>
+
+                            <aside class="rounded-2xl bg-white p-7 shadow-sm sm:p-9" aria-labelledby="required-documents-title">
+                                <h3 id="required-documents-title" class="text-xl font-bold text-navy">{{ tr('Pièces à fournir', 'Required documents') }}</h3>
+                                <ul v-if="campaign.required_documents?.length" class="mt-5 space-y-3.5">
+                                    <li
+                                        v-for="document in campaign.required_documents"
+                                        :key="document.key"
+                                        class="flex items-start gap-3 leading-6 text-gray-600"
+                                    >
+                                        <CheckCircle2 :size="19" class="mt-0.5 flex-none text-edsp-green" aria-hidden="true" />
+                                        {{ document.label }}
+                                    </li>
+                                </ul>
+                                <p v-else class="mt-4 leading-7 text-gray-600">
+                                    {{ tr('La liste des pièces est précisée dans le formulaire d’inscription.', 'The document list is detailed in the application form.') }}
+                                </p>
+                            </aside>
+                        </div>
                     </template>
-                    <p v-else class="mt-4 text-gray-600">{{ tr('Aucune campagne n’est ouverte actuellement.', 'No admission round is currently open.') }}</p>
+
+                    <div v-else class="mx-auto max-w-2xl rounded-2xl bg-white p-9 text-center shadow-sm">
+                        <h2 id="campaign-information-title" class="text-2xl font-bold text-navy">
+                            {{ tr('Aucune campagne n’est ouverte actuellement', 'No admission round is currently open') }}
+                        </h2>
+                        <p class="mt-3 leading-7 text-gray-600">
+                            {{ tr('Revenez prochainement, ou contactez-nous pour être informé de l’ouverture des inscriptions.', 'Check back soon, or contact us to be notified when applications open.') }}
+                        </p>
+                        <Link href="/contact" class="button-secondary mt-6">
+                            {{ tr('Nous contacter', 'Contact us') }}
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                v-if="page.slug === 'vie-etudiante' && studentLifePhotos.length"
+                class="bg-white py-12 sm:py-14"
+                aria-labelledby="student-photos-title"
+            >
+                <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-6">
+                    <h2 id="student-photos-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('La vie étudiante en images', 'Student life in pictures') }}</h2>
+                    <div class="flex items-center gap-3">
+                        <Link href="/galerie" class="inline-flex items-center gap-2 font-semibold text-edsp-green transition hover:text-green-700">
+                            {{ tr('Voir toute la galerie', 'View the full gallery') }}
+                            <ArrowRight :size="17" aria-hidden="true" />
+                        </Link>
+                        <div v-if="studentLifePhotos.length > 1" class="flex gap-2">
+                            <button
+                                type="button"
+                                class="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-navy shadow-sm transition hover:border-edsp-green hover:text-edsp-green"
+                                :aria-label="tr('Photos précédentes', 'Previous photos')"
+                                @click="pausePhotoAutoplay(); scrollPhotos(-1);"
+                            >
+                                <ChevronLeft :size="20" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                class="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-navy shadow-sm transition hover:border-edsp-green hover:text-edsp-green"
+                                :aria-label="tr('Photos suivantes', 'Next photos')"
+                                @click="pausePhotoAutoplay(); scrollPhotos(1);"
+                            >
+                                <ChevronRight :size="20" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    ref="photoCarousel"
+                    class="mx-auto mt-7 flex max-w-7xl snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 sm:gap-5"
+                    @mouseenter="pausePhotoAutoplay"
+                    @mouseleave="startPhotoAutoplay"
+                    @focusin="pausePhotoAutoplay"
+                    @focusout="startPhotoAutoplay"
+                    @touchstart.passive="pausePhotoAutoplay"
+                >
+                    <Link
+                        v-for="image in studentLifePhotos"
+                        :key="image.id"
+                        href="/galerie"
+                        class="group relative h-72 w-[86%] flex-none snap-center overflow-hidden rounded-2xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 sm:h-96 sm:w-[62%] lg:w-[44%]"
+                        :aria-label="tr('Ouvrir la galerie', 'Open the gallery')"
+                    >
+                        <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.03]">
+                            <MediaPlaceholder
+                                :image-url="mediaUrl(image.media)"
+                                :alt="image.alt_text || image.media?.alt_text || tr('Vie étudiante à l’EDSP', 'Student life at EDSP')"
+                                :label="tr('Vie étudiante à l’EDSP', 'Student life at EDSP')"
+                            />
+                        </span>
+                        <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/75 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" aria-hidden="true" />
+                        <span v-if="image.title || image.caption" class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-white opacity-0 transition group-hover:opacity-100">
+                            <span class="block truncate font-heading text-sm font-bold">{{ image.title || image.caption }}</span>
+                        </span>
+                    </Link>
+                </div>
+            </section>
+
+            <section v-if="page.slug === 'vie-etudiante' && news.length" class="bg-soft px-6 py-14 sm:py-16" aria-labelledby="student-news-title">
+                <div class="mx-auto max-w-7xl">
+                    <div class="flex flex-wrap items-end justify-between gap-4">
+                        <h2 id="student-news-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Actualités et événements', 'News and events') }}</h2>
+                        <Link href="/actualites" class="inline-flex items-center gap-2 font-semibold text-edsp-green transition hover:text-green-700">
+                            {{ tr('Toutes les actualités', 'All news') }}
+                            <ArrowRight :size="17" aria-hidden="true" />
+                        </Link>
+                    </div>
+                    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <NewsCard v-for="article in news" :key="article.id" :article="article" />
+                    </div>
                 </div>
             </section>
 
@@ -363,23 +645,69 @@ const submitContact = (): void => {
                 class="border-t border-gray-200 bg-soft"
                 aria-labelledby="contact-form-title"
             >
-                <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 sm:py-20 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-16">
+                <div class="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:py-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-14">
                     <div>
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-navy text-gold">
-                            <Mail :size="23" aria-hidden="true" />
-                        </div>
-                        <p class="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
+                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
                             {{ tr('Écrivez-nous', 'Write to us') }}
                         </p>
                         <h2 id="contact-form-title" class="mt-2 text-2xl font-bold text-navy sm:text-3xl">
                             {{ tr('Envoyer un message', 'Send us a message') }}
                         </h2>
                         <p class="mt-4 leading-7 text-gray-600">
-                            {{ tr('Remplissez ce formulaire pour transmettre votre demande à l’établissement.', 'Complete this form to send your enquiry to the School.') }}
+                            {{ tr('Remplissez ce formulaire pour transmettre votre demande à l’établissement, ou contactez-nous directement via les coordonnées ci-dessous.', 'Complete this form to send your enquiry to the School, or reach us directly using the details below.') }}
                         </p>
+
+                        <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
+                                    <MapPin :size="20" aria-hidden="true" />
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-bold text-navy">{{ tr('Adresse', 'Address') }}</span>
+                                    <span class="mt-1 block leading-6 text-gray-600">{{ contactDetails.address }}</span>
+                                </span>
+                            </li>
+                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
+                                    <Phone :size="20" aria-hidden="true" />
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-bold text-navy">{{ tr('Téléphone', 'Phone') }}</span>
+                                    <a
+                                        v-for="phone in contactDetails.phones"
+                                        :key="phone"
+                                        :href="`tel:${phone.replace(/\s+/g, '')}`"
+                                        class="mt-1 block leading-6 text-gray-600 transition hover:text-edsp-green"
+                                    >{{ phone }}</a>
+                                </span>
+                            </li>
+                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
+                                    <Mail :size="20" aria-hidden="true" />
+                                </span>
+                                <span class="min-w-0">
+                                    <span class="block font-heading text-sm font-bold text-navy">{{ tr('Email', 'Email') }}</span>
+                                    <a
+                                        :href="`mailto:${contactDetails.email}`"
+                                        class="mt-1 block truncate leading-6 text-gray-600 transition hover:text-edsp-green"
+                                    >{{ contactDetails.email }}</a>
+                                </span>
+                            </li>
+                            <li class="flex items-start gap-4 rounded-xl border border-edsp-green/25 bg-edsp-green/5 p-5">
+                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-edsp-green text-white">
+                                    <Clock :size="20" aria-hidden="true" />
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-bold text-navy">{{ tr('Délai de réponse', 'Response time') }}</span>
+                                    <span class="mt-1 block leading-6 text-gray-600">
+                                        {{ tr('Nous répondons généralement sous 48 h ouvrées.', 'We usually reply within 48 working hours.') }}
+                                    </span>
+                                </span>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div>
+                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
                         <form class="grid gap-x-6 gap-y-5 sm:grid-cols-2" novalidate @submit.prevent="submitContact">
                             <div>
                                 <label for="contact-first-name" class="block text-sm font-semibold text-navy">{{ tr('Prénom', 'First name') }}</label>
@@ -518,7 +846,7 @@ const submitContact = (): void => {
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4">
+                                <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-soft p-4">
                                     <input
                                         v-model="contactForm.consent"
                                         type="checkbox"
@@ -565,7 +893,7 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <div v-else-if="!visibleSections.length" class="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
+            <div v-else-if="!visibleSections.length && !(page.slug === 'vie-etudiante' && (news.length || studentLifePhotos.length))" class="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
                 <div class="mx-auto h-1 w-14 rounded-full bg-gold" aria-hidden="true" />
                 <h2 class="mt-6 text-2xl font-bold text-navy">{{ tr('Contenu en cours de publication', 'Content coming soon') }}</h2>
                 <p class="mx-auto mt-3 max-w-xl leading-7 text-gray-600">
