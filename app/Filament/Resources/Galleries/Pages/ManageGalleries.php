@@ -6,6 +6,7 @@ use App\Filament\Concerns\TracksContentRevisions;
 use App\Filament\Resources\Galleries\GalleryResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
+use Filament\Support\Icons\Heroicon;
 
 class ManageGalleries extends ManageRecords
 {
@@ -17,7 +18,9 @@ class ManageGalleries extends ManageRecords
     {
         return [
             CreateAction::make()
-                ->modalWidth('7xl'),
+                ->label('Nouvelle galerie')
+                ->icon(Heroicon::OutlinedPlus)
+                ->url(GalleryResource::getUrl('create')),
         ];
     }
 }

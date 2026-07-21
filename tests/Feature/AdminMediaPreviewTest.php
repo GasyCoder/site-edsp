@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Forms\MediaImagePreview;
-use App\Filament\Resources\Galleries\Pages\ManageGalleries;
+use App\Filament\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Resources\Partners\Pages\ManagePartners;
 use App\Filament\Resources\TeamMembers\Pages\ManageTeamMembers;
 use App\Filament\Resources\Testimonials\Pages\ManageTestimonials;
@@ -50,9 +50,9 @@ test('media selectors expose an immediate image preview in administration forms'
         ->assertFormFieldExists('photo_id')
         ->assertSchemaComponentExists('photo_preview');
 
-    Livewire::test(ManageGalleries::class)
-        ->mountAction('create')
+    Livewire::test(CreateGallery::class)
+        ->assertFormFieldExists('title')
+        ->assertFormFieldExists('published')
         ->assertFormFieldExists('cover_image_id')
-        ->assertSchemaComponentExists('cover_image_preview')
         ->assertFormFieldExists('images');
 });

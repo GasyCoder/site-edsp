@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Galleries;
 
 use App\Filament\Forms\MediaImagePreview;
+use App\Filament\Resources\Galleries\Pages\CreateGallery;
+use App\Filament\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Resources\Galleries\Pages\ManageGalleries;
 use App\Models\Gallery;
 use App\Models\Media;
@@ -16,8 +18,6 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -26,7 +26,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -61,51 +60,29 @@ class GalleryResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Présentation')
+                Section::make('Galerie')
                     ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('title')
-                                ->label('Titre')
-                                ->required()
-                                ->maxLength(255)
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(fn (?string $state, callable $set): mixed => $set('slug', Str::slug($state ?? ''))),
-                            TextInput::make('slug')
-                                ->label('Identifiant URL')
-                                ->required()
-                                ->unique(ignoreRecord: true)
-                                ->maxLength(255),
-                            Select::make('cover_image_id')
-                                ->label('Image de couverture')
-                                ->helperText('Cette image représente la galerie dans les listes publiques.')
-                                ->relationship(
-                                    name: 'coverImage',
-                                    titleAttribute: 'original_name',
-                                    modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
-                                )
-                                ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
-                                ->allowHtml()
-                                ->live()
-                                ->searchable()
-                                ->preload(),
-                            Placeholder::make('cover_image_preview')
-                                ->label('Aperçu de la couverture')
-                                ->content(fn (Get $get) => MediaImagePreview::render($get->integer('cover_image_id'), 'Aucune couverture sélectionnée.')),
-                            TextInput::make('position')
-                                ->label('Ordre d’affichage')
-                                ->numeric()
-                                ->minValue(0)
-                                ->default(0)
-                                ->required(),
-                        ]),
+                        TextInput::make('title')
+                            ->label('Titre')
+                            ->helperText('Pré-rempli automatiquement — modifiez-le si vous voulez un nom plus parlant (ex. « Remise des diplômes 2026 »).')
+                            ->default(fn (): string => 'Galerie du '.now()->translatedFormat('j F Y'))
+                            ->required()
+                            ->maxLength(255),
                         Textarea::make('description')
-                            ->label('Description')
-                            ->rows(4)
-                            ->maxLength(3000)
-                            ->columnSpanFull(),
+                            ->label('Description (optionnelle)')
+                            ->rows(3)
+                            ->maxLength(3000),
+                        Toggle::make('published')
+                            ->label('Publier sur le site')
+                            ->helperText('Désactivé, la galerie reste en brouillon, invisible pour les visiteurs.')
+                            ->default(true)
+                            ->dehydrated()
+                            ->afterStateHydrated(fn (Toggle $component, ?Gallery $record) => $component->state(
+                                $record === null || ($record->status === 'published' && $record->is_visible),
+                            )),
                     ]),
                 Section::make('Images de la galerie')
-                    ->description('Choisissez des images déjà téléversées dans la médiathèque et organisez-les par glisser-déposer.')
+                    ->description('Choisissez des images de la médiathèque et organisez-les par glisser-déposer. La légende est optionnelle.')
                     ->schema([
                         Repeater::make('images')
                             ->hiddenLabel()
@@ -121,60 +98,99 @@ class GalleryResource extends Resource
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
                                     ->allowHtml()
-                                    ->live()
                                     ->searchable()
                                     ->preload()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                     ->required(),
-                                Placeholder::make('media_preview')
-                                    ->label('Aperçu de l’image')
-                                    ->content(fn (Get $get) => MediaImagePreview::render($get->integer('media_id'), 'Sélectionnez une image pour afficher son aperçu.')),
-                                TextInput::make('title')
-                                    ->label('Titre')
-                                    ->maxLength(255),
-                                TextInput::make('alt_text')
-                                    ->label('Texte alternatif')
-                                    ->maxLength(255),
-                                Textarea::make('caption')
-                                    ->label('Légende')
-                                    ->rows(2)
+                                TextInput::make('caption')
+                                    ->label('Légende (optionnelle)')
                                     ->maxLength(1000),
-                                Toggle::make('is_visible')
-                                    ->label('Visible')
-                                    ->default(true),
                             ])
                             ->columns(2)
-                            ->itemLabel(fn (array $state): string => filled($state['title'] ?? null) ? $state['title'] : 'Image')
                             ->itemNumbers()
-                            ->collapsible()
-                            ->collapsed()
                             ->addActionLabel('Ajouter une image')
                             ->deleteAction(fn (Action $action): Action => $action->requiresConfirmation())
                             ->columnSpanFull(),
                     ]),
-                Section::make('Version anglaise')
-                    ->description('Présentation affichée lorsque le visiteur choisit English.')
+                Section::make('Réglages avancés')
+                    ->description('Couverture, ordre d’affichage et version anglaise. Tout est optionnel.')
                     ->schema([
+                        Grid::make(2)->schema([
+                            Select::make('cover_image_id')
+                                ->label('Image de couverture')
+                                ->helperText('Par défaut : la première image de la galerie.')
+                                ->relationship(
+                                    name: 'coverImage',
+                                    titleAttribute: 'original_name',
+                                    modifyQueryUsing: fn (Builder $query): Builder => $query->where('mime_type', 'like', 'image/%'),
+                                )
+                                ->getOptionLabelFromRecordUsing(fn (Media $record): string => MediaImagePreview::optionLabel($record))
+                                ->allowHtml()
+                                ->searchable()
+                                ->preload(),
+                            TextInput::make('position')
+                                ->label('Ordre d’affichage')
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
+                                ->required(),
+                        ]),
                         TextInput::make('translations.en.title')->label('Titre en anglais')->maxLength(255),
-                        Textarea::make('translations.en.description')->label('Description en anglais')->rows(4)->maxLength(3000),
+                        Textarea::make('translations.en.description')->label('Description en anglais')->rows(3)->maxLength(3000),
                     ])
                     ->collapsed(),
-                Section::make('Publication')
-                    ->schema([
-                        Select::make('status')
-                            ->label('Statut')
-                            ->options(self::statusOptions())
-                            ->default('draft')
-                            ->required(),
-                        DateTimePicker::make('published_at')
-                            ->label('Date de publication')
-                            ->seconds(false),
-                        Toggle::make('is_visible')
-                            ->label('Afficher sur le site')
-                            ->default(true),
-                    ])
-                    ->columns(3),
             ]);
+    }
+
+    /**
+     * Applique l'interrupteur « Publier » aux colonnes réelles et génère le slug.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public static function applySimplifiedFormData(array $data, ?Gallery $record = null): array
+    {
+        $published = (bool) ($data['published'] ?? false);
+        unset($data['published']);
+
+        $data['status'] = $published ? 'published' : 'draft';
+        $data['is_visible'] = $published;
+        $data['published_at'] = $published ? ($record?->published_at ?? now()) : null;
+
+        if ($record === null) {
+            $data['slug'] = self::generateUniqueSlug((string) ($data['title'] ?? ''));
+        }
+
+        return $data;
+    }
+
+    public static function generateUniqueSlug(string $title, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($title) ?: 'galerie';
+        $slug = $base;
+        $suffix = 2;
+
+        while (Gallery::withTrashed()
+            ->where('slug', $slug)
+            ->when($ignoreId !== null, fn (Builder $query): Builder => $query->whereKeyNot($ignoreId))
+            ->exists()) {
+            $slug = $base.'-'.$suffix++;
+        }
+
+        return $slug;
+    }
+
+    public static function syncDefaultCover(Gallery $record): void
+    {
+        if ($record->cover_image_id !== null) {
+            return;
+        }
+
+        $firstImageId = $record->images()->orderBy('position')->value('media_id');
+
+        if ($firstImageId !== null) {
+            $record->forceFill(['cover_image_id' => $firstImageId])->saveQuietly();
+        }
     }
 
     public static function table(Table $table): Table
@@ -232,7 +248,7 @@ class GalleryResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->modalWidth('7xl'),
+                    ->url(fn (Gallery $record): string => self::getUrl('edit', ['record' => $record])),
                 DeleteAction::make()
                     ->requiresConfirmation(),
                 ForceDeleteAction::make()
@@ -266,6 +282,8 @@ class GalleryResource extends Resource
     {
         return [
             'index' => ManageGalleries::route('/'),
+            'create' => CreateGallery::route('/create'),
+            'edit' => EditGallery::route('/{record}/edit'),
         ];
     }
 
