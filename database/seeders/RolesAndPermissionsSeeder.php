@@ -26,6 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view documents', 'create documents', 'edit documents', 'delete documents',
             'view partners', 'create partners', 'edit partners', 'delete partners',
             'view testimonials', 'create testimonials', 'edit testimonials', 'delete testimonials',
+            'view faqs', 'create faqs', 'edit faqs', 'delete faqs',
             'view campaigns', 'create campaigns', 'edit campaigns', 'delete campaigns',
             'view applications', 'create applications', 'edit applications', 'delete applications',
             'change application status', 'download application documents', 'export applications',

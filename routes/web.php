@@ -41,6 +41,7 @@ Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->
 Route::get('/newsletter/confirmer/{subscriber}', [NewsletterSubscriptionController::class, 'verify'])->middleware('throttle:20,1')->name('newsletter.verify');
 Route::get('/newsletter/desinscription/{subscriber}', [NewsletterSubscriptionController::class, 'unsubscribe'])->middleware('throttle:20,1')->name('newsletter.unsubscribe');
 Route::get('/documents', [PublicSiteController::class, 'documents'])->name('documents.index');
+Route::get('/faq', [PublicSiteController::class, 'faq'])->name('faq.index');
 Route::get('/documents/{document}/consulter', [DocumentController::class, 'preview'])->middleware('throttle:60,1')->name('documents.preview');
 Route::get('/documents/{document}/telecharger', [DocumentController::class, 'download'])->middleware('throttle:60,1')->name('documents.download');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');

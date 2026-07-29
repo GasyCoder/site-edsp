@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Faq;
 use App\Models\News;
 use App\Models\Page;
 use App\Models\Program;
@@ -14,6 +15,7 @@ final class SitemapService
         $urls = [
             [route('programs.index'), now()],
             [route('news.index'), now()],
+            [route('faq.index'), Faq::query()->latest('updated_at')->first()?->updated_at ?? now()],
         ];
         $home = Page::published()->where('slug', 'accueil')->where('robots_index', true)->first();
 

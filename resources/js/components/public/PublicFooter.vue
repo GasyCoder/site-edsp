@@ -202,6 +202,7 @@ const submitNewsletter = (): void => {
                         <li><Link href="/documents" class="footer-link">{{ tr('Documents publics', 'Public documents') }}</Link></li>
                         <li><Link href="/galerie" class="footer-link">{{ tr('Galerie', 'Gallery') }}</Link></li>
                         <li><Link href="/contact" class="footer-link">Contact</Link></li>
+                        <li><Link href="/faq" class="footer-link">{{ tr('FAQ', 'FAQ') }}</Link></li>
                     </ul>
                 </nav>
 
@@ -237,7 +238,13 @@ const submitNewsletter = (): void => {
             </div>
 
             <div class="flex flex-col gap-2 border-t border-white/10 pt-4 pb-[calc(4.75rem+env(safe-area-inset-bottom))] text-[11px] text-[#8295BD] sm:flex-row sm:items-center sm:justify-between sm:text-xs min-[1280px]:pb-4">
-                <p>© {{ currentYear }} {{ tr('École de Droit et Science Politique.', 'School of Law and Political Science.') }}</p>
+                <p>
+                    © {{ currentYear }}
+                    {{ tr(
+                        'École de Droit et Science Politique | Université de Mahajanga. Conçu par Florent B.',
+                        'School of Law and Political Science | University of Mahajanga. Designed by Florent B.',
+                    ) }}
+                </p>
                 <nav
                     :aria-label="tr('Informations légales', 'Legal information')"
                     class="flex flex-wrap items-center gap-x-2.5 gap-y-1"

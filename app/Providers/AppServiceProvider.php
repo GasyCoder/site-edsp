@@ -13,6 +13,7 @@ use App\Models\CourseElement;
 use App\Models\Department;
 use App\Models\Document;
 use App\Models\ExamSession;
+use App\Models\Faq;
 use App\Models\Gallery;
 use App\Models\Media;
 use App\Models\Mention;
@@ -45,6 +46,7 @@ use App\Policies\ContactMessagePolicy;
 use App\Policies\ContentRevisionPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\DocumentPolicy;
+use App\Policies\FaqPolicy;
 use App\Policies\GalleryPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\NewsCategoryPolicy;
@@ -138,6 +140,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(TeamMember::class, TeamMemberPolicy::class);
         Gate::policy(Gallery::class, GalleryPolicy::class);
         Gate::policy(Document::class, DocumentPolicy::class);
+        Gate::policy(Faq::class, FaqPolicy::class);
         Gate::policy(Partner::class, PartnerPolicy::class);
         Gate::policy(Testimonial::class, TestimonialPolicy::class);
         Gate::policy(AdmissionCampaign::class, AdmissionCampaignPolicy::class);
@@ -177,6 +180,7 @@ class AppServiceProvider extends ServiceProvider
             ContactMessage::class,
             Department::class,
             Document::class,
+            Faq::class,
             NewsCategory::class,
             NewsletterSubscriber::class,
             NewsletterCampaign::class,

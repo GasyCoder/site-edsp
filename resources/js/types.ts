@@ -213,6 +213,14 @@ export interface Testimonial {
     photo_url?: Nullable<string>;
 }
 
+export interface Faq {
+    id: number;
+    question: string;
+    answer: string;
+    category?: Nullable<string>;
+    position?: number;
+}
+
 export interface Partner {
     id: number;
     name: string;

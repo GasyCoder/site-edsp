@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdmissionCampaign;
 use App\Models\Document;
+use App\Models\Faq;
 use App\Models\Gallery;
 use App\Models\Mention;
 use App\Models\News;
@@ -15,6 +16,7 @@ use App\Models\Testimonial;
 use App\Services\SeoService;
 use App\Services\SettingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PublicSiteController extends Controller
@@ -169,6 +171,36 @@ class PublicSiteController extends Controller
                     : 'Recherchez et consultez les documents officiels publiés par l’École de Droit et Science Politique.',
                 'CollectionPage',
             ),
+        ]);
+    }
+
+    public function faq(SeoService $seo)
+    {
+        $faqs = Faq::query()
+            ->visible()
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get();
+        $english = app()->isLocale('en');
+        $seoData = $seo->forListing(
+            $english ? 'Frequently asked questions — EDSP' : 'Questions fréquentes — EDSP',
+            $english
+                ? 'Find clear answers to common questions about EDSP programmes, admissions and student services.'
+                : 'Retrouvez les réponses aux questions fréquentes sur les formations, les admissions et les services de l’EDSP.',
+            'FAQPage',
+        );
+        $seoData['schema']['mainEntity'] = $faqs->map(fn (Faq $faq): array => [
+            '@type' => 'Question',
+            'name' => $faq->question,
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text' => Str::of(strip_tags((string) $faq->answer))->squish()->toString(),
+            ],
+        ])->values()->all();
+
+        return Inertia::render('Faq/Index', [
+            'faqs' => $faqs,
+            'seo' => $seoData,
         ]);
     }
 
