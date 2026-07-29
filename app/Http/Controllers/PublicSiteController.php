@@ -34,6 +34,19 @@ class PublicSiteController extends Controller
             ->where('slug', 'presentation')
             ->first()
             ?->mainSection;
+        $testimonials = Testimonial::query()->where('is_visible', true)->with('photo')->latest()->limit(3)->get();
+        $partners = Partner::query()->where('is_visible', true)->with('logo')->orderBy('position')->limit(6)->get();
+
+        if (! $canEdit) {
+            $page->setRelation('sections', $page->sections
+                ->reject(function ($section) use ($partners, $testimonials): bool {
+                    $descriptor = Str::lower("{$section->section_key} {$section->section_type}");
+
+                    return ($testimonials->isEmpty() && (Str::contains($descriptor, 'testimonial') || Str::contains($descriptor, 'temoignage')))
+                        || ($partners->isEmpty() && (Str::contains($descriptor, 'partner') || Str::contains($descriptor, 'partenaire')));
+                })
+                ->values());
+        }
 
         return Inertia::render('Home', [
             'page' => $page,
@@ -42,8 +55,8 @@ class PublicSiteController extends Controller
             'news' => News::published()->with(['category', 'featuredImage'])->latest('published_at')->limit(3)->get(),
             'campaign' => $this->campaignForFrontend(),
             'teamMembers' => TeamMember::published()->with('photo')->orderBy('display_order')->limit(4)->get(),
-            'testimonials' => Testimonial::query()->where('is_visible', true)->with('photo')->latest()->limit(3)->get(),
-            'partners' => Partner::query()->where('is_visible', true)->with('logo')->orderBy('position')->limit(6)->get(),
+            'testimonials' => $testimonials,
+            'partners' => $partners,
             'settings' => $publicSettings,
             'seo' => $seo->for($page, $publicSettings),
             'canEdit' => $canEdit,

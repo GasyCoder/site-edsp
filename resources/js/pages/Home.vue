@@ -60,9 +60,6 @@ const props = withDefaults(
 );
 
 const editing = ref(false);
-const sections = computed(() => (props.page?.sections ?? [])
-    .filter((section) => section.is_visible || (props.canEdit && editing.value))
-    .sort((left, right) => (left.position ?? 0) - (right.position ?? 0)));
 
 function sectionKind(section: Section): string {
     const value = `${section.section_key} ${section.section_type}`.toLocaleLowerCase('fr');
@@ -82,6 +79,20 @@ function sectionKind(section: Section): string {
 
     return 'content';
 }
+
+function hasPublicRecords(section: Section): boolean {
+    const kind = sectionKind(section);
+
+    if (kind === 'testimonials') return props.testimonials.length > 0;
+    if (kind === 'partners') return props.partners.length > 0;
+
+    return true;
+}
+
+const sections = computed(() => (props.page?.sections ?? [])
+    .filter((section) => section.is_visible || (props.canEdit && editing.value))
+    .filter((section) => (props.canEdit && editing.value) || hasPublicRecords(section))
+    .sort((left, right) => (left.position ?? 0) - (right.position ?? 0)));
 
 const heroImage = computed(() => mediaUrl(sections.value.find((section) => sectionKind(section) === 'hero')));
 

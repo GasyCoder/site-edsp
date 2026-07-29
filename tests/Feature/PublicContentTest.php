@@ -4,7 +4,9 @@ use App\Models\Gallery;
 use App\Models\Media;
 use App\Models\News;
 use App\Models\Page;
+use App\Models\Partner;
 use App\Models\Program;
+use App\Models\Testimonial;
 use Database\Seeders\PagesSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -39,6 +41,61 @@ test('a visitor sees published home content but not hidden sections', function (
             ->where('page.slug', 'accueil')
             ->has('page.sections', 1)
             ->where('page.sections.0.section_key', 'hero'));
+});
+
+test('empty testimonial and partner sections are hidden from the public home page', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+
+    foreach ([
+        ['hero', 'hero', 'Bienvenue', 1],
+        ['testimonials', 'testimonials', 'Paroles d’étudiants', 2],
+        ['partners', 'partners', 'Nos partenaires', 3],
+    ] as [$key, $type, $title, $position]) {
+        $page->sections()->create([
+            'section_key' => $key,
+            'section_type' => $type,
+            'title' => $title,
+            'position' => $position,
+            'is_visible' => true,
+        ]);
+    }
+
+    $testimonial = Testimonial::query()->create([
+        'author_name' => 'Étudiante masquée',
+        'content' => 'Ce témoignage ne doit pas apparaître.',
+        'is_visible' => false,
+    ]);
+    $partner = Partner::query()->create([
+        'name' => 'Partenaire masqué',
+        'position' => 1,
+        'is_visible' => false,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->has('page.sections', 1)
+            ->where('page.sections.0.section_key', 'hero')
+            ->has('testimonials', 0)
+            ->has('partners', 0));
+
+    $testimonial->update(['is_visible' => true]);
+    $partner->update(['is_visible' => true]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->has('page.sections', 3)
+            ->where('page.sections.1.section_key', 'testimonials')
+            ->where('page.sections.2.section_key', 'partners')
+            ->has('testimonials', 1)
+            ->has('partners', 1));
 });
 
 test('an editor receives hidden sections so they can be re-enabled', function (): void {
