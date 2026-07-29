@@ -10,6 +10,7 @@ use App\Services\MediaService;
 use App\Services\MediaVariantDispatcher;
 use BackedEnum;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -33,6 +34,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
@@ -45,6 +47,8 @@ use UnitEnum;
 class MediaResource extends Resource
 {
     private const MAX_UPLOAD_SIZE_KB = 10 * 1024;
+
+    private const MAX_BATCH_IMAGES = 30;
 
     /** @var array<string, list<string>> */
     public const ALLOWED_MIME_TYPES = [
@@ -333,6 +337,157 @@ class MediaResource extends Resource
         return $data;
     }
 
+    public static function batchUploadAction(): Action
+    {
+        return Action::make('uploadMultiple')
+            ->label('Importer plusieurs images')
+            ->icon(Heroicon::OutlinedPhoto)
+            ->color('success')
+            ->modalHeading('Importer plusieurs images')
+            ->modalDescription('Sélectionnez jusqu’à 30 images. Chaque fichier sera ajouté séparément à la médiathèque avec un aperçu et un nom accessible.')
+            ->modalWidth('6xl')
+            ->schema([
+                Section::make('Images')
+                    ->description(sprintf(
+                        'JPEG, PNG ou WebP. %s maximum par image.',
+                        self::effectiveUploadSizeLabel(),
+                    ))
+                    ->schema([
+                        FileUpload::make('files')
+                            ->label('Images à importer')
+                            ->disk('public')
+                            ->directory(fn (): string => self::currentMediaDirectory())
+                            ->visibility('public')
+                            ->acceptedFileTypes(self::allowedImageMimeTypes())
+                            ->rules([fn (): Closure => self::strictUploadRule()])
+                            ->maxSize(self::effectiveUploadSizeInKilobytes())
+                            ->maxFiles(self::MAX_BATCH_IMAGES)
+                            ->multiple()
+                            ->reorderable()
+                            ->storeFileNamesIn('original_names')
+                            ->imagePreviewHeight('180')
+                            ->panelLayout('grid')
+                            ->previewable()
+                            ->openable()
+                            ->preventFilePathTampering()
+                            ->required()
+                            ->columnSpanFull(),
+                        TextInput::make('alt_prefix')
+                            ->label('Préfixe du texte alternatif (optionnel)')
+                            ->helperText('Exemple : « Journée d’accueil ». Le numéro de chaque image sera ajouté automatiquement. Sans préfixe, le nom du fichier sera utilisé.')
+                            ->maxLength(180),
+                        Textarea::make('caption')
+                            ->label('Légende commune (optionnelle)')
+                            ->rows(2)
+                            ->maxLength(1000),
+                    ]),
+            ])
+            ->action(function (array $data): void {
+                $media = self::createManyFromStoredImages(
+                    (array) ($data['files'] ?? []),
+                    (array) ($data['original_names'] ?? []),
+                    $data['alt_prefix'] ?? null,
+                    $data['caption'] ?? null,
+                );
+                $count = $media->count();
+
+                Notification::make()
+                    ->success()
+                    ->title($count === 1 ? 'Une image importée' : "{$count} images importées")
+                    ->body('Les images sont disponibles dans la médiathèque.')
+                    ->send();
+            })
+            ->visible(fn (): bool => self::canCreate());
+    }
+
+    /**
+     * @param  list<string>  $paths
+     * @param  array<string, string>  $originalNames
+     * @return Collection<int, Media>
+     */
+    public static function createManyFromStoredImages(
+        array $paths,
+        array $originalNames = [],
+        ?string $altPrefix = null,
+        ?string $caption = null,
+    ): Collection {
+        $paths = collect($paths)
+            ->filter(fn (mixed $path): bool => is_string($path) && filled($path))
+            ->unique()
+            ->values();
+
+        if ($paths->isEmpty()) {
+            throw ValidationException::withMessages([
+                'files' => 'Sélectionnez au moins une image à importer.',
+            ]);
+        }
+
+        if ($paths->count() > self::MAX_BATCH_IMAGES) {
+            throw ValidationException::withMessages([
+                'files' => 'Vous pouvez importer au maximum '.self::MAX_BATCH_IMAGES.' images à la fois.',
+            ]);
+        }
+
+        $created = collect();
+
+        try {
+            $created = DB::transaction(function () use ($altPrefix, $caption, $originalNames, $paths): Collection {
+                return $paths->map(function (string $path, int $index) use ($altPrefix, $caption, $originalNames): Media {
+                    if (! self::isBatchUploadPath($path) || Media::query()->where('disk', 'public')->where('path', $path)->exists()) {
+                        throw ValidationException::withMessages([
+                            'files' => 'Une image envoyée est invalide ou existe déjà dans la médiathèque.',
+                        ]);
+                    }
+
+                    $originalName = (string) ($originalNames[$path] ?? basename($path));
+                    $altText = filled($altPrefix)
+                        ? trim((string) $altPrefix).' '.($index + 1)
+                        : self::altTextFromFilename($originalName);
+                    $metadata = self::withStoredFileMetadata([
+                        'disk' => 'public',
+                        'path' => $path,
+                        'original_name' => $originalName,
+                        'alt_text' => $altText,
+                        'caption' => $caption,
+                    ]);
+
+                    if (! str_starts_with((string) $metadata['mime_type'], 'image/')) {
+                        throw ValidationException::withMessages([
+                            'files' => 'Seuls les fichiers image peuvent être importés en lot.',
+                        ]);
+                    }
+
+                    $media = Media::query()->create($metadata);
+                    app(ActivityLogger::class)->record(
+                        'media.uploaded',
+                        $media,
+                        auth()->id(),
+                        ['mime_type' => $media->mime_type, 'size' => $media->size, 'batch' => true],
+                    );
+
+                    return $media;
+                });
+            });
+        } catch (Throwable $exception) {
+            // Ne supprime que les nouveaux fichiers générés par ce formulaire.
+            // Un chemin déjà référencé par la médiathèque ne doit jamais être effacé.
+            $deletablePaths = $paths
+                ->filter(fn (string $path): bool => self::isBatchUploadPath($path))
+                ->reject(fn (string $path): bool => Media::query()
+                    ->where('disk', 'public')
+                    ->where('path', $path)
+                    ->exists())
+                ->all();
+
+            Storage::disk('public')->delete($deletablePaths);
+            throw $exception;
+        }
+
+        $created->each(fn (Media $media) => app(MediaVariantDispatcher::class)->dispatch($media));
+
+        return $created;
+    }
+
     public static function isSuperAdmin(): bool
     {
         $user = auth()->user();
@@ -344,6 +499,15 @@ class MediaResource extends Resource
     public static function allowedMimeTypes(): array
     {
         return array_values(array_unique(array_merge(...array_values(self::ALLOWED_MIME_TYPES))));
+    }
+
+    /** @return list<string> */
+    public static function allowedImageMimeTypes(): array
+    {
+        return array_values(array_filter(
+            self::allowedMimeTypes(),
+            fn (string $mimeType): bool => str_starts_with($mimeType, 'image/'),
+        ));
     }
 
     public static function altTextFromFilename(string $filename): string
@@ -401,7 +565,7 @@ class MediaResource extends Resource
         return max(1, (int) floor($bytes / 1024));
     }
 
-    private static function strictUploadRule(): Closure
+    public static function strictUploadRule(): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail): void {
             if (! $value instanceof TemporaryUploadedFile) {
@@ -425,6 +589,23 @@ class MediaResource extends Resource
                 }
             }
         };
+    }
+
+    public static function currentMediaDirectory(): string
+    {
+        return 'media/'.now()->format('Y/m');
+    }
+
+    private static function isBatchUploadPath(string $path): bool
+    {
+        if (! Str::startsWith($path, self::currentMediaDirectory().'/')) {
+            return false;
+        }
+
+        return preg_match(
+            '/^[0-9A-HJKMNP-TV-Z]{26}\.(?:jpe?g|png|webp)$/i',
+            basename($path),
+        ) === 1;
     }
 
     private static function editAction(): EditAction

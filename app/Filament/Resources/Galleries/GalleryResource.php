@@ -6,6 +6,7 @@ use App\Filament\Forms\MediaImagePreview;
 use App\Filament\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Resources\Galleries\Pages\ManageGalleries;
+use App\Filament\Resources\Media\MediaResource as MediaLibraryResource;
 use App\Models\Gallery;
 use App\Models\Media;
 use BackedEnum;
@@ -18,6 +19,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -82,10 +84,38 @@ class GalleryResource extends Resource
                             )),
                     ]),
                 Section::make('Images de la galerie')
-                    ->description('Choisissez des images de la médiathèque et organisez-les par glisser-déposer. La légende est optionnelle.')
+                    ->description('Importez plusieurs nouvelles photos ou choisissez des images déjà présentes dans la médiathèque.')
                     ->schema([
+                        FileUpload::make('new_images')
+                            ->label('Importer de nouvelles images')
+                            ->helperText('Jusqu’à 30 images. Elles seront ajoutées à la médiathèque et directement reliées à cette galerie.')
+                            ->disk('public')
+                            ->directory(fn (): string => MediaLibraryResource::currentMediaDirectory())
+                            ->visibility('public')
+                            ->acceptedFileTypes(MediaLibraryResource::allowedImageMimeTypes())
+                            ->rules([fn () => MediaLibraryResource::strictUploadRule()])
+                            ->maxSize(MediaLibraryResource::effectiveUploadSizeInKilobytes())
+                            ->maxFiles(30)
+                            ->multiple()
+                            ->reorderable()
+                            ->storeFileNamesIn('new_image_names')
+                            ->imagePreviewHeight('180')
+                            ->panelLayout('grid')
+                            ->previewable()
+                            ->openable()
+                            ->preventFilePathTampering()
+                            ->columnSpanFull(),
+                        Grid::make(2)->schema([
+                            TextInput::make('new_images_alt_prefix')
+                                ->label('Description commune (optionnelle)')
+                                ->helperText('Le numéro de la photo sera ajouté. Par défaut, le titre de la galerie est utilisé.')
+                                ->maxLength(180),
+                            TextInput::make('new_images_caption')
+                                ->label('Légende commune (optionnelle)')
+                                ->maxLength(1000),
+                        ]),
                         Repeater::make('images')
-                            ->hiddenLabel()
+                            ->label('Images existantes de la médiathèque')
                             ->relationship()
                             ->orderColumn('position')
                             ->schema([
@@ -150,6 +180,13 @@ class GalleryResource extends Resource
      */
     public static function applySimplifiedFormData(array $data, ?Gallery $record = null): array
     {
+        unset(
+            $data['new_images'],
+            $data['new_image_names'],
+            $data['new_images_alt_prefix'],
+            $data['new_images_caption'],
+        );
+
         $published = (bool) ($data['published'] ?? false);
         unset($data['published']);
 
@@ -162,6 +199,67 @@ class GalleryResource extends Resource
         }
 
         return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{paths: list<string>, names: array<string, string>, alt_prefix: ?string, caption: ?string}
+     */
+    public static function pullNewImageUploads(array &$data): array
+    {
+        $uploads = [
+            'paths' => array_values(array_filter(
+                (array) ($data['new_images'] ?? []),
+                fn (mixed $path): bool => is_string($path) && filled($path),
+            )),
+            'names' => (array) ($data['new_image_names'] ?? []),
+            'alt_prefix' => filled($data['new_images_alt_prefix'] ?? null)
+                ? trim((string) $data['new_images_alt_prefix'])
+                : null,
+            'caption' => filled($data['new_images_caption'] ?? null)
+                ? trim((string) $data['new_images_caption'])
+                : null,
+        ];
+
+        unset(
+            $data['new_images'],
+            $data['new_image_names'],
+            $data['new_images_alt_prefix'],
+            $data['new_images_caption'],
+        );
+
+        return $uploads;
+    }
+
+    /**
+     * @param  array{paths: list<string>, names: array<string, string>, alt_prefix: ?string, caption: ?string}  $uploads
+     */
+    public static function attachUploadedImages(Gallery $gallery, array $uploads): int
+    {
+        if ($uploads['paths'] === []) {
+            return 0;
+        }
+
+        $media = MediaLibraryResource::createManyFromStoredImages(
+            $uploads['paths'],
+            $uploads['names'],
+            $uploads['alt_prefix'] ?: $gallery->title,
+            $uploads['caption'],
+        );
+        $position = (int) ($gallery->images()->max('position') ?? 0);
+
+        foreach ($media as $image) {
+            $gallery->images()->create([
+                'media_id' => $image->id,
+                'title' => $image->alt_text,
+                'alt_text' => $image->alt_text,
+                'caption' => $image->caption,
+                'position' => ++$position,
+                'is_visible' => true,
+            ]);
+        }
+
+        return $media->count();
     }
 
     public static function generateUniqueSlug(string $title, ?int $ignoreId = null): string

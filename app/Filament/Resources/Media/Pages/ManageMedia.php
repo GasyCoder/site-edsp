@@ -16,7 +16,9 @@ class ManageMedia extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
+            MediaResource::batchUploadAction(),
             CreateAction::make()
+                ->label('Ajouter un fichier')
                 ->modalWidth('5xl')
                 ->mutateDataUsing(fn (array $data): array => MediaResource::withStoredFileMetadata($data))
                 ->after(function (Media $record): void {

@@ -6,6 +6,7 @@ use App\Filament\Concerns\TracksContentRevisions;
 use App\Filament\Resources\Galleries\GalleryResource;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
@@ -19,6 +20,14 @@ class EditGallery extends EditRecord
     protected Width|string|null $maxContentWidth = Width::Full;
 
     public static bool $formActionsAreSticky = true;
+
+    /** @var array{paths: list<string>, names: array<string, string>, alt_prefix: ?string, caption: ?string} */
+    private array $pendingImageUploads = [
+        'paths' => [],
+        'names' => [],
+        'alt_prefix' => null,
+        'caption' => null,
+    ];
 
     public function getHeading(): string
     {
@@ -48,12 +57,23 @@ class EditGallery extends EditRecord
     /** @param array<string, mixed> $data */
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $this->pendingImageUploads = GalleryResource::pullNewImageUploads($data);
+
         return GalleryResource::applySimplifiedFormData($data, $this->getRecord());
     }
 
     protected function afterSave(): void
     {
+        $count = GalleryResource::attachUploadedImages($this->getRecord(), $this->pendingImageUploads);
         GalleryResource::syncDefaultCover($this->getRecord());
+
+        if ($count > 0) {
+            Notification::make()
+                ->success()
+                ->title($count === 1 ? 'Une image ajoutée' : "{$count} images ajoutées")
+                ->body('Les images ont également été enregistrées dans la médiathèque.')
+                ->send();
+        }
     }
 
     protected function getSavedNotificationTitle(): ?string
