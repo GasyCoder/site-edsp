@@ -1,0 +1,60 @@
+{
+    "id": "/",
+    "name": "EDSP — École de Droit et Science Politique",
+    "short_name": "EDSP",
+    "description": "Site officiel de l’École de Droit et Science Politique de l’Université de Mahajanga.",
+    "lang": "fr",
+    "dir": "ltr",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#0B1F55",
+    "categories": ["education", "government"],
+    "icons": [
+        {
+            "src": "/images/pwa/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/pwa/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/pwa/maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Formations",
+            "short_name": "Formations",
+            "url": "/formations",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Inscription",
+            "short_name": "Inscription",
+            "url": "/inscription",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Actualités",
+            "short_name": "Actualités",
+            "url": "/actualites",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Documents publics",
+            "short_name": "Documents",
+            "url": "/documents",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        }
+    ]
+}

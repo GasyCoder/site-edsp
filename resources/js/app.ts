@@ -3,8 +3,11 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h, type DefineComponent } from 'vue';
 import { initializeNavigationLoading, startInitialPageLoading } from './lib/navigation-loading';
 import { initializeColorMode } from './lib/color-mode';
+import { registerPwaServiceWorker } from './lib/pwa';
 
 const pages = import.meta.glob<{ default: DefineComponent }>('./pages/**/*.vue');
+
+registerPwaServiceWorker();
 
 createInertiaApp({
     progress: {

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#0B1F55">
+        <title>Connexion indisponible — EDSP</title>
+        <style>
+            :root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+            * { box-sizing: border-box; }
+            body {
+                align-items: center;
+                background: #f5f7fb;
+                color: #0b1f55;
+                display: flex;
+                justify-content: center;
+                margin: 0;
+                min-height: 100vh;
+                padding: 1.25rem;
+            }
+            main {
+                background: #fff;
+                border: 1px solid #dbe3ef;
+                border-radius: 1rem;
+                box-shadow: 0 16px 42px rgb(11 31 85 / 10%);
+                max-width: 32rem;
+                padding: 2rem;
+                width: 100%;
+            }
+            img { display: block; height: 4rem; margin-bottom: 1.5rem; width: 4rem; }
+            p { color: #53627c; line-height: 1.7; }
+            .en { border-top: 1px solid #e5eaf2; font-size: .9rem; margin-top: 1.25rem; padding-top: 1.25rem; }
+            .actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+            button, a {
+                border-radius: .5rem;
+                cursor: pointer;
+                font: inherit;
+                font-size: .875rem;
+                font-weight: 700;
+                padding: .75rem 1rem;
+                text-decoration: none;
+            }
+            button { background: #078b3e; border: 1px solid #078b3e; color: #fff; }
+            a { border: 1px solid #c8d2e1; color: #0b1f55; }
+            @media (prefers-color-scheme: dark) {
+                body { background: #071126; color: #f8fafc; }
+                main { background: #0d1a31; border-color: #263653; }
+                p { color: #c9d4ee; }
+                .en { border-color: #263653; }
+                a { border-color: #465574; color: #f8fafc; }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <img src="/images/pwa/icon-192.png" alt="EDSP">
+            <h1>Connexion indisponible</h1>
+            <p>Cette page ne peut pas être chargée pour le moment. Vérifiez votre connexion internet, puis réessayez.</p>
+            <div class="en" lang="en">
+                <strong>You’re offline</strong>
+                <p>This page cannot be loaded right now. Check your internet connection and try again.</p>
+            </div>
+            <div class="actions">
+                <button type="button" onclick="window.location.reload()">Réessayer</button>
+                <a href="/">Retour à l’accueil</a>
+            </div>
+        </main>
+    </body>
+</html>

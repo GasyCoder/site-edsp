@@ -18,6 +18,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#0B1F55">
+        <meta name="application-name" content="EDSP">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="EDSP">
         <script>
             (() => {
                 try {
@@ -30,6 +35,8 @@
             })();
         </script>
         <link rel="icon" href="{{ str_starts_with($favicon, 'http') ? $favicon : asset(ltrim($favicon, '/')) }}">
+        <link rel="manifest" href="/manifest.webmanifest">
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/pwa/apple-touch-icon.png">
 
         <title inertia data-inertia="">{{ $seoTitle }}</title>
         @if ($seoDescription)

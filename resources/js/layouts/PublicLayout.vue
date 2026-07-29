@@ -7,6 +7,7 @@ import BackToTopButton from '../components/public/BackToTopButton.vue';
 import MainHeader from '../components/public/MainHeader.vue';
 import InstitutionalReferenceBar from '../components/public/InstitutionalReferenceBar.vue';
 import PageLoadingSkeleton from '../components/public/PageLoadingSkeleton.vue';
+import PwaInstallPrompt from '../components/public/PwaInstallPrompt.vue';
 import PublicFooter from '../components/public/PublicFooter.vue';
 import TopBar from '../components/public/TopBar.vue';
 import { loadingSkeletonVariant, navigationLoading } from '../lib/navigation-loading';
@@ -130,6 +131,7 @@ onBeforeUnmount(() => {
             :can-edit="canEditSettings"
         />
         <PublicFooter :settings="resolvedSettings" />
+        <PwaInstallPrompt />
         <BackToTopButton />
     </div>
 </template>

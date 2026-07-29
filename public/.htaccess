@@ -38,4 +38,15 @@
     <FilesMatch "\.(?:avif|gif|jpe?g|png|svg|webp|woff2)$">
         Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>
+
+    <Files "sw.js">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </Files>
+
+    <Files "manifest.webmanifest">
+        Header set Cache-Control "no-cache"
+    </Files>
 </IfModule>
+
+AddType application/manifest+json .webmanifest
