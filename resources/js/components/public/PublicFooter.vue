@@ -77,35 +77,37 @@ const submitNewsletter = (): void => {
 
 <template>
     <footer id="contact" class="bg-[#071943] px-4 text-[#C9D4EE] sm:px-6">
-        <div class="mx-auto max-w-7xl pt-10 sm:pt-12">
+        <div class="mx-auto max-w-7xl pt-7 sm:pt-9">
             <section
                 id="newsletter"
                 aria-labelledby="newsletter-title"
-                class="rounded-xl border border-white/15 bg-[#0d285f] px-5 py-6 sm:px-7 sm:py-7 lg:px-8"
+                class="rounded-lg border border-white/12 bg-white/[0.035] px-4 py-5 sm:px-6 sm:py-6 lg:px-7"
             >
-                <div class="grid items-center gap-7 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+                <div class="grid items-center gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8">
                     <div>
-                        <div class="mb-4 flex size-11 items-center justify-center rounded-xl bg-gold/15 text-gold ring-1 ring-gold/20">
-                            <Mail :size="21" aria-hidden="true" />
+                        <div class="mb-2.5 flex items-center gap-2.5">
+                            <span class="grid size-8 place-items-center rounded-md bg-white/8 text-edsp-green">
+                                <Mail :size="17" aria-hidden="true" />
+                            </span>
+                            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-edsp-green">{{ tr('Restez informé', 'Stay informed') }}</p>
                         </div>
-                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-gold">{{ tr('Restez informé', 'Stay informed') }}</p>
-                        <h2 id="newsletter-title" class="mt-2 text-xl font-bold leading-tight text-white">
+                        <h2 id="newsletter-title" class="max-w-xl text-lg font-bold leading-snug text-white sm:text-xl">
                             {{ tr('Les actualités de l’EDSP, directement dans votre boîte mail', 'EDSP news, delivered straight to your inbox') }}
                         </h2>
-                        <p class="mt-3 max-w-xl text-sm leading-6 text-[#C9D4EE] sm:text-base">
+                        <p class="mt-2 max-w-xl text-sm leading-6 text-[#B8C5E0]">
                             {{ tr('Recevez les dates d’admission, les événements et les nouvelles formations. Aucun message inutile.', 'Receive admission dates, events and new programme announcements. Only useful updates.') }}
                         </p>
                     </div>
 
                     <form action="/newsletter" method="post" novalidate @submit.prevent="submitNewsletter">
-                        <label for="newsletter-email" class="mb-2 block font-heading text-sm font-semibold text-white">
+                        <label for="newsletter-email" class="mb-1.5 block font-heading text-xs font-semibold text-white">
                             {{ tr('Votre adresse e-mail', 'Your email address') }}
                         </label>
-                        <div class="flex flex-col gap-2.5 sm:flex-row">
+                        <div class="flex flex-col gap-2 sm:flex-row">
                             <div class="relative min-w-0 flex-1">
                                 <Mail
-                                    :size="18"
-                                    class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                                    :size="16"
+                                    class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                                     aria-hidden="true"
                                 />
                                 <input
@@ -117,18 +119,18 @@ const submitNewsletter = (): void => {
                                     autocomplete="email"
                                     required
                                     :placeholder="tr('vous@exemple.com', 'you@example.com')"
-                                    class="h-12 w-full rounded-lg border border-white/15 bg-white pl-11 pr-4 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-white/40 focus:border-gold focus:ring-4 focus:ring-gold/15 focus:outline-none"
+                                    class="h-10.5 w-full rounded-md border border-slate-200 bg-[#f8fafc] pl-10 pr-3.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-300 focus:border-edsp-green focus:ring-3 focus:ring-edsp-green/15 focus:outline-none"
                                     :aria-invalid="Boolean(newsletterForm.errors.email)"
                                     :aria-describedby="newsletterDescribedBy"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                class="inline-flex h-12 flex-none items-center justify-center gap-2 rounded-md bg-edsp-green px-5 font-heading text-sm font-bold text-white transition hover:bg-[#069344] disabled:cursor-wait disabled:opacity-70"
+                                class="inline-flex h-10.5 flex-none items-center justify-center gap-2 rounded-md bg-edsp-green px-4 font-heading text-xs font-bold text-white transition hover:bg-[#069344] disabled:cursor-wait disabled:opacity-70 sm:text-sm"
                                 :disabled="newsletterForm.processing"
                             >
-                                <LoaderCircle v-if="newsletterForm.processing" :size="18" class="animate-spin" aria-hidden="true" />
-                                <Send v-else :size="17" aria-hidden="true" />
+                                <LoaderCircle v-if="newsletterForm.processing" :size="16" class="animate-spin" aria-hidden="true" />
+                                <Send v-else :size="16" aria-hidden="true" />
                                 {{ newsletterForm.processing ? tr('Envoi…', 'Sending…') : tr('Je m’inscris', 'Subscribe') }}
                             </button>
                         </div>
@@ -155,8 +157,8 @@ const submitNewsletter = (): void => {
                             <span>{{ newsletterFeedback.message }}</span>
                         </div>
 
-                        <p id="newsletter-privacy" class="mt-3 flex items-start gap-2 text-xs leading-5 text-[#9FB0D5]">
-                            <LockKeyhole :size="14" class="mt-0.5 flex-none text-gold" aria-hidden="true" />
+                        <p id="newsletter-privacy" class="mt-2 flex items-start gap-2 text-[11px] leading-4.5 text-[#9FB0D5]">
+                            <LockKeyhole :size="13" class="mt-0.5 flex-none text-[#9FB0D5]" aria-hidden="true" />
                             <span>
                                 {{ tr('Inscription sécurisée en deux étapes : vous devrez confirmer votre adresse par e-mail.', 'Secure double opt-in: you will need to confirm your email address.') }}
                                 <Link href="/politique-de-confidentialite" class="underline decoration-white/30 underline-offset-2 hover:text-white">
@@ -168,23 +170,23 @@ const submitNewsletter = (): void => {
                 </div>
             </section>
 
-            <div class="grid gap-9 py-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-12">
-                <div class="lg:col-span-4 lg:pr-10">
-                    <div class="mb-5 flex items-center gap-3">
-                        <span class="grid size-16 place-items-center rounded-xl bg-white p-1.5 shadow-sm">
+            <div class="grid grid-cols-2 gap-x-5 gap-y-7 py-7 lg:grid-cols-12 lg:gap-7 lg:py-8">
+                <div class="col-span-2 lg:col-span-4 lg:pr-10">
+                    <div class="mb-3 flex items-center gap-3">
+                        <span class="grid size-12 place-items-center rounded-lg bg-white p-1 shadow-sm">
                             <img :src="darkLogoUrl || logoUrl" alt="Logo EDSP" class="max-h-full max-w-full object-contain" />
                         </span>
                         <span>
-                            <span class="block font-heading text-lg font-bold text-white">EDSP</span>
+                            <span class="block font-heading text-base font-bold text-white">EDSP</span>
                             <span class="block text-xs text-edsp-green">Mahajanga</span>
                         </span>
                     </div>
-                    <p class="max-w-sm text-sm leading-7">{{ footerText }}</p>
+                    <p class="max-w-sm text-sm leading-6">{{ footerText }}</p>
                 </div>
 
                 <nav :aria-label="tr('Liens du site', 'Website links')" class="lg:col-span-2">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Le site', 'Explore') }}</h2>
-                    <ul class="space-y-2.5 text-sm">
+                    <h2 class="mb-3 font-heading text-sm font-semibold text-white">{{ tr('Le site', 'Explore') }}</h2>
+                    <ul class="space-y-2 text-xs sm:text-sm">
                         <li><Link href="/" class="footer-link">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li><Link href="/presentation" class="footer-link">{{ tr('Mot du directeur', "Director's message") }}</Link></li>
                         <li><Link href="/formations" class="footer-link">{{ tr('Formations', 'Programmes') }}</Link></li>
@@ -194,8 +196,8 @@ const submitNewsletter = (): void => {
                 </nav>
 
                 <nav :aria-label="tr('Liens utiles', 'Useful links')" class="lg:col-span-2">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Liens utiles', 'Useful links') }}</h2>
-                    <ul class="space-y-2.5 text-sm">
+                    <h2 class="mb-3 font-heading text-sm font-semibold text-white">{{ tr('Liens utiles', 'Useful links') }}</h2>
+                    <ul class="space-y-2 text-xs sm:text-sm">
                         <li><Link href="/vie-etudiante" class="footer-link">{{ tr('Vie étudiante', 'Student life') }}</Link></li>
                         <li><SmartLink :href="libraryUrl" class="footer-link">{{ tr('Bibliothèque', 'Library') }}</SmartLink></li>
                         <li><Link href="/documents" class="footer-link">{{ tr('Documents publics', 'Public documents') }}</Link></li>
@@ -206,20 +208,20 @@ const submitNewsletter = (): void => {
                     </ul>
                 </nav>
 
-                <div class="lg:col-span-4 lg:pl-6">
-                    <h2 class="mb-4 font-heading text-sm font-semibold text-white">{{ tr('Nous contacter', 'Contact us') }}</h2>
-                    <ul class="space-y-4 text-sm">
+                <div class="col-span-2 lg:col-span-4 lg:pl-6">
+                    <h2 class="mb-3 font-heading text-sm font-semibold text-white">{{ tr('Nous contacter', 'Contact us') }}</h2>
+                    <ul class="grid gap-3 text-xs sm:grid-cols-2 sm:text-sm lg:grid-cols-1">
                         <li class="flex gap-3">
-                            <span class="grid size-8 flex-none place-items-center rounded-lg bg-white/7 text-gold">
-                                <MapPin :size="16" aria-hidden="true" />
+                            <span class="grid size-7 flex-none place-items-center rounded-md bg-white/7 text-edsp-green">
+                                <MapPin :size="14" aria-hidden="true" />
                             </span>
-                            <span class="pt-1.5">{{ address }}</span>
+                            <span class="pt-1">{{ address }}</span>
                         </li>
                         <li class="flex gap-3">
-                            <span class="grid size-8 flex-none place-items-center rounded-lg bg-white/7 text-gold">
-                                <Phone :size="16" aria-hidden="true" />
+                            <span class="grid size-7 flex-none place-items-center rounded-md bg-white/7 text-edsp-green">
+                                <Phone :size="14" aria-hidden="true" />
                             </span>
-                            <span class="pt-1">
+                            <span class="pt-0.5">
                                 <a :href="`tel:${phone.replace(/\s/g, '')}`" class="footer-link">{{ phone }}</a>
                                 <template v-if="secondPhone">
                                     <br />
@@ -228,16 +230,16 @@ const submitNewsletter = (): void => {
                             </span>
                         </li>
                         <li class="flex gap-3">
-                            <span class="grid size-8 flex-none place-items-center rounded-lg bg-white/7 text-gold">
-                                <Mail :size="16" aria-hidden="true" />
+                            <span class="grid size-7 flex-none place-items-center rounded-md bg-white/7 text-edsp-green">
+                                <Mail :size="14" aria-hidden="true" />
                             </span>
-                            <a :href="`mailto:${email}`" class="footer-link break-all pt-1.5">{{ email }}</a>
+                            <a :href="`mailto:${email}`" class="footer-link break-all pt-1">{{ email }}</a>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3 border-t border-white/10 pt-5 pb-[calc(5rem+env(safe-area-inset-bottom))] text-xs text-[#8295BD] sm:flex-row sm:items-center sm:justify-between min-[1280px]:pb-5">
+            <div class="flex flex-col gap-2 border-t border-white/10 pt-4 pb-[calc(4.75rem+env(safe-area-inset-bottom))] text-[11px] text-[#8295BD] sm:flex-row sm:items-center sm:justify-between sm:text-xs min-[1280px]:pb-4">
                 <p>© {{ currentYear }} {{ tr('École de Droit et Science Politique.', 'School of Law and Political Science.') }}</p>
                 <p class="inline-flex items-center gap-1.5">
                     {{ tr('Tous droits réservés', 'All rights reserved') }}
