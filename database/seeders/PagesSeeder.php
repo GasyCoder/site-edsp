@@ -12,7 +12,15 @@ class PagesSeeder extends Seeder
         $directorMessage = '<p>Chères étudiantes, chers étudiants,</p><p>C’est avec un réel plaisir que je vous souhaite la bienvenue à l’École de Droit et Science Politique. Notre établissement place l’exigence académique, l’esprit critique et le sens des responsabilités au cœur de chaque formation.</p><p>Notre ambition est de former des juristes et des spécialistes de la science politique capables de comprendre les transformations de notre société, d’éclairer la décision publique et de contribuer avec intégrité au développement de Madagascar.</p><p>À l’EDSP, vous trouverez une équipe pédagogique engagée, des parcours structurés de la Licence au Master et un environnement favorable à la réussite, à l’ouverture professionnelle et à l’engagement citoyen.</p><p>Je vous invite à construire pleinement votre projet universitaire au sein de notre école.</p>';
         $directorMessageEn = '<p>Dear students,</p><p>It is a genuine pleasure to welcome you to the School of Law and Political Science. Our School places academic excellence, critical thinking and a sense of responsibility at the heart of every programme.</p><p>Our ambition is to educate legal professionals and political science specialists who can understand the transformations affecting our society, inform public decision-making and contribute with integrity to Madagascar’s development.</p><p>At EDSP, you will find a committed teaching team, structured Bachelor’s and Master’s pathways, and an environment that supports achievement, professional development and civic engagement.</p><p>I invite you to build your academic future fully within our School.</p>';
 
-        $home = $this->page('accueil', 'Accueil', 'home', 'École de Droit et Science Politique | Université de Mahajanga');
+        $home = $this->page(
+            'accueil',
+            'Accueil',
+            'home',
+            'Site officiel de l’École de Droit et Sciences Politique de l’Université de Mahajanga.',
+        );
+        $home->update([
+            'meta_title' => 'Accueil | EDSP - Ecole de Droit et Sciences Politique | Université de Mahajanga',
+        ]);
 
         $sections = [
             ['hero', 'hero', 'Comprendre le droit. Agir sur la société.', null, 'L’EDSP vous forme à l’analyse juridique, aux institutions et aux politiques publiques, de la Licence au Master, au cœur de Mahajanga.', 'Découvrir les parcours', '/formations'],

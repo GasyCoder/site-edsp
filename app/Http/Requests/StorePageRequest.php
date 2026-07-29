@@ -30,7 +30,7 @@ class StorePageRequest extends FormRequest
             'slug' => ['required', new PublicSlug, 'max:180', 'unique:pages,slug'],
             'status' => ['required', Rule::enum(ContentStatus::class)],
             'template' => ['required', 'string', 'max:80'],
-            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_title' => ['nullable', 'string', 'max:90'],
             'meta_description' => ['nullable', 'string', 'max:180'],
             'meta_keywords' => ['nullable', 'string', 'max:255'],
             'canonical_url' => ['nullable', new SafeUrl],

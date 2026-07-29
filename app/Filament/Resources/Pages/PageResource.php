@@ -195,7 +195,7 @@ class PageResource extends Resource
                     ->schema([
                         TextInput::make('meta_title')
                             ->label('Titre SEO')
-                            ->maxLength(70),
+                            ->maxLength(90),
                         Textarea::make('meta_description')
                             ->label('Description SEO')
                             ->rows(3)
@@ -241,7 +241,7 @@ class PageResource extends Resource
                     ->icon(Heroicon::OutlinedLanguage)
                     ->schema([
                         TextInput::make('translations.en.title')->label('Title')->maxLength(180),
-                        TextInput::make('translations.en.meta_title')->label('SEO title')->maxLength(70),
+                        TextInput::make('translations.en.meta_title')->label('SEO title')->maxLength(90),
                         Textarea::make('translations.en.meta_description')->label('SEO description')->rows(3)->maxLength(180),
                         TextInput::make('translations.en.meta_keywords')->label('Keywords'),
                         TextInput::make('translations.en.og_title')->label('Open Graph title')->maxLength(95),

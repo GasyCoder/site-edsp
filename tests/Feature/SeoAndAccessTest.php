@@ -5,6 +5,7 @@ use App\Models\Page;
 use App\Models\Program;
 use App\Models\Redirect;
 use App\Models\Setting;
+use Database\Seeders\PagesSeeder;
 
 test('sitemap and robots expose only configured public discovery data', function (): void {
     Page::query()->create([
@@ -91,6 +92,17 @@ test('long dashes are removed from html and social titles', function (): void {
         ->assertOk()
         ->assertSee('<title inertia data-inertia="">Vie étudiante | EDSP</title>', false)
         ->assertSee('property="og:title" content="Vie étudiante | Université de Mahajanga"', false);
+});
+
+test('the home page uses the requested institutional html title', function (): void {
+    $this->seed(PagesSeeder::class);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee(
+            '<title inertia data-inertia="">Accueil | EDSP - Ecole de Droit et Sciences Politique | Université de Mahajanga</title>',
+            false,
+        );
 });
 
 test('the administrable maintenance switch returns an institutional service page', function (): void {
