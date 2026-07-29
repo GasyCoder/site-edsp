@@ -432,8 +432,8 @@ onBeforeUnmount(() => {
 
 @media (max-width: 639px) {
     .hero-title {
-        font-size: clamp(1.85rem, 8vw, min(var(--hero-title-size, 2.25rem), 2.25rem));
-        line-height: 1.16;
+        font-size: clamp(1.65rem, 7vw, min(var(--hero-title-size, 1.9rem), 1.9rem));
+        line-height: 1.13;
     }
 }
 
