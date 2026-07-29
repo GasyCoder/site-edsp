@@ -50,6 +50,12 @@ const steps = computed(() => [
         title: sectionSetting(props.section, 'step_4_title', tr('Recevoir la confirmation', 'Receive confirmation')),
     },
 ]);
+const stepNumberClasses = [
+    'bg-navy text-white',
+    'bg-institutional text-white',
+    'bg-edsp-green text-white',
+    'bg-gold text-navy',
+];
 const infoText = computed(() => sectionSetting(props.section, 'info_text', tr('Les informations relatives aux inscriptions, calendriers et pièces à fournir sont publiées régulièrement sur le site.', 'Application dates, schedules and required documents are updated regularly on this website.')));
 const campaignFallback = computed(() => sectionSetting(props.section, 'campaign_fallback_text', tr("Consultez l'avis officiel d’inscription en cours.", 'View the current official application notice.')));
 const campaignLinkText = computed(() => sectionSetting(props.section, 'campaign_link_text', tr('Consulter les avis', 'View notices')));
@@ -63,21 +69,16 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
         <div :class="container" class="mx-auto">
             <SectionHeading :eyebrow="eyebrow" :title="title" :description="content" :align="alignment" :dark="dark" />
 
-            <ol class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ol class="mt-11 grid gap-x-5 gap-y-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-5">
                 <li v-for="(step, index) in steps" :key="index" class="admission-step">
-                    <template v-if="index === 0">
-                    <span class="admission-step-number bg-navy text-white">1</span>
-                    </template>
-                    <template v-else-if="index === 1">
-                    <span class="admission-step-number bg-institutional text-white">2</span>
-                    </template>
-                    <template v-else-if="index === 2">
-                    <span class="admission-step-number bg-edsp-green text-white">3</span>
-                    </template>
-                    <template v-else>
-                    <span class="admission-step-number bg-gold text-navy">4</span>
-                    </template>
-                    <h3 class="mt-4 font-semibold text-navy">{{ step.title }}</h3>
+                    <span
+                        class="admission-step-number"
+                        :class="stepNumberClasses[index]"
+                        aria-hidden="true"
+                    >
+                        {{ index + 1 }}
+                    </span>
+                    <h3 class="font-semibold text-navy">{{ step.title }}</h3>
                     <p class="mt-2 text-sm leading-6 text-slate-600">{{ step.description }}</p>
                 </li>
             </ol>
