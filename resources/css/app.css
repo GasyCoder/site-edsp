@@ -71,15 +71,39 @@
     }
 
     .mobile-nav-link {
-        @apply rounded-md px-3 py-2.5 font-semibold text-navy transition hover:bg-soft hover:text-edsp-green dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
+        @apply rounded-md px-3 py-2 text-sm font-semibold text-navy transition hover:bg-soft hover:text-edsp-green dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
+    }
+
+    .mobile-menu-group {
+        @apply overflow-hidden rounded-lg border border-slate-200 bg-white transition-colors dark:border-slate-800 dark:bg-slate-900/70;
+    }
+
+    .mobile-menu-group-active {
+        @apply border-edsp-green/30;
+    }
+
+    .mobile-menu-trigger {
+        @apply flex w-full items-center gap-3 px-3 py-2.5 text-navy transition hover:bg-soft hover:text-edsp-green dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
+    }
+
+    .mobile-menu-trigger-icon {
+        @apply grid size-8 flex-none place-items-center rounded-md bg-soft text-institutional dark:bg-slate-800 dark:text-emerald-300;
+    }
+
+    .mobile-menu-panel {
+        @apply grid gap-0.5 border-t border-slate-200 bg-slate-50/70 p-1.5 dark:border-slate-800 dark:bg-slate-950/50;
     }
 
     .mobile-nav-sublink {
-        @apply rounded-md py-2.5 pl-7 pr-3 text-sm font-semibold text-navy transition hover:bg-soft hover:text-edsp-green dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
+        @apply flex items-center gap-2 rounded-md px-3 py-2 text-[0.8125rem] font-semibold text-navy transition hover:bg-white hover:text-edsp-green dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
+    }
+
+    .mobile-nav-sublink-active {
+        @apply bg-edsp-green/10 text-edsp-green dark:text-emerald-300;
     }
 
     .nav-group-label {
-        @apply mb-1 mt-3 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500;
+        @apply mb-0.5 mt-1.5 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500;
     }
 
     .footer-link {
@@ -256,6 +280,19 @@
 .dropdown-leave-to {
     opacity: 0;
     transform: translateY(-0.35rem);
+}
+
+.mobile-accordion-enter-active,
+.mobile-accordion-leave-active {
+    transition:
+        opacity 140ms ease,
+        transform 140ms ease;
+}
+
+.mobile-accordion-enter-from,
+.mobile-accordion-leave-to {
+    opacity: 0;
+    transform: translateY(-0.25rem);
 }
 
 /* Les vues publiques utilisent encore quelques couleurs utilitaires historiques.
