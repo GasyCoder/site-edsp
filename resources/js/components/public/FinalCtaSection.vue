@@ -57,14 +57,14 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
                     </ul>
                 </div>
 
-                <div class="flex min-w-56 flex-col gap-3 sm:flex-row lg:flex-col">
-                    <SmartLink :href="section?.button_url || '/formations'" class="button-primary justify-center px-6">
+                <div class="flex min-w-0 flex-row flex-wrap justify-center gap-2 lg:min-w-56 lg:flex-col lg:gap-3">
+                    <SmartLink :href="section?.button_url || '/formations'" class="button-primary final-cta-action justify-center whitespace-nowrap">
                         {{ section?.button_text || tr('Voir les formations', 'View programmes') }}
-                        <ArrowRight :size="17" aria-hidden="true" />
+                        <ArrowRight :size="16" aria-hidden="true" />
                     </SmartLink>
                     <SmartLink
                         :href="secondaryButtonUrl"
-                        class="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-3 font-heading text-sm font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
+                        class="final-cta-action inline-flex items-center justify-center whitespace-nowrap rounded-md border border-navy/20 font-heading font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
                     >
                         {{ secondaryButtonText }}
                     </SmartLink>
