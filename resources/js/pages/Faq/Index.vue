@@ -98,7 +98,7 @@ const clearFilters = (): void => {
         </header>
 
         <section class="bg-white px-4 py-10 sm:px-6 sm:py-14 dark:bg-[#071126]" aria-labelledby="faq-list-title">
-            <div class="mx-auto max-w-5xl">
+            <div class="mx-auto max-w-7xl">
                 <div class="grid gap-5 border-b border-slate-200 pb-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-end dark:border-white/10">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.14em] text-edsp-green">
