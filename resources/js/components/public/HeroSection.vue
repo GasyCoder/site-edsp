@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowRight, GraduationCap, Landmark, MapPin, Pencil, Scale, UserPlus } from 'lucide-vue-next';
-import { computed, inject } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { Section } from '../../types';
 import { mediaUrl } from '../../lib/public-content';
 import MediaPlaceholder from './MediaPlaceholder.vue';
@@ -100,7 +100,94 @@ const visualPrograms = computed(() => [
     sectionSetting(props.section, 'visual_program_1', programs.value[0]),
     sectionSetting(props.section, 'visual_program_2', programs.value[1]),
 ]);
-const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â· '));
+const displayedProgram = ref(programs.value[0] || '');
+let programIndex = 0;
+let characterIndex = 0;
+let deleting = false;
+let typingTimer: number | undefined;
+let typingMounted = false;
+
+function clearTypingTimer(): void {
+    if (typingTimer !== undefined) {
+        window.clearTimeout(typingTimer);
+        typingTimer = undefined;
+    }
+}
+
+function animateProgram(): void {
+    const items = programs.value.filter(Boolean);
+
+    if (!items.length) {
+        displayedProgram.value = '';
+        return;
+    }
+
+    programIndex %= items.length;
+    const currentProgram = items[programIndex];
+
+    if (deleting && characterIndex > 0) {
+        characterIndex -= 1;
+        displayedProgram.value = currentProgram.slice(0, characterIndex);
+        typingTimer = window.setTimeout(animateProgram, 45);
+        return;
+    }
+
+    if (deleting) {
+        deleting = false;
+        programIndex = (programIndex + 1) % items.length;
+        characterIndex = 0;
+        typingTimer = window.setTimeout(animateProgram, 220);
+        return;
+    }
+
+    const nextProgram = items[programIndex];
+    characterIndex += 1;
+    displayedProgram.value = nextProgram.slice(0, characterIndex);
+
+    if (characterIndex >= nextProgram.length) {
+        deleting = true;
+        typingTimer = window.setTimeout(animateProgram, 1800);
+        return;
+    }
+
+    typingTimer = window.setTimeout(animateProgram, 75);
+}
+
+function restartProgramAnimation(): void {
+    clearTypingTimer();
+
+    const items = programs.value.filter(Boolean);
+    displayedProgram.value = items[0] || '';
+    programIndex = 0;
+    characterIndex = displayedProgram.value.length;
+    deleting = true;
+
+    if (!items.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        displayedProgram.value = items.join(' Â· ');
+        return;
+    }
+
+    typingTimer = window.setTimeout(animateProgram, 1800);
+}
+
+watch(
+    () => programs.value.join('\u0000'),
+    () => {
+        if (typingMounted) {
+            restartProgramAnimation();
+        }
+    },
+);
+
+onMounted(() => {
+    typingMounted = true;
+    restartProgramAnimation();
+});
+
+onBeforeUnmount(() => {
+    typingMounted = false;
+    clearTypingTimer();
+});
 </script>
 
 <template>
@@ -152,13 +239,17 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
                         v-if="editing"
                         type="button"
                         class="grid size-7 flex-none place-items-center rounded-full border border-edsp-green/30 bg-white text-edsp-green shadow-sm transition hover:bg-edsp-green hover:text-white dark:bg-slate-800"
-                        aria-label="Modifier le texte Deux parcours"
+                        aria-label="Modifier le libellÃ© des mentions"
                         title="Modifier le texte fixe"
                         @click.stop="editField('settings.kicker_text')"
                     >
                         <Pencil :size="13" aria-hidden="true" />
                     </button>
-                    <span class="text-edsp-green">{{ displayedPrograms }}</span>
+                    <span class="text-edsp-green" aria-hidden="true">{{ displayedProgram }}</span>
+                    <span
+                        class="h-4 w-px flex-none bg-edsp-green motion-safe:animate-pulse"
+                        aria-hidden="true"
+                    />
                     <button
                         v-if="editing"
                         type="button"
@@ -203,15 +294,16 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
                     aria-hidden="true"
                 />
                 <div
-                    class="relative z-10 h-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(11,31,85,0.09)] sm:h-[24rem] lg:h-[25rem]"
+                    class="hero-media-card group relative z-10 h-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(11,31,85,0.09)] sm:h-[24rem] lg:h-[25rem]"
                 >
-                    <MediaPlaceholder
-                        v-if="image"
-                        :image-url="image"
-                        :alt="alt"
-                        eager
-                        :label="tr(`Campus et vie Ã©tudiante de l'EDSP`, 'EDSP campus and student life')"
-                    />
+                    <div v-if="image" class="hero-media-motion h-full w-full">
+                        <MediaPlaceholder
+                            :image-url="image"
+                            :alt="alt"
+                            eager
+                            :label="tr(`Campus et vie Ã©tudiante de l'EDSP`, 'EDSP campus and student life')"
+                        />
+                    </div>
                     <div
                         v-else
                         class="flex h-full flex-col bg-navy px-6 py-7 text-white sm:px-9 sm:py-9"
@@ -303,6 +395,29 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
     --hero-highlight-color: rgb(184 129 18 / 78%);
 }
 
+.hero-media-card {
+    transition:
+        transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-media-motion {
+    transition:
+        transform 750ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 750ms ease;
+    will-change: transform;
+}
+
+.hero-media-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgb(11 31 85 / 14%);
+}
+
+.hero-media-card:hover .hero-media-motion {
+    filter: saturate(1.04) contrast(1.015);
+    transform: scale(1.035) translate3d(0, -0.25%, 0);
+}
+
 :global(html.dark) .hero-title-highlight--green {
     --hero-highlight-color: rgb(74 222 128 / 88%);
 }
@@ -319,6 +434,19 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
     .hero-title {
         font-size: clamp(1.85rem, 8vw, min(var(--hero-title-size, 2.25rem), 2.25rem));
         line-height: 1.16;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-media-card,
+    .hero-media-motion {
+        transition: none;
+    }
+
+    .hero-media-card:hover,
+    .hero-media-card:hover .hero-media-motion {
+        filter: none;
+        transform: none;
     }
 }
 </style>
