@@ -100,6 +100,40 @@ const visibleSections = computed<Section[]>(() =>
         .sort((left, right) => (left.position ?? 0) - (right.position ?? 0)),
 );
 
+const normalizeCopy = (value?: string | null): string => (value ?? '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&(?:rsquo|lsquo|apos|#0*39);/gi, "'")
+    .replace(/[’‘]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLocaleLowerCase();
+
+const isRedundantPageIntroduction = (section: Section): boolean => {
+    if (
+        section.section_key !== 'main'
+        || section.subtitle
+        || section.button_text
+        || section.button_url
+        || mediaUrl(section)
+    ) {
+        return false;
+    }
+
+    return normalizeCopy(section.title) === normalizeCopy(props.page.title)
+        && normalizeCopy(section.content) === normalizeCopy(props.page.meta_description);
+};
+
+const hasRedundantPageIntroduction = computed(() =>
+    visibleSections.value.some(isRedundantPageIntroduction),
+);
+
+const displayedSections = computed(() =>
+    visibleSections.value.filter((section) => editing.value || !isRedundantPageIntroduction(section)),
+);
+
 const heroImage = computed(() => {
     for (const section of props.page.sections) {
         if (!section.is_visible) continue;
@@ -155,6 +189,18 @@ const studentLifePhotos = computed(() => props.galleries
     .flatMap((gallery) => gallery.images ?? [])
     .filter((image) => mediaUrl(image.media))
     .slice(0, 10));
+
+const hasDedicatedPageContent = computed(() => {
+    const slug = props.page.slug;
+
+    return slug === 'contact'
+        || (slug === 'equipe' && props.teamMembers.length > 0)
+        || (slug === 'galerie' && props.galleries.length > 0)
+        || (slug === 'partenaires' && props.partners.length > 0)
+        || (slug === 'bibliotheque' && props.documents.length > 0)
+        || (slug === 'admissions' && props.campaign !== null)
+        || (slug === 'vie-etudiante' && (props.news.length > 0 || studentLifePhotos.value.length > 0));
+});
 
 const photoCarousel = ref<HTMLElement | null>(null);
 let carouselTimer: ReturnType<typeof setInterval> | null = null;
@@ -266,9 +312,9 @@ const submitContact = (): void => {
         </header>
 
         <div class="bg-white">
-            <div v-if="visibleSections.length" :class="sectionsWrapperClass">
+            <div v-if="displayedSections.length" :class="sectionsWrapperClass">
                 <EditableSection
-                    v-for="(section, sectionIndex) in visibleSections"
+                    v-for="(section, sectionIndex) in displayedSections"
                     :key="section.id"
                     :section="section"
                     :editing="editing"
@@ -333,12 +379,12 @@ const submitContact = (): void => {
                     <section
                         v-else
                         :class="sectionBackground(section)"
-                        class="relative border-b border-gray-200 px-6 py-14 sm:py-18"
+                        class="relative border-b border-gray-200 px-4 py-12 sm:px-6 sm:py-16"
                         :aria-labelledby="section.title ? `section-${section.id}` : undefined"
                     >
                         <div
                             :class="[sectionContainer(section), sectionAlignment(section)]"
-                            class="mx-auto grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)]"
+                            class="mx-auto grid items-center gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)]"
                         >
                             <div class="min-w-0" :class="!mediaUrl(section) && 'lg:col-span-2'">
                             <p
@@ -351,7 +397,7 @@ const submitContact = (): void => {
                             <h2
                                 v-if="section.title"
                                 :id="`section-${section.id}`"
-                                class="mt-2 text-2xl font-bold leading-tight sm:text-3xl"
+                                class="section-title mt-2"
                                 :class="section.settings?.background === 'blue' ? 'text-white' : 'text-navy'"
                             >
                                 {{ section.title }}
@@ -359,7 +405,7 @@ const submitContact = (): void => {
                             <RichText
                                 v-if="section.content"
                                 :html="section.content"
-                                class="mt-5 text-base sm:text-lg"
+                                class="mt-4 text-[0.95rem] leading-7 sm:text-base"
                                 :class="section.settings?.background === 'blue' ? 'text-blue-100' : 'text-gray-600'"
                             />
 
@@ -436,8 +482,9 @@ const submitContact = (): void => {
 
             <section v-if="page.slug === 'partenaires' && partners.length" class="public-section bg-soft" aria-labelledby="partners-list-title">
                 <div class="mx-auto max-w-7xl">
-                    <h2 id="partners-list-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Partenaires', 'Partners') }}</h2>
-                    <div class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <p class="section-eyebrow text-edsp-green">{{ tr('Coopérations', 'Partnerships') }}</p>
+                    <h2 id="partners-list-title" class="section-title mt-2 text-navy">{{ tr('Nos collaborations institutionnelles', 'Our institutional partnerships') }}</h2>
+                    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         <article v-for="partner in partners" :key="partner.id" class="surface-card p-6">
                             <div class="h-28 overflow-hidden rounded-lg">
                                 <MediaPlaceholder
@@ -549,11 +596,11 @@ const submitContact = (): void => {
 
             <section
                 v-if="page.slug === 'vie-etudiante' && studentLifePhotos.length"
-                class="bg-white py-12 sm:py-14"
+                class="public-section bg-white"
                 aria-labelledby="student-photos-title"
             >
-                <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-6">
-                    <h2 id="student-photos-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('La vie étudiante en images', 'Student life in pictures') }}</h2>
+                <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4">
+                    <h2 id="student-photos-title" class="section-title text-navy">{{ tr('La vie étudiante en images', 'Student life in pictures') }}</h2>
                     <div class="flex items-center gap-3">
                         <Link href="/galerie" class="inline-flex items-center gap-2 font-semibold text-edsp-green transition hover:text-green-700">
                             {{ tr('Voir toute la galerie', 'View the full gallery') }}
@@ -581,7 +628,7 @@ const submitContact = (): void => {
                 </div>
                 <div
                     ref="photoCarousel"
-                    class="mx-auto mt-7 flex max-w-7xl snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 sm:gap-5"
+                    class="mx-auto mt-7 flex max-w-7xl snap-x snap-mandatory gap-4 overflow-x-auto pb-3 sm:gap-5"
                     @mouseenter="pausePhotoAutoplay"
                     @mouseleave="startPhotoAutoplay"
                     @focusin="pausePhotoAutoplay"
@@ -609,10 +656,10 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <section v-if="page.slug === 'vie-etudiante' && news.length" class="bg-soft px-6 py-14 sm:py-16" aria-labelledby="student-news-title">
+            <section v-if="page.slug === 'vie-etudiante' && news.length" class="public-section bg-soft" aria-labelledby="student-news-title">
                 <div class="mx-auto max-w-7xl">
                     <div class="flex flex-wrap items-end justify-between gap-4">
-                        <h2 id="student-news-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Actualités et événements', 'News and events') }}</h2>
+                        <h2 id="student-news-title" class="section-title text-navy">{{ tr('Actualités et événements', 'News and events') }}</h2>
                         <Link href="/actualites" class="inline-flex items-center gap-2 font-semibold text-edsp-green transition hover:text-green-700">
                             {{ tr('Toutes les actualités', 'All news') }}
                             <ArrowRight :size="17" aria-hidden="true" />
@@ -642,7 +689,7 @@ const submitContact = (): void => {
                         </p>
 
                         <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                            <li class="surface-card flex items-start gap-4 p-5">
                                 <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
                                     <MapPin :size="20" aria-hidden="true" />
                                 </span>
@@ -651,7 +698,7 @@ const submitContact = (): void => {
                                     <span class="mt-1 block leading-6 text-gray-600">{{ contactDetails.address }}</span>
                                 </span>
                             </li>
-                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                            <li class="surface-card flex items-start gap-4 p-5">
                                 <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
                                     <Phone :size="20" aria-hidden="true" />
                                 </span>
@@ -665,7 +712,7 @@ const submitContact = (): void => {
                                     >{{ phone }}</a>
                                 </span>
                             </li>
-                            <li class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                            <li class="surface-card flex items-start gap-4 p-5">
                                 <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-navy text-gold">
                                     <Mail :size="20" aria-hidden="true" />
                                 </span>
@@ -691,7 +738,7 @@ const submitContact = (): void => {
                         </ul>
                     </div>
 
-                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                    <div class="surface-card p-6 sm:p-8">
                         <form class="grid gap-x-6 gap-y-5 sm:grid-cols-2" novalidate @submit.prevent="submitContact">
                             <div>
                                 <label for="contact-first-name" class="block text-sm font-semibold text-navy">{{ tr('Prénom', 'First name') }}</label>
@@ -877,7 +924,10 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <div v-else-if="!visibleSections.length && !(page.slug === 'vie-etudiante' && (news.length || studentLifePhotos.length))" class="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
+            <div
+                v-else-if="!displayedSections.length && !hasDedicatedPageContent && !hasRedundantPageIntroduction"
+                class="mx-auto max-w-3xl px-6 py-16 text-center sm:py-20"
+            >
                 <div class="mx-auto h-1 w-14 rounded-full bg-gold" aria-hidden="true" />
                 <h2 class="mt-6 text-2xl font-bold text-navy">{{ tr('Contenu en cours de publication', 'Content coming soon') }}</h2>
                 <p class="mx-auto mt-3 max-w-xl leading-7 text-gray-600">
