@@ -161,13 +161,16 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
                     <span class="sr-only">{{ programs.join(tr(' et ', ' and ')) }}</span>
                 </div>
 
-                <div class="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-                    <SmartLink :href="buttonUrl" class="button-dark justify-center sm:justify-start">
+                <div
+                    class="mt-6 flex flex-row flex-wrap items-center gap-2.5"
+                    :class="alignment === 'center' ? 'justify-center lg:justify-start' : 'justify-start'"
+                >
+                    <SmartLink :href="buttonUrl" class="button-dark hero-action-button justify-center">
                         {{ buttonText }}
-                        <ArrowRight :size="17" aria-hidden="true" />
+                        <ArrowRight :size="16" aria-hidden="true" />
                     </SmartLink>
-                    <SmartLink :href="secondaryButtonUrl" class="button-primary justify-center sm:justify-start">
-                        <UserPlus :size="17" aria-hidden="true" />
+                    <SmartLink :href="secondaryButtonUrl" class="button-primary hero-action-button justify-center">
+                        <UserPlus :size="16" aria-hidden="true" />
                         {{ secondaryButtonText }}
                     </SmartLink>
                 </div>
