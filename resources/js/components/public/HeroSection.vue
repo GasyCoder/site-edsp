@@ -284,7 +284,8 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
 
 @media (max-width: 639px) {
     .hero-title {
-        font-size: clamp(2rem, 9vw, min(var(--hero-title-size, 2.6rem), 2.6rem));
+        font-size: clamp(1.85rem, 8vw, min(var(--hero-title-size, 2.25rem), 2.25rem));
+        line-height: 1.16;
     }
 }
 </style>
