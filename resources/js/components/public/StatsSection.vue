@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 const { tr } = useI18n();
 
-const programCount = computed(() => props.programs.length || '—');
+const programCount = computed(() => props.programs.length);
 const levels = computed(() => {
     const values = [...new Set(props.programs.map((program) => program.level).filter(Boolean))];
     return values.length ? values.join(' · ') : tr('Licence · Master', 'Bachelor’s · Master’s');

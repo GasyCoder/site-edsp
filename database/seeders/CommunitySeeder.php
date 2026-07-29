@@ -29,9 +29,9 @@ class CommunitySeeder extends Seeder
         }
 
         $testimonials = [
-            ['Miora R. (exemple)', 'Étudiante — témoignage de démonstration', 'Les enseignements nous poussent à raisonner avec méthode et à relier le droit aux réalités de notre société.'],
-            ['Tojo A. (exemple)', 'Étudiant — témoignage de démonstration', 'Les débats et les conférences m’ont aidé à développer une lecture plus structurée des enjeux publics.'],
-            ['Fanja L. (exemple)', 'Diplômée — témoignage de démonstration', 'Le parcours présenté ici illustre la manière dont une expérience étudiante peut être valorisée sur le site.'],
+            ['Miora R. (exemple)', 'Étudiante (témoignage de démonstration)', 'Les enseignements nous poussent à raisonner avec méthode et à relier le droit aux réalités de notre société.'],
+            ['Tojo A. (exemple)', 'Étudiant (témoignage de démonstration)', 'Les débats et les conférences m’ont aidé à développer une lecture plus structurée des enjeux publics.'],
+            ['Fanja L. (exemple)', 'Diplômée (témoignage de démonstration)', 'Le parcours présenté ici illustre la manière dont une expérience étudiante peut être valorisée sur le site.'],
         ];
         foreach ($testimonials as [$name, $role, $content]) {
             Testimonial::query()->updateOrCreate(['author_name' => $name], ['author_role' => $role, 'content' => $content, 'is_visible' => true]);
@@ -50,14 +50,14 @@ class CommunitySeeder extends Seeder
             ]]]);
         }
         $testimonialTranslations = [
-            'Miora R. (exemple)' => ['author_role' => 'Student — sample testimonial', 'content' => 'Our courses encourage us to think methodically and connect law with the realities of our society.'],
-            'Tojo A. (exemple)' => ['author_role' => 'Student — sample testimonial', 'content' => 'Debates and conferences have helped me develop a more structured understanding of public issues.'],
-            'Fanja L. (exemple)' => ['author_role' => 'Graduate — sample testimonial', 'content' => 'The pathway presented here shows how a student experience can be highlighted on the website.'],
+            'Miora R. (exemple)' => ['author_role' => 'Student (sample testimonial)', 'content' => 'Our courses encourage us to think methodically and connect law with the realities of our society.'],
+            'Tojo A. (exemple)' => ['author_role' => 'Student (sample testimonial)', 'content' => 'Debates and conferences have helped me develop a more structured understanding of public issues.'],
+            'Fanja L. (exemple)' => ['author_role' => 'Graduate (sample testimonial)', 'content' => 'The pathway presented here shows how a student experience can be highlighted on the website.'],
         ];
         foreach ($testimonialTranslations as $author => $fields) {
             Testimonial::query()->where('author_name', $author)->first()?->update(['translations' => ['en' => $fields]]);
         }
 
-        Partner::query()->updateOrCreate(['name' => 'Partenaire institutionnel — à renseigner'], ['url' => null, 'position' => 1, 'is_visible' => false]);
+        Partner::query()->updateOrCreate(['name' => 'Partenaire institutionnel (à renseigner)'], ['url' => null, 'position' => 1, 'is_visible' => false]);
     }
 }

@@ -36,12 +36,14 @@ const props = withDefaults(
 const page = usePage();
 const { tr } = useI18n();
 const sharedSettings = computed(() => (page.props.settings ?? {}) as SiteSettings);
+const normalizeTitle = (title: string): string => title.replace(/\s*[—–]\s*/g, ' | ').trim();
 const resolvedTitle = computed(
-    () =>
+    () => normalizeTitle(
         props.title ||
         sharedSettings.value.default_meta_title ||
         sharedSettings.value.site_name ||
-        tr('EDSP — Université de Mahajanga', 'EDSP — University of Mahajanga'),
+        tr('EDSP | Université de Mahajanga', 'EDSP | University of Mahajanga'),
+    ),
 );
 const resolvedDescription = computed(
     () =>
@@ -54,7 +56,7 @@ const resolvedKeywords = computed(() => props.keywords || sharedSettings.value.d
 const resolvedImage = computed(
     () => props.imageUrl || sharedSettings.value.default_og_image || null,
 );
-const resolvedOpenGraphTitle = computed(() => props.openGraphTitle || resolvedTitle.value);
+const resolvedOpenGraphTitle = computed(() => normalizeTitle(props.openGraphTitle || resolvedTitle.value));
 const resolvedOpenGraphDescription = computed(() => props.openGraphDescription || resolvedDescription.value);
 const serializedStructuredData = computed(() => props.structuredData ? JSON.stringify(props.structuredData) : null);
 const robots = computed(

@@ -110,7 +110,7 @@ class PublicSiteController extends Controller
                 ->orderBy('id')
                 ->get(),
             'seo' => $seo->forListing(
-                $english ? 'Degree programmes — EDSP' : 'Formations — EDSP',
+                $english ? 'Degree programmes | EDSP' : 'Formations | EDSP',
                 $english ? 'Explore degree programmes offered by the School of Law and Political Science.' : 'Découvrez les parcours de formation proposés par l’École de Droit et Science Politique.',
             ),
         ]);
@@ -139,7 +139,7 @@ class PublicSiteController extends Controller
         return Inertia::render('News/Index', [
             'news' => News::published()->with(['category', 'featuredImage'])->latest('published_at')->paginate(12),
             'seo' => $seo->forListing(
-                $english ? 'News — EDSP' : 'Actualités — EDSP',
+                $english ? 'News | EDSP' : 'Actualités | EDSP',
                 $english ? 'Read news and announcements from the School of Law and Political Science.' : 'Consultez les actualités et communiqués publiés par l’École de Droit et Science Politique.',
             ),
         ]);
@@ -178,7 +178,7 @@ class PublicSiteController extends Controller
             'categories' => $categories,
             'filters' => ['q' => $search, 'category' => $category],
             'seo' => $seo->forListing(
-                $english ? 'Public documents — EDSP' : 'Documents publics — EDSP',
+                $english ? 'Public documents | EDSP' : 'Documents publics | EDSP',
                 $english
                     ? 'Find and consult official documents published by the School of Law and Political Science.'
                     : 'Recherchez et consultez les documents officiels publiés par l’École de Droit et Science Politique.',
@@ -196,7 +196,7 @@ class PublicSiteController extends Controller
             ->get();
         $english = app()->isLocale('en');
         $seoData = $seo->forListing(
-            $english ? 'Frequently asked questions — EDSP' : 'Questions fréquentes — EDSP',
+            $english ? 'Frequently asked questions | EDSP' : 'Questions fréquentes | EDSP',
             $english
                 ? 'Find clear answers to common questions about EDSP programmes, admissions and student services.'
                 : 'Retrouvez les réponses aux questions fréquentes sur les formations, les admissions et les services de l’EDSP.',

@@ -23,7 +23,7 @@ class AcademicContentSeeder extends Seeder
             'skills' => '<ul><li>Raisonnement juridique</li><li>Recherche documentaire</li><li>Argumentation et rédaction</li></ul>',
             'careers' => 'Professions juridiques, administration, entreprises et poursuite d’études.',
             'duration' => 'Licence et Master', 'curriculum' => 'Le détail officiel des unités d’enseignement est administrable depuis le CMS.',
-            'status' => 'published', 'position' => 1, 'meta_title' => 'Mention Droit — Parcours de Licence et Master | EDSP',
+            'status' => 'published', 'position' => 1, 'meta_title' => 'Mention Droit : parcours de Licence et Master | EDSP',
             'meta_description' => 'Découvrez la mention Droit de l’EDSP : tronc commun, Droit privé et Droit des affaires, de la L1 au M2.',
             'robots_index' => true, 'robots_follow' => true, 'published_at' => now(),
         ]);
@@ -38,7 +38,7 @@ class AcademicContentSeeder extends Seeder
             'skills' => '<ul><li>Analyse institutionnelle</li><li>Conception et évaluation des politiques publiques</li><li>Recherche en sciences sociales</li></ul>',
             'careers' => 'Administration publique, collectivités, organisations, recherche et poursuite d’études.',
             'duration' => 'Licence et Master', 'curriculum' => 'Le détail officiel des unités d’enseignement est administrable depuis le CMS.',
-            'status' => 'published', 'position' => 2, 'meta_title' => 'Mention Sciences Politiques — Licence et Master | EDSP',
+            'status' => 'published', 'position' => 2, 'meta_title' => 'Mention Sciences Politiques : Licence et Master | EDSP',
             'meta_description' => 'Découvrez les parcours Science Politique et Études Politiques proposés par l’EDSP de la L1 au M2.',
             'robots_index' => true, 'robots_follow' => true, 'published_at' => now(),
         ]);
@@ -58,7 +58,7 @@ class AcademicContentSeeder extends Seeder
                 'admission_requirements' => 'Requirements are specified for each admission round.',
                 'skills' => '<ul><li>Legal reasoning</li><li>Documentary research</li><li>Legal argument and drafting</li></ul>',
                 'careers' => 'Legal professions, public administration, business and further study.', 'duration' => 'Bachelor’s and Master’s degrees',
-                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Law degree pathways — Bachelor to Master | EDSP',
+                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Law degree pathways: Bachelor to Master | EDSP',
                 'meta_description' => 'Explore EDSP Law pathways from the common core through Private Law and Business Law, from L1 to M2.',
             ],
             'science-politique' => [
@@ -68,7 +68,7 @@ class AcademicContentSeeder extends Seeder
                 'admission_requirements' => 'Requirements are specified for each admission round.',
                 'skills' => '<ul><li>Institutional analysis</li><li>Public policy design and evaluation</li><li>Social science research</li></ul>',
                 'careers' => 'Public administration, local authorities, organisations, research and further study.', 'duration' => 'Bachelor’s and Master’s degrees',
-                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Political Science pathways — Bachelor to Master | EDSP',
+                'curriculum' => 'The official course-unit catalogue is managed through the CMS.', 'meta_title' => 'Political Science pathways: Bachelor to Master | EDSP',
                 'meta_description' => 'Explore EDSP Political Science and Political Studies pathways from L1 to M2.',
             ],
         ];

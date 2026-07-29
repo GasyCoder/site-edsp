@@ -76,6 +76,23 @@ test('public pages expose server rendered canonical metadata and json ld', funct
         ->assertSee('WebPage', false);
 });
 
+test('long dashes are removed from html and social titles', function (): void {
+    Page::query()->create([
+        'title' => 'Vie étudiante',
+        'slug' => 'titre-sans-tiret-long',
+        'status' => 'published',
+        'template' => 'default',
+        'meta_title' => 'Vie étudiante — EDSP',
+        'og_title' => 'Vie étudiante – Université de Mahajanga',
+        'published_at' => now(),
+    ]);
+
+    $this->get('/titre-sans-tiret-long')
+        ->assertOk()
+        ->assertSee('<title inertia data-inertia="">Vie étudiante | EDSP</title>', false)
+        ->assertSee('property="og:title" content="Vie étudiante | Université de Mahajanga"', false);
+});
+
 test('the administrable maintenance switch returns an institutional service page', function (): void {
     Setting::query()->updateOrCreate(
         ['key' => 'maintenance_mode'],

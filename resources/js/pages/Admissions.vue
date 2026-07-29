@@ -551,7 +551,7 @@ const submit = (): void => {
                                     <label for="academic-level" class="text-sm font-semibold text-navy">{{ tr('Niveau demandé', 'Level applied for') }} *</label>
                                     <select id="academic-level" v-model.number="form.academic_level_id" name="academic_level_id" required class="form-control mt-2" :aria-invalid="Boolean(fieldError('academic_level_id'))">
                                         <option :value="0" disabled>{{ tr('Sélectionnez le niveau', 'Select a level') }}</option>
-                                        <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.code }} — {{ level.name }}</option>
+                                        <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.code }} · {{ level.name }}</option>
                                     </select>
                                     <p v-if="fieldError('academic_level_id')" class="mt-1.5 text-sm text-red-700">{{ fieldError('academic_level_id') }}</p>
                                 </div>
@@ -626,7 +626,7 @@ const submit = (): void => {
                                         </div>
                                         <p v-if="documentError(document.key)" class="mt-2 text-sm text-red-700">{{ documentError(document.key) }}</p>
                                     </div>
-                                    <p class="text-xs leading-5 text-slate-500 sm:col-span-2">{{ tr('JPG, PNG, WebP, PDF, DOC ou DOCX — 5 Mo maximum par fichier.', 'JPG, PNG, WebP, PDF, DOC or DOCX — maximum 5 MB per file.') }}</p>
+                                    <p class="text-xs leading-5 text-slate-500 sm:col-span-2">{{ tr('JPG, PNG, WebP, PDF, DOC ou DOCX (5 Mo maximum par fichier).', 'JPG, PNG, WebP, PDF, DOC or DOCX (maximum 5 MB per file).') }}</p>
                                 </div>
 
                                 <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:col-span-2">

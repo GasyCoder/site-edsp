@@ -224,12 +224,12 @@ const directorMessageFields: SectionField[] = [
 ];
 
 const presentationFields: SectionField[] = [
-    detailText('feature_1_title', 'Carte 1 — titre'),
-    detailText('feature_1_description', 'Carte 1 — description', 3),
-    detailText('feature_2_title', 'Carte 2 — titre'),
-    detailText('feature_2_description', 'Carte 2 — description', 3),
-    detailText('feature_3_title', 'Carte 3 — titre'),
-    detailText('feature_3_description', 'Carte 3 — description', 3),
+    detailText('feature_1_title', 'Carte 1 : titre'),
+    detailText('feature_1_description', 'Carte 1 : description', 3),
+    detailText('feature_2_title', 'Carte 2 : titre'),
+    detailText('feature_2_description', 'Carte 2 : description', 3),
+    detailText('feature_3_title', 'Carte 3 : titre'),
+    detailText('feature_3_description', 'Carte 3 : description', 3),
 ];
 
 const statsFields: SectionField[] = [
@@ -241,8 +241,8 @@ const statsFields: SectionField[] = [
 
 const admissionsFields: SectionField[] = [
     ...[1, 2, 3, 4].flatMap((number) => [
-        detailText(`step_${number}_title`, `Étape ${number} — titre`),
-        detailText(`step_${number}_description`, `Étape ${number} — description`, 3),
+        detailText(`step_${number}_title`, `Étape ${number} : titre`),
+        detailText(`step_${number}_description`, `Étape ${number} : description`, 3),
     ]),
     detailText('info_text', 'Note d’information', 3),
     detailText('campaign_fallback_text', 'Texte lorsqu’aucune campagne n’est ouverte', 2),

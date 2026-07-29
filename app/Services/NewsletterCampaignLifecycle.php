@@ -98,7 +98,7 @@ class NewsletterCampaignLifecycle
 
             $notice = NewsletterCampaign::query()->create([
                 'type' => 'event_cancellation',
-                'title' => 'Annulation — '.$locked->title,
+                'title' => 'Annulation : '.$locked->title,
                 'subject' => 'Annulation : '.$locked->subject,
                 'preheader' => 'Cet événement est annulé. Consultez les informations importantes.',
                 'content' => '<p><strong>L’événement « '.e($locked->title).' » est annulé.</strong></p><p>'.$safeReason.'</p>',

@@ -24,8 +24,8 @@ const accreditationLabel = computed(() => props.settings.accreditation_reference
     'Degree programme accreditation',
 ));
 const accreditationReference = computed(() => props.settings.accreditation_reference || tr(
-    'Arrêté n°34682/2025-MESUPRES portant habilitation de l’offre de formation dispensée par l’établissement d’enseignement supérieur dénommé « Université de Mahajanga – École de Droit et Science Politique – EDSP »',
-    'Order No. 34682/2025-MESUPRES accrediting the degree programmes delivered by the higher education institution known as “University of Mahajanga – School of Law and Political Science (EDSP)”',
+    'Arrêté n°34682/2025-MESUPRES portant habilitation de l’offre de formation dispensée par l’établissement d’enseignement supérieur dénommé « Université de Mahajanga, École de Droit et Science Politique (EDSP) »',
+    'Order No. 34682/2025-MESUPRES accrediting the degree programmes delivered by the higher education institution known as “University of Mahajanga, School of Law and Political Science (EDSP)”',
 ));
 const institutionName = computed(() => props.settings.institution_name || tr('École de Droit et Science Politique', 'School of Law and Political Science'));
 const form = useForm({

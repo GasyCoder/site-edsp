@@ -72,7 +72,7 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="title"
-                        :label="tr('Grande photo — vie étudiante', 'Student life photo')"
+                        :label="tr('Grande photo de la vie étudiante', 'Student life photo')"
                     />
                     <button
                         v-if="editing"

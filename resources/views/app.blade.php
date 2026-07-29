@@ -4,11 +4,12 @@
         @php
             $seo = $page['props']['seo'] ?? [];
             $settings = $page['props']['settings'] ?? [];
-            $seoTitle = $seo['title'] ?? $settings['default_meta_title'] ?? config('app.name', 'EDSP');
+            $normalizeSeoTitle = static fn ($title) => trim((string) preg_replace('/\s*[—–]\s*/u', ' | ', (string) $title));
+            $seoTitle = $normalizeSeoTitle($seo['title'] ?? $settings['default_meta_title'] ?? config('app.name', 'EDSP'));
             $seoDescription = $seo['description'] ?? $settings['default_meta_description'] ?? null;
             $seoCanonical = $seo['canonical'] ?? url()->current();
             $seoRobots = $seo['robots'] ?? 'index,follow';
-            $seoOgTitle = $seo['og_title'] ?? $seoTitle;
+            $seoOgTitle = $normalizeSeoTitle($seo['og_title'] ?? $seoTitle);
             $seoOgDescription = $seo['og_description'] ?? $seoDescription;
             $seoOgImage = $seo['og_image'] ?? $settings['default_og_image'] ?? null;
             $seoKeywords = $seo['keywords'] ?? $settings['default_meta_keywords'] ?? null;

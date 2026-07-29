@@ -106,7 +106,7 @@ onMounted(loadMedia);
                 <select :id="`${inputId}-select`" :value="modelValue ?? ''" class="form-control pl-10" @change="selectMedia">
                     <option value="">Aucune image</option>
                     <option v-for="item in media" :key="item.id" :value="item.id">
-                        {{ item.original_name }}{{ item.alt_text ? ` — ${item.alt_text}` : '' }}
+                        {{ item.original_name }}{{ item.alt_text ? ` · ${item.alt_text}` : '' }}
                     </option>
                 </select>
             </span>

@@ -24,7 +24,7 @@ class NewsSeeder extends Seeder
             News::query()->updateOrCreate(['slug' => $slug], [
                 'title' => $title, 'excerpt' => $excerpt, 'content' => '<p>'.$content.'</p>',
                 'category_id' => $categoryId, 'status' => 'published', 'is_featured' => $featured,
-                'meta_title' => $title.' — EDSP', 'meta_description' => $excerpt,
+                'meta_title' => $title.' | EDSP', 'meta_description' => $excerpt,
                 'robots_index' => true, 'robots_follow' => true,
                 'published_at' => now()->subDays($index + 1),
             ]);
@@ -36,7 +36,7 @@ class NewsSeeder extends Seeder
             'activites-scientifiques-et-conferences' => ['title' => 'Academic events and conferences', 'excerpt' => 'Conferences, meetings and academic activities at EDSP.', 'content' => '<p>Follow announcements about academic events and conferences organised or hosted by EDSP.</p>'],
         ];
         foreach ($translations as $slug => $fields) {
-            News::query()->where('slug', $slug)->first()?->update(['translations' => ['en' => $fields + ['meta_title' => $fields['title'].' — EDSP', 'meta_description' => $fields['excerpt']]]]);
+            News::query()->where('slug', $slug)->first()?->update(['translations' => ['en' => $fields + ['meta_title' => $fields['title'].' | EDSP', 'meta_description' => $fields['excerpt']]]]);
         }
         $announcement->update(['translations' => ['en' => ['name' => 'Announcements']]]);
         $academic->update(['translations' => ['en' => ['name' => 'Academic life']]]);

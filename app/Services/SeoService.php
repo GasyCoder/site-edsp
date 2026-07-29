@@ -13,16 +13,17 @@ final class SeoService
     /** @return array<string, mixed> */
     public function for(Model $content, array $settings = []): array
     {
-        $title = $content->meta_title ?: $content->title;
+        $title = $this->normalizeTitle($content->meta_title ?: $content->title);
         $description = $content->meta_description ?: Str::limit(strip_tags((string) ($content->excerpt ?? $content->description ?? '')), 180, '');
+        $fallbackTitle = $this->normalizeTitle($settings['seo_default_title'] ?? $settings['site_name'] ?? 'EDSP');
 
         $seo = [
-            'title' => $title ?: ($settings['seo_default_title'] ?? $settings['site_name'] ?? 'EDSP'),
+            'title' => $title ?: $fallbackTitle,
             'description' => $description ?: ($settings['seo_default_description'] ?? null),
             'keywords' => $content->meta_keywords ?? null,
             'canonical' => $content->canonical_url ?: url()->current(),
             'robots' => ($content->robots_index ?? true ? 'index' : 'noindex').','.($content->robots_follow ?? true ? 'follow' : 'nofollow'),
-            'og_title' => $content->og_title ?: $title,
+            'og_title' => $this->normalizeTitle($content->og_title ?: $title),
             'og_description' => $content->og_description ?: $description,
             'og_image' => $content->ogImage?->image_url ?? $settings['seo_default_og_image'] ?? null,
         ];
@@ -36,6 +37,7 @@ final class SeoService
     public function forListing(string $title, string $description, string $type = 'CollectionPage'): array
     {
         $canonical = url()->current();
+        $title = $this->normalizeTitle($title) ?? 'EDSP';
 
         return [
             'title' => $title,
@@ -54,6 +56,15 @@ final class SeoService
                 'url' => $canonical,
             ],
         ];
+    }
+
+    private function normalizeTitle(?string $title): ?string
+    {
+        if (blank($title)) {
+            return null;
+        }
+
+        return trim((string) preg_replace('/\s*[—–]\s*/u', ' | ', $title));
     }
 
     /** @param array<string, mixed> $seo @param array<string, mixed> $settings @return array<string, mixed> */

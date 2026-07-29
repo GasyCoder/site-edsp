@@ -48,7 +48,7 @@ class ApplicationController extends Controller
                     'parcours_name' => $english ? $this->academicLabel($link->parcours->nom) : $link->parcours->nom,
                 ]),
             'seo' => $seo->forListing(
-                $english ? 'Application — EDSP' : 'Inscription — EDSP',
+                $english ? 'Application | EDSP' : 'Inscription | EDSP',
                 $english ? 'Submit your application to the School of Law and Political Science.' : 'Déposez votre demande d’inscription auprès de l’École de Droit et Science Politique.',
             ),
         ]);
@@ -71,7 +71,7 @@ class ApplicationController extends Controller
         $data = $request->safe()->except('website');
         $data['academic_background'] = filled($data['academic_background'] ?? null)
             ? $data['academic_background']
-            : trim($data['last_diploma'].' — '.$data['previous_institution'].' ('.$data['graduation_year'].')');
+            : trim($data['last_diploma'].', '.$data['previous_institution'].' ('.$data['graduation_year'].')');
         $application = $service->create($data);
 
         $message = app()->isLocale('en')
