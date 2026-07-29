@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function (): void {
     // proxies and shared hosts reject non-standard form methods such as PATCH.
     Route::match(['post', 'patch'], '/edition/sections/{section}', [PageSectionController::class, 'update'])
         ->name('sections.update');
-    Route::patch('/edition/reference-ministerielle', [SettingController::class, 'updateInstitutionalReference'])
+    Route::match(['post', 'patch'], '/edition/reference-ministerielle', [SettingController::class, 'updateInstitutionalReference'])
         ->name('settings.institutional-reference.update');
     Route::patch('/administration/candidatures/{application}/statut', [ApplicationStatusController::class, 'update'])->name('applications.status.update');
     Route::get('/administration/documents-candidature/{document}/apercu', [ApplicationDocumentController::class, 'preview'])

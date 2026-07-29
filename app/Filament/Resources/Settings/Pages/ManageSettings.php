@@ -129,8 +129,8 @@ class ManageSettings extends Page
                         Tab::make('Référence officielle')
                             ->icon(Heroicon::OutlinedDocumentCheck)
                             ->schema([
-                                Section::make('Habilitation de l’établissement')
-                                    ->description('Modifiez ici l’arrêté ministériel affiché dans le bandeau institutionnel du site public.')
+                                Section::make('Référence historique de l’établissement')
+                                    ->description('Référence historique de l’établissement affichée dans le bandeau institutionnel du site public.')
                                     ->icon(Heroicon::OutlinedBuildingLibrary)
                                     ->schema([
                                         TextInput::make('ministerial_reference_label')
@@ -147,6 +147,23 @@ class ManageSettings extends Page
                                             ->required()
                                             ->maxLength(500),
                                     ]),
+                                Section::make('Habilitation de l’offre de formation')
+                                    ->description('Arrêté qui habilite officiellement les formations dispensées par l’EDSP.')
+                                    ->icon(Heroicon::OutlinedAcademicCap)
+                                    ->schema([
+                                        TextInput::make('accreditation_reference_label')
+                                            ->label('Libellé affiché au public')
+                                            ->placeholder('Habilitation de l’offre de formation')
+                                            ->required()
+                                            ->maxLength(180),
+                                        Textarea::make('accreditation_reference')
+                                            ->label('Référence de l’arrêté d’habilitation')
+                                            ->placeholder('Arrêté n°34682/2025-MESUPRES portant habilitation de l’offre de formation…')
+                                            ->helperText('Ce texte est affiché avec la référence historique dans le bandeau institutionnel du site.')
+                                            ->rows(5)
+                                            ->required()
+                                            ->maxLength(1000),
+                                    ]),
                                 Section::make('Version anglaise')
                                     ->description('Texte affiché lorsque la langue du site est English.')
                                     ->icon(Heroicon::OutlinedLanguage)
@@ -158,6 +175,13 @@ class ManageSettings extends Page
                                             ->label('Ministerial order reference')
                                             ->rows(3)
                                             ->maxLength(500),
+                                        TextInput::make('accreditation_reference_label_en')
+                                            ->label('Degree programme accreditation label')
+                                            ->maxLength(180),
+                                        Textarea::make('accreditation_reference_en')
+                                            ->label('Degree programme accreditation order')
+                                            ->rows(5)
+                                            ->maxLength(1000),
                                     ]),
                             ]),
                         Tab::make('Coordonnées')
@@ -382,6 +406,10 @@ class ManageSettings extends Page
                 'ministerial_reference' => $data['ministerial_reference'] ?? null,
                 'ministerial_reference_label_en' => $data['ministerial_reference_label_en'] ?? null,
                 'ministerial_reference_en' => $data['ministerial_reference_en'] ?? null,
+                'accreditation_reference_label' => $data['accreditation_reference_label'] ?? null,
+                'accreditation_reference' => $data['accreditation_reference'] ?? null,
+                'accreditation_reference_label_en' => $data['accreditation_reference_label_en'] ?? null,
+                'accreditation_reference_en' => $data['accreditation_reference_en'] ?? null,
                 'academic_year' => $data['academic_year'] ?? null,
                 'contact_email' => $data['contact_email'] ?? null,
                 'email' => $data['contact_email'] ?? null,
@@ -447,6 +475,10 @@ class ManageSettings extends Page
             'ministerial_reference' => $settings->get('ministerial_reference'),
             'ministerial_reference_label_en' => $settings->get('ministerial_reference_label_en'),
             'ministerial_reference_en' => $settings->get('ministerial_reference_en'),
+            'accreditation_reference_label' => $settings->get('accreditation_reference_label'),
+            'accreditation_reference' => $settings->get('accreditation_reference'),
+            'accreditation_reference_label_en' => $settings->get('accreditation_reference_label_en'),
+            'accreditation_reference_en' => $settings->get('accreditation_reference_en'),
             'academic_year' => $settings->get('academic_year'),
             'contact_email' => $settings->get('contact_email') ?: $settings->get('email'),
             'contact_phone' => $settings->get('contact_phone') ?: $settings->get('phone'),
@@ -691,6 +723,10 @@ class ManageSettings extends Page
             'ministerial_reference' => ['string', 'legal', true],
             'ministerial_reference_label_en' => ['string', 'legal', true],
             'ministerial_reference_en' => ['string', 'legal', true],
+            'accreditation_reference_label' => ['string', 'legal', true],
+            'accreditation_reference' => ['text', 'legal', true],
+            'accreditation_reference_label_en' => ['string', 'legal', true],
+            'accreditation_reference_en' => ['text', 'legal', true],
             'logo_url' => ['string', 'general', true],
             'logo_dark_url' => ['string', 'general', true],
             'favicon_url' => ['string', 'general', true],

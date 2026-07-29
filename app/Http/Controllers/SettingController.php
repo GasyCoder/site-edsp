@@ -24,7 +24,7 @@ class SettingController extends Controller
         });
         $settings->forget();
 
-        return back()->with('success', 'Référence ministérielle mise à jour.');
+        return back()->with('success', 'Références officielles mises à jour.');
     }
 
     public function update(UpdateSettingRequest $request, Setting $setting, SettingService $settings)

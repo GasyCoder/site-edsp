@@ -29,10 +29,29 @@ test('the settings page uses a clear grouped form', function (): void {
         ->assertSee('Identité')
         ->assertSee('Référence officielle')
         ->assertSee('Modifier la référence officielle')
+        ->assertSee('Habilitation de l’offre de formation')
+        ->assertSee('Référence de l’arrêté d’habilitation')
         ->assertSee('Coordonnées')
         ->assertSee('Réseaux sociaux')
         ->assertSee('SEO et partage')
         ->assertSee('Enregistrer les paramètres');
+});
+
+test('an authorized editor updates both official references from the public editor', function (): void {
+    $response = $this->post(route('settings.institutional-reference.update'), [
+        'ministerial_reference_label' => 'Référence historique',
+        'ministerial_reference' => 'Arrêté historique de l’EDSP',
+        'accreditation_reference_label' => 'Habilitation des formations',
+        'accreditation_reference' => 'Arrêté n°34682/2025-MESUPRES portant habilitation de l’offre de formation de l’EDSP',
+    ]);
+
+    $response->assertRedirect()
+        ->assertSessionHas('success', 'Références officielles mises à jour.');
+
+    expect(Setting::query()->where('key', 'ministerial_reference')->value('value'))
+        ->toBe('Arrêté historique de l’EDSP')
+        ->and(Setting::query()->where('key', 'accreditation_reference')->value('value'))
+        ->toContain('34682/2025-MESUPRES');
 });
 
 test('an existing media image can be selected as the site logo', function (): void {

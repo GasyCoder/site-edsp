@@ -255,6 +255,8 @@ export interface SiteSettings {
     library_url?: Nullable<string>;
     linkedin?: Nullable<string>;
     logo_url?: Nullable<string>;
+    accreditation_reference?: Nullable<string>;
+    accreditation_reference_label?: Nullable<string>;
     ministerial_reference?: Nullable<string>;
     ministerial_reference_label?: Nullable<string>;
     phone?: Nullable<string>;

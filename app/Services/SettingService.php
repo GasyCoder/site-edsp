@@ -30,7 +30,7 @@ final class SettingService
         });
 
         if (app()->isLocale('en')) {
-            foreach (['institution_name', 'site_description', 'footer_text', 'ministerial_reference_label', 'ministerial_reference', 'default_meta_title', 'default_meta_description', 'default_meta_keywords'] as $key) {
+            foreach (['institution_name', 'site_description', 'footer_text', 'ministerial_reference_label', 'ministerial_reference', 'accreditation_reference_label', 'accreditation_reference', 'default_meta_title', 'default_meta_description', 'default_meta_keywords'] as $key) {
                 if (filled($settings[$key.'_en'] ?? null)) {
                     $settings[$key] = $settings[$key.'_en'];
                 }

@@ -22,6 +22,8 @@ class UpdateInstitutionalReferenceRequest extends FormRequest
         return [
             'ministerial_reference_label' => ['required', 'string', 'max:180'],
             'ministerial_reference' => ['required', 'string', 'max:500'],
+            'accreditation_reference_label' => ['required', 'string', 'max:180'],
+            'accreditation_reference' => ['required', 'string', 'max:1000'],
         ];
     }
 }
