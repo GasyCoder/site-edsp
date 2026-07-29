@@ -14,6 +14,12 @@ const { tr } = useI18n();
 const levelLabel = computed(() => programLevelLabel(props.program));
 
 const mentionLabel = computed(() => props.program.mention_record?.nom || props.program.domain || props.program.mention);
+const showMention = computed(() => {
+    const mention = mentionLabel.value?.trim().toLocaleLowerCase('fr');
+    const title = props.program.title.trim().toLocaleLowerCase('fr');
+
+    return Boolean(mention && mention !== title);
+});
 
 const icon = computed(() => {
     const subject = `${props.program.slug} ${props.program.domain ?? ''}`.toLocaleLowerCase('fr');
@@ -32,30 +38,38 @@ const icon = computed(() => {
 
 <template>
     <article
-        class="group surface-card flex h-full flex-col p-5 transition-colors hover:border-edsp-green/35 sm:p-7"
+        class="group surface-card flex h-full flex-col p-4 transition-[border-color,box-shadow] hover:border-edsp-green/30 hover:shadow-[0_10px_22px_rgba(11,31,85,0.06)] sm:p-5"
     >
-        <span class="mb-4 grid size-11 place-items-center rounded-lg bg-institutional/10 text-institutional">
-            <component :is="icon" :size="23" :stroke-width="1.8" aria-hidden="true" />
-        </span>
-        <p class="text-sm font-bold uppercase tracking-wide text-edsp-green">{{ levelLabel }}</p>
-        <h3 class="mt-2 text-xl font-bold text-navy sm:text-[1.35rem]">{{ program.title }}</h3>
-        <p class="mt-3 flex-1 text-[0.95rem] leading-7 text-slate-600">{{ program.description }}</p>
-        <dl v-if="program.duration || mentionLabel" class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <div v-if="program.duration">
-                <dt class="sr-only">{{ tr('Durée', 'Duration') }}</dt>
-                <dd class="font-semibold text-slate-700">{{ program.duration }}</dd>
+        <div class="flex items-start gap-3.5">
+            <span class="grid size-10 flex-none place-items-center rounded-lg bg-institutional/8 text-institutional">
+                <component :is="icon" :size="20" :stroke-width="1.8" aria-hidden="true" />
+            </span>
+            <div class="min-w-0">
+                <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-edsp-green sm:text-xs">{{ levelLabel }}</p>
+                <h3 class="mt-1 text-lg font-bold leading-tight text-navy sm:text-xl">{{ program.title }}</h3>
             </div>
-            <div v-if="mentionLabel">
-                <dt class="sr-only">{{ tr('Mention', 'Subject area') }}</dt>
-                <dd class="text-slate-500">{{ mentionLabel }}</dd>
-            </div>
-        </dl>
-        <Link
-            :href="`/formations/${program.slug}`"
-            class="mt-7 inline-flex w-fit items-center gap-2 font-heading text-sm font-semibold text-institutional transition group-hover:text-edsp-green"
-        >
-            {{ tr('Découvrir le parcours', 'Explore this programme') }}
-            <ArrowRight :size="17" aria-hidden="true" />
-        </Link>
+        </div>
+
+        <p class="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-slate-600 sm:line-clamp-2">{{ program.description }}</p>
+
+        <div class="mt-4 flex flex-wrap items-end justify-between gap-x-5 gap-y-3 border-t border-slate-200 pt-3.5">
+            <dl v-if="program.duration || showMention" class="flex flex-wrap gap-x-5 gap-y-1 text-xs sm:text-sm">
+                <div v-if="program.duration">
+                    <dt class="sr-only">{{ tr('Durée', 'Duration') }}</dt>
+                    <dd class="font-semibold text-slate-700">{{ program.duration }}</dd>
+                </div>
+                <div v-if="showMention">
+                    <dt class="sr-only">{{ tr('Mention', 'Subject area') }}</dt>
+                    <dd class="text-slate-500">{{ mentionLabel }}</dd>
+                </div>
+            </dl>
+            <Link
+                :href="`/formations/${program.slug}`"
+                class="inline-flex w-fit items-center gap-1.5 font-heading text-xs font-semibold text-institutional transition group-hover:text-edsp-green sm:text-sm"
+            >
+                {{ tr('Découvrir le parcours', 'Explore this programme') }}
+                <ArrowRight :size="15" aria-hidden="true" />
+            </Link>
+        </div>
     </article>
 </template>
