@@ -239,11 +239,25 @@ const submitNewsletter = (): void => {
 
             <div class="flex flex-col gap-2 border-t border-white/10 pt-4 pb-[calc(4.75rem+env(safe-area-inset-bottom))] text-[11px] text-[#8295BD] sm:flex-row sm:items-center sm:justify-between sm:text-xs min-[1280px]:pb-4">
                 <p>
-                    © {{ currentYear }}
-                    {{ tr(
-                        'École de Droit et Science Politique | Université de Mahajanga. Conçu par Florent B.',
-                        'School of Law and Political Science | University of Mahajanga. Designed by Florent B.',
-                    ) }}
+                    © {{ currentYear }} {{ tr('École de Droit et Science Politique', 'School of Law and Political Science') }}
+                    |
+                    <a
+                        href="https://mahajanga-univ.mg/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="transition hover:text-white hover:underline hover:underline-offset-2"
+                    >
+                        {{ tr('Université de Mahajanga', 'University of Mahajanga') }}
+                    </a>.
+                    {{ tr('Conçu par', 'Designed by') }}
+                    <a
+                        href="https://www.linkedin.com/in/florentbezara/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="transition hover:text-white hover:underline hover:underline-offset-2"
+                    >
+                        Florent B.
+                    </a>
                 </p>
                 <nav
                     :aria-label="tr('Informations légales', 'Legal information')"
