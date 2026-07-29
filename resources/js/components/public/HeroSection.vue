@@ -117,7 +117,18 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
                             v-for="(segment, index) in titleSegments"
                             :key="`${index}-${segment.text}`"
                             :class="segment.color ? highlightClasses[segment.color] : undefined"
-                        >{{ segment.text }}</span>
+                        >
+                            <span class="relative z-10">{{ segment.text }}</span>
+                            <svg
+                                v-if="segment.color"
+                                class="hero-title-stroke"
+                                viewBox="0 0 220 14"
+                                preserveAspectRatio="none"
+                                aria-hidden="true"
+                            >
+                                <path d="M4 10 C 60 3, 150 4, 216 8" />
+                            </svg>
+                        </span>
                     </h1>
                     <button
                         v-if="editing"
@@ -255,34 +266,53 @@ const displayedPrograms = computed(() => programs.value.filter(Boolean).join(' Â
 }
 
 .hero-title-highlight {
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    box-shadow: inset 0 -0.24em 0 var(--hero-highlight-color);
+    position: relative;
+    display: inline-block;
     color: inherit;
 }
 
+.hero-title-stroke {
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.06em;
+    left: -0.04em;
+    width: calc(100% + 0.08em);
+    height: 0.22em;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.hero-title-stroke path {
+    fill: none;
+    stroke: var(--hero-highlight-color);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
 .hero-title-highlight--green {
-    --hero-highlight-color: rgb(7 139 62 / 22%);
+    --hero-highlight-color: rgb(7 139 62 / 82%);
 }
 
 .hero-title-highlight--blue {
-    --hero-highlight-color: rgb(21 58 138 / 20%);
+    --hero-highlight-color: rgb(21 58 138 / 78%);
 }
 
 .hero-title-highlight--gold {
-    --hero-highlight-color: rgb(245 183 49 / 26%);
+    --hero-highlight-color: rgb(184 129 18 / 78%);
 }
 
 :global(html.dark) .hero-title-highlight--green {
-    --hero-highlight-color: rgb(34 197 94 / 34%);
+    --hero-highlight-color: rgb(74 222 128 / 88%);
 }
 
 :global(html.dark) .hero-title-highlight--blue {
-    --hero-highlight-color: rgb(96 165 250 / 32%);
+    --hero-highlight-color: rgb(96 165 250 / 88%);
 }
 
 :global(html.dark) .hero-title-highlight--gold {
-    --hero-highlight-color: rgb(245 183 49 / 36%);
+    --hero-highlight-color: rgb(245 183 49 / 88%);
 }
 
 @media (max-width: 639px) {
