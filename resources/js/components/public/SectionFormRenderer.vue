@@ -30,6 +30,11 @@ const emit = defineEmits<{
 
 const fields = computed(() => fieldsForSection(`${props.section.section_key} ${props.section.section_type}`));
 const fieldGroups: Array<{ description: string; key: SectionFieldGroup; label: string }> = [
+    {
+        key: 'title-style',
+        label: 'Style du titre du hero',
+        description: 'Taille, expressions soulignées et couleurs associées au titre principal.',
+    },
     { key: 'content', label: 'Contenu principal', description: 'Textes, boutons et image principale de la section.' },
     { key: 'details', label: 'Contenus complémentaires', description: 'Libellés propres au design de cette section.' },
     { key: 'appearance', label: 'Apparence et affichage', description: 'Fond, largeur, alignement, ordre et visibilité.' },
@@ -54,6 +59,10 @@ function valueFor(key: string): string | boolean | number | null {
     return typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number'
         ? value
         : null;
+}
+
+function resolvedValueFor(field: SectionField): string | boolean | number | null {
+    return valueFor(field.key) ?? field.defaultValue ?? null;
 }
 
 function updateValue(key: string, value: string | boolean | number | null) {
@@ -187,21 +196,26 @@ function mediaPreviewFor(key: string): string | null | undefined {
                 <p v-if="errorFor(field.key)" class="mt-1.5 text-sm text-red-700">{{ errorFor(field.key) }}</p>
             </div>
 
-            <fieldset v-else-if="field.type === 'color-choice'">
+            <fieldset
+                v-else-if="field.type === 'color-choice'"
+                :id="fieldId(field.key)"
+                class="rounded-lg border border-slate-200 bg-slate-50/70 p-4"
+                tabindex="-1"
+            >
                 <legend class="text-sm font-semibold text-slate-800">{{ field.label }}</legend>
                 <div class="mt-2 grid gap-2 sm:grid-cols-3">
                     <label
                         v-for="option in field.options"
                         :key="option.value"
                         class="relative flex cursor-pointer items-center gap-3 rounded-lg border bg-white px-3 py-3 transition hover:border-slate-400"
-                        :class="valueFor(field.key) === option.value ? 'border-institutional ring-2 ring-institutional/10' : 'border-slate-200'"
+                        :class="resolvedValueFor(field) === option.value ? 'border-institutional ring-2 ring-institutional/10' : 'border-slate-200'"
                     >
                         <input
                             :name="fieldId(field.key)"
                             type="radio"
                             class="sr-only"
                             :value="option.value"
-                            :checked="valueFor(field.key) === option.value"
+                            :checked="resolvedValueFor(field) === option.value"
                             @change="updateValue(field.key, option.value)"
                         />
                         <span
@@ -211,7 +225,7 @@ function mediaPreviewFor(key: string): string | null | undefined {
                         />
                         <span class="min-w-0 text-xs font-semibold leading-5 text-slate-700">{{ option.label }}</span>
                         <span
-                            v-if="valueFor(field.key) === option.value"
+                            v-if="resolvedValueFor(field) === option.value"
                             class="ml-auto grid size-5 flex-none place-items-center rounded-full bg-institutional text-white"
                             aria-hidden="true"
                         >

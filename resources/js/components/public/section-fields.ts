@@ -10,7 +10,7 @@ export type SectionFieldType =
     | 'textarea'
     | 'url';
 
-export type SectionFieldGroup = 'appearance' | 'content' | 'details';
+export type SectionFieldGroup = 'appearance' | 'content' | 'details' | 'title-style';
 
 export interface SectionFieldOption {
     label: string;
@@ -19,7 +19,7 @@ export interface SectionFieldOption {
 }
 
 export interface SectionField {
-    defaultValue?: number;
+    defaultValue?: boolean | number | string;
     group: SectionFieldGroup;
     help?: string;
     key: string;
@@ -127,9 +127,10 @@ function heroContentText(key: string, label: string, help?: string): SectionFiel
     return { group: 'content', key: `settings.${key}`, label, help, type: 'text' };
 }
 
-function heroHighlightColor(key: string, label: string): SectionField {
+function heroHighlightColor(key: string, label: string, defaultValue: HighlightColor): SectionField {
     return {
-        group: 'content',
+        defaultValue,
+        group: 'title-style',
         key: `settings.${key}`,
         label,
         help: 'Cliquez directement sur une couleur. La coche indique le choix actuellement appliqué.',
@@ -142,9 +143,11 @@ function heroHighlightColor(key: string, label: string): SectionField {
     };
 }
 
+type HighlightColor = 'gold' | 'green' | 'institutional';
+
 const heroFields: SectionField[] = [
     {
-        group: 'content',
+        group: 'title-style',
         help: 'La taille mobile reste automatiquement limitée pour conserver un titre lisible.',
         key: 'settings.title_font_size',
         label: 'Taille du titre',
@@ -154,10 +157,16 @@ const heroFields: SectionField[] = [
         type: 'range',
         unit: 'px',
     },
-    heroContentText('title_highlight_1', 'Première expression à surligner', 'Saisissez exactement un passage du titre, ou laissez vide pour retirer ce surlignage.'),
-    heroHighlightColor('title_highlight_1_color', 'Couleur du premier surlignage'),
-    heroContentText('title_highlight_2', 'Deuxième expression à surligner', 'Saisissez exactement un passage du titre, ou laissez vide pour retirer ce surlignage.'),
-    heroHighlightColor('title_highlight_2_color', 'Couleur du deuxième surlignage'),
+    {
+        ...heroContentText('title_highlight_1', 'Première expression à surligner', 'Saisissez exactement un passage du titre, ou laissez vide pour retirer ce surlignage.'),
+        group: 'title-style',
+    },
+    heroHighlightColor('title_highlight_1_color', 'Couleur du premier surlignage', 'green'),
+    {
+        ...heroContentText('title_highlight_2', 'Deuxième expression à surligner', 'Saisissez exactement un passage du titre, ou laissez vide pour retirer ce surlignage.'),
+        group: 'title-style',
+    },
+    heroHighlightColor('title_highlight_2_color', 'Couleur du deuxième surlignage', 'institutional'),
     heroContentText('kicker_text', 'Texte fixe avant les mentions (ex. « Deux mentions : »)'),
     heroContentText('rotating_item_1', 'Première mention animée (ex. « Droit »)'),
     heroContentText('rotating_item_2', 'Deuxième mention animée (ex. « Sciences Politiques »)'),
