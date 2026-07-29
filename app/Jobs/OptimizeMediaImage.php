@@ -45,8 +45,18 @@ class OptimizeMediaImage implements ShouldQueue
             $disk->makeDirectory($directory);
 
             try {
-                $this->writeVariant($source, $disk->path($optimizedPath), 1920, 82);
-                $this->writeVariant($source, $disk->path($thumbnailPath), 640, 78);
+                $this->writeVariant(
+                    $source,
+                    $disk->path($optimizedPath),
+                    (int) config('media.optimized_width', 1920),
+                    (int) config('media.optimized_quality', 82),
+                );
+                $this->writeVariant(
+                    $source,
+                    $disk->path($thumbnailPath),
+                    (int) config('media.thumbnail_width', 640),
+                    (int) config('media.thumbnail_quality', 78),
+                );
             } catch (Throwable $exception) {
                 $disk->delete([$optimizedPath, $thumbnailPath]);
 

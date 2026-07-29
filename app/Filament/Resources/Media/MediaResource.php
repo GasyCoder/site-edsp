@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Media;
 
 use App\Filament\Resources\Media\Pages\ManageMedia;
-use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
 use App\Models\User;
 use App\Services\ActivityLogger;
 use App\Services\MediaService;
+use App\Services\MediaVariantDispatcher;
 use BackedEnum;
 use Closure;
 use Filament\Actions\BulkActionGroup;
@@ -144,9 +144,7 @@ class MediaResource extends Resource
             ->columns([
                 ImageColumn::make('preview')
                     ->label('Aperçu')
-                    ->state(fn (Media $record): ?string => str_starts_with($record->mime_type, 'image/') ? $record->path : null)
-                    ->disk('public')
-                    ->visibility('public')
+                    ->state(fn (Media $record): ?string => str_starts_with($record->mime_type, 'image/') ? $record->thumbnail_url : null)
                     ->square()
                     ->size(56),
                 TextColumn::make('original_name')
@@ -443,7 +441,7 @@ class MediaResource extends Resource
                 app(ActivityLogger::class)->record('media.updated', $record, auth()->id());
 
                 if (str_starts_with((string) $record->mime_type, 'image/')) {
-                    OptimizeMediaImage::dispatch($record->id)->afterCommit();
+                    app(MediaVariantDispatcher::class)->dispatch($record);
                 }
 
                 if (! $previousFile || $previousFile['path'] === $record->path) {

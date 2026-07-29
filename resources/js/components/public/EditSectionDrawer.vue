@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import { LoaderCircle, Save, X } from 'lucide-vue-next';
+import { AlertCircle, LoaderCircle, Save, X } from 'lucide-vue-next';
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
-import type { Section } from '../../types';
+import type { Section, SharedPageProps } from '../../types';
 import SectionFormRenderer, { type EditableSectionPayload } from './SectionFormRenderer.vue';
 import SectionPreview from './SectionPreview.vue';
 
@@ -20,6 +20,7 @@ const emit = defineEmits<{
 const drawer = ref<HTMLElement | null>(null);
 const closeButton = ref<HTMLButtonElement | null>(null);
 const errors = ref<Record<string, string>>({});
+const requestError = ref('');
 const processing = ref(false);
 const previousOverflow = ref('');
 const returnFocus = ref<HTMLElement | null>(null);
@@ -47,6 +48,7 @@ watch(
             returnFocus.value = document.activeElement as HTMLElement | null;
             draft.value = payloadFromSection(props.section);
             errors.value = {};
+            requestError.value = '';
             previousOverflow.value = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
             await nextTick();
@@ -79,17 +81,41 @@ function close() {
 function save() {
     processing.value = true;
     errors.value = {};
+    requestError.value = '';
 
-    router.patch(`/edition/sections/${props.section.id}`, draft.value, {
+    // POST is more reliable than PATCH behind production reverse proxies/WAFs.
+    router.post(`/edition/sections/${props.section.id}`, draft.value, {
         onError: (validationErrors) => {
             errors.value = validationErrors;
+            requestError.value = 'Certains champs doivent être corrigés avant l’enregistrement.';
+        },
+        onHttpException: (response) => {
+            requestError.value = response.status === 419
+                ? 'Votre session a expiré. Rechargez la page, reconnectez-vous puis réessayez.'
+                : response.status === 401 || response.status === 403
+                    ? 'Vous n’êtes plus autorisé à modifier cette section. Reconnectez-vous à l’administration.'
+                    : `L’enregistrement a échoué (erreur ${response.status}). Réessayez ou contactez l’administrateur.`;
+
+            return false;
+        },
+        onNetworkError: () => {
+            requestError.value = 'Le serveur est inaccessible. Vérifiez votre connexion puis réessayez.';
+
+            return false;
         },
         onFinish: () => {
             processing.value = false;
         },
-        onSuccess: () => {
-            emit('saved');
-            emit('close');
+        onSuccess: (page) => {
+            const flash = (page.props as SharedPageProps).flash?.success;
+
+            if (flash) {
+                emit('saved');
+                emit('close');
+                return;
+            }
+
+            requestError.value = 'Le serveur n’a pas confirmé l’enregistrement. Veuillez réessayer.';
         },
         preserveScroll: true,
     });
@@ -175,6 +201,15 @@ onBeforeUnmount(() => {
 
                     <form class="flex min-h-0 flex-1 flex-col" @submit.prevent="save">
                         <div class="flex-1 space-y-7 overflow-y-auto px-5 py-6 sm:px-7">
+                            <div
+                                v-if="requestError"
+                                class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800"
+                                role="alert"
+                                aria-live="assertive"
+                            >
+                                <AlertCircle :size="19" class="mt-0.5 flex-none" aria-hidden="true" />
+                                <p>{{ requestError }}</p>
+                            </div>
                             <SectionPreview :model-value="draft" />
                             <SectionFormRenderer
                                 v-model="draft"

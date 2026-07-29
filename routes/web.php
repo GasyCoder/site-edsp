@@ -49,7 +49,10 @@ Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::middleware('auth')->group(function (): void {
     Route::get('/administration/newsletters/{campaign}/piece-jointe', [NewsletterCampaignAttachmentController::class, 'download'])
         ->name('newsletter-campaigns.attachment.download');
-    Route::patch('/edition/sections/{section}', [PageSectionController::class, 'update'])->name('sections.update');
+    // POST is intentionally accepted for the visual editor: some production
+    // proxies and shared hosts reject non-standard form methods such as PATCH.
+    Route::match(['post', 'patch'], '/edition/sections/{section}', [PageSectionController::class, 'update'])
+        ->name('sections.update');
     Route::patch('/edition/reference-ministerielle', [SettingController::class, 'updateInstitutionalReference'])
         ->name('settings.institutional-reference.update');
     Route::patch('/administration/candidatures/{application}/statut', [ApplicationStatusController::class, 'update'])->name('applications.status.update');

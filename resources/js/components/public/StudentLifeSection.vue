@@ -28,8 +28,8 @@ const content = computed(
         tr("Au-delà des cours, l'EDSP offre un cadre vivant où les étudiants apprennent, débattent et s'engagent.", 'Beyond the classroom, EDSP offers a vibrant environment where students learn, debate and get involved.'),
 );
 const image = computed(() => mediaUrl(props.section));
-const secondaryImage = computed(() => props.section?.secondary_image_url ?? null);
-const tertiaryImage = computed(() => props.section?.tertiary_image_url ?? null);
+const secondaryImage = computed(() => props.section?.secondary_thumbnail_url ?? props.section?.secondary_image_url ?? null);
+const tertiaryImage = computed(() => props.section?.tertiary_thumbnail_url ?? props.section?.tertiary_image_url ?? null);
 const editing = computed(() => editContext?.editing.value === true);
 const background = computed(() => sectionBackgroundClass(props.section, 'white'));
 const container = computed(() => sectionContainerClass(props.section));

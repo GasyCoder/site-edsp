@@ -2,7 +2,7 @@
 import { ChevronLeft, ChevronRight, Images, X } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { GalleryImage, PublicGallery } from '../../types';
-import { mediaUrl } from '../../lib/public-content';
+import { mediaThumbnailUrl, mediaUrl } from '../../lib/public-content';
 import { useI18n } from '../../lib/i18n';
 import MediaPlaceholder from './MediaPlaceholder.vue';
 
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
                     >
                         <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.03]">
                             <MediaPlaceholder
-                                :image-url="mediaUrl(groupCover(group)?.image.media)"
+                                :image-url="mediaThumbnailUrl(groupCover(group)?.image.media)"
                                 :alt="groupCover(group) ? imageLabel(groupCover(group)!) : group.title"
                                 :label="group.title"
                             />

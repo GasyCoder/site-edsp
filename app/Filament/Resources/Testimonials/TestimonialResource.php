@@ -103,10 +103,11 @@ class TestimonialResource extends Resource
         return $table
             ->recordTitleAttribute('author_name')
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('photo'))
             ->columns([
-                ImageColumn::make('photo.path')
+                ImageColumn::make('photo_preview')
                     ->label('Photo')
-                    ->disk('public')
+                    ->state(fn (Testimonial $record): ?string => $record->photo?->thumbnail_url)
                     ->circular(),
                 TextColumn::make('author_name')
                     ->label('Auteur')

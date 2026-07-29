@@ -12,6 +12,6 @@ class PageSectionController extends Controller
     {
         $revisions->update($section, $request->validated(), $request->user()->id);
 
-        return back()->with('success', 'Section mise à jour.');
+        return redirect()->back(303)->with('success', 'Section mise à jour.');
     }
 }

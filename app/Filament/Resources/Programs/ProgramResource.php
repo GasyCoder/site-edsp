@@ -378,7 +378,7 @@ class ProgramResource extends Resource
     private static function mediaPreview(?int $mediaId, string $emptyMessage): HtmlString
     {
         $media = $mediaId ? Media::query()->find($mediaId) : null;
-        $imageUrl = $media?->image_url;
+        $imageUrl = $media?->thumbnail_url;
 
         if ($media === null || blank($imageUrl)) {
             return new HtmlString('<div style="display:grid;min-height:10rem;place-items:center;border:1px dashed rgb(100 116 139 / .45);border-radius:.75rem;padding:1rem;color:rgb(148 163 184);font-size:.875rem">'.e($emptyMessage).'</div>');

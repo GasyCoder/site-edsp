@@ -91,6 +91,40 @@ test('an authorized editor updates a controlled section and creates a revision',
         ->and(ContentRevision::query()->where('action', 'restored')->exists())->toBeTrue();
 });
 
+test('the production-safe post endpoint persists visual editor changes', function (): void {
+    $page = Page::query()->create([
+        'title' => 'Accueil',
+        'slug' => 'accueil-post-edition',
+        'status' => 'published',
+        'template' => 'home',
+        'published_at' => now(),
+    ]);
+    $section = $page->sections()->create([
+        'section_key' => 'hero',
+        'section_type' => 'hero',
+        'title' => 'Avant',
+        'position' => 1,
+        'is_visible' => true,
+    ]);
+
+    $this->actingAs(userWithPermissions(['edit pages']))
+        ->from('/')
+        ->post(route('sections.update', $section), [
+            'title' => 'Après publication',
+            'is_visible' => true,
+            'settings' => [
+                'background' => 'light',
+                'alignment' => 'left',
+                'container' => 'wide',
+            ],
+        ])
+        ->assertStatus(303)
+        ->assertRedirect('/')
+        ->assertSessionHas('success', 'Section mise à jour.');
+
+    expect($section->fresh()->title)->toBe('Après publication');
+});
+
 test('visual editor rejects unknown or unsafe section settings', function (): void {
     $page = Page::query()->create([
         'title' => 'Accueil',

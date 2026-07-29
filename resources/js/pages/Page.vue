@@ -456,7 +456,7 @@ const submitContact = (): void => {
                         <article v-for="partner in partners" :key="partner.id" class="rounded-xl bg-white p-6 shadow-sm">
                             <div class="h-28 overflow-hidden rounded-lg">
                                 <MediaPlaceholder
-                                    :image-url="mediaUrl(partner.logo)"
+                                    :image-url="mediaThumbnailUrl(partner.logo)"
                                     :alt="partner.logo?.alt_text || tr(`Logo ${partner.name}`, `${partner.name} logo`)"
                                     :label="tr(`Logo ${partner.name}`, `${partner.name} logo`)"
                                 />
@@ -612,7 +612,7 @@ const submitContact = (): void => {
                     >
                         <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.03]">
                             <MediaPlaceholder
-                                :image-url="mediaUrl(image.media)"
+                                :image-url="mediaThumbnailUrl(image.media)"
                                 :alt="image.alt_text || image.media?.alt_text || tr('Vie étudiante à l’EDSP', 'Student life at EDSP')"
                                 :label="tr('Vie étudiante à l’EDSP', 'Student life at EDSP')"
                             />

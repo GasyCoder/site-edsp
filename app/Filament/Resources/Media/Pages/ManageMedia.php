@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Media\Pages;
 
 use App\Filament\Resources\Media\MediaResource;
-use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
 use App\Services\ActivityLogger;
+use App\Services\MediaVariantDispatcher;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRecords;
 
@@ -28,7 +28,7 @@ class ManageMedia extends ManageRecords
                     );
 
                     if (str_starts_with((string) $record->mime_type, 'image/')) {
-                        OptimizeMediaImage::dispatch($record->id)->afterCommit();
+                        app(MediaVariantDispatcher::class)->dispatch($record);
                     }
                 }),
         ];

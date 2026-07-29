@@ -69,7 +69,9 @@ export interface Section {
     image?: Nullable<MediaAsset>;
     image_url?: Nullable<string>;
     secondary_image_url?: Nullable<string>;
+    secondary_thumbnail_url?: Nullable<string>;
     tertiary_image_url?: Nullable<string>;
+    tertiary_thumbnail_url?: Nullable<string>;
     button_text: Nullable<string>;
     button_url: Nullable<string>;
     settings: SectionSettings | null;

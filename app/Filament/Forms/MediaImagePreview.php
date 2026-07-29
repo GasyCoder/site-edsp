@@ -25,7 +25,7 @@ final class MediaImagePreview
     public static function render(?int $mediaId, string $emptyMessage = 'Aucune image sélectionnée.'): HtmlString
     {
         $media = $mediaId ? Media::query()->find($mediaId) : null;
-        $imageUrl = $media?->image_url;
+        $imageUrl = $media?->thumbnail_url;
 
         if ($media === null || blank($imageUrl)) {
             return new HtmlString(

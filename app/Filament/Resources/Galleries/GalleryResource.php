@@ -198,10 +198,11 @@ class GalleryResource extends Resource
         return $table
             ->recordTitleAttribute('title')
             ->defaultSort('position')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('coverImage'))
             ->columns([
-                ImageColumn::make('coverImage.path')
+                ImageColumn::make('cover_preview')
                     ->label('Couverture')
-                    ->disk('public')
+                    ->state(fn (Gallery $record): ?string => $record->coverImage?->thumbnail_url)
                     ->square()
                     ->size(54),
                 TextColumn::make('title')

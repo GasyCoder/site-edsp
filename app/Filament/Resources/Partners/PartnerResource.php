@@ -100,10 +100,11 @@ class PartnerResource extends Resource
         return $table
             ->recordTitleAttribute('name')
             ->defaultSort('position')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('logo'))
             ->columns([
-                ImageColumn::make('logo.path')
+                ImageColumn::make('logo_preview')
                     ->label('Logo')
-                    ->disk('public')
+                    ->state(fn (Partner $record): ?string => $record->logo?->thumbnail_url)
                     ->height(42),
                 TextColumn::make('name')
                     ->label('Partenaire')

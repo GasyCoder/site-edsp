@@ -44,8 +44,9 @@ class DirectorMessageResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image.image_url')
+                ImageColumn::make('image_preview')
                     ->label('Portrait')
+                    ->state(fn (PageSection $record): ?string => $record->image?->thumbnail_url)
                     ->circular(),
                 TextColumn::make('title')
                     ->label('Directeur')
@@ -71,6 +72,7 @@ class DirectorMessageResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with('image')
             ->where('section_type', 'director-message');
     }
 

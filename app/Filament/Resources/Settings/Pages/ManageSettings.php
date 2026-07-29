@@ -4,9 +4,9 @@ namespace App\Filament\Resources\Settings\Pages;
 
 use App\Filament\Resources\Media\MediaResource;
 use App\Filament\Resources\Settings\SettingResource;
-use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
 use App\Models\Setting;
+use App\Services\MediaVariantDispatcher;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -519,7 +519,7 @@ class ManageSettings extends Page
             ]);
 
             $media = Media::query()->create($metadata);
-            OptimizeMediaImage::dispatch($media->id)->afterCommit();
+            app(MediaVariantDispatcher::class)->dispatch($media);
         }
 
         return $media->url;

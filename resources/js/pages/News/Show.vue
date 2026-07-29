@@ -15,7 +15,7 @@ import PublicLayout from '../../layouts/PublicLayout.vue';
 import MediaPlaceholder from '../../components/public/MediaPlaceholder.vue';
 import SeoHead from '../../components/public/SeoHead.vue';
 import RichText from '../../components/public/RichText.vue';
-import { mediaUrl, safePublicUrl } from '../../lib/public-content';
+import { mediaThumbnailUrl, mediaUrl, safePublicUrl } from '../../lib/public-content';
 import type { Article, PublicDocument, PublicGallery, SeoData } from '../../types';
 import { useI18n } from '../../lib/i18n';
 
@@ -257,7 +257,7 @@ const formatDate = (date: string | null): string => {
                             >
                                 <div class="h-64">
                                     <MediaPlaceholder
-                                        :image-url="mediaUrl(image.media)"
+                                        :image-url="mediaThumbnailUrl(image.media)"
                                         :alt="image.alt_text || image.media?.alt_text || image.caption || gallery.title"
                                         :label="image.caption || image.title || gallery.title"
                                     />

@@ -307,11 +307,11 @@ class NewsResource extends Resource
         return $table
             ->recordTitleAttribute('title')
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['featuredImage', 'category']))
             ->columns([
-                ImageColumn::make('featuredImage.path')
+                ImageColumn::make('featured_image_preview')
                     ->label('Image')
-                    ->disk('public')
-                    ->visibility('public')
+                    ->state(fn (News $record): ?string => $record->featuredImage?->thumbnail_url)
                     ->square()
                     ->size(48),
                 TextColumn::make('title')

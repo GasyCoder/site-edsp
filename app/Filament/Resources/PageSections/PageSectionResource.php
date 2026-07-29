@@ -423,7 +423,7 @@ class PageSectionResource extends Resource
     {
         $media = $mediaId ? Media::query()->find($mediaId) : null;
 
-        if ($media === null || blank($media->image_url)) {
+        if ($media === null || blank($media->thumbnail_url)) {
             return new HtmlString('<div style="display:grid;min-height:13rem;place-items:center;border:1px dashed rgb(100 116 139 / .45);border-radius:.75rem;padding:1rem;color:rgb(148 163 184);font-size:.875rem">Aucune image sélectionnée.</div>');
         }
 
@@ -434,7 +434,7 @@ class PageSectionResource extends Resource
 
         return new HtmlString(
             '<figure style="overflow:hidden;border:1px solid rgb(100 116 139 / .35);border-radius:.75rem;background:rgb(15 23 42 / .18)">'
-            .'<div style="height:16rem;overflow:hidden;background:rgb(241 245 249)"><img src="'.e($media->image_url).'" alt="'.e($media->alt_text ?: $media->original_name).'" style="display:block;width:100%;height:100%;object-fit:contain;object-position:'.$positionX.'% '.$positionY.'%;transform:scale('.$scale.');transform-origin:'.$positionX.'% '.$positionY.'%" /></div>'
+            .'<div style="height:16rem;overflow:hidden;background:rgb(241 245 249)"><img src="'.e($media->thumbnail_url).'" alt="'.e($media->alt_text ?: $media->original_name).'" style="display:block;width:100%;height:100%;object-fit:contain;object-position:'.$positionX.'% '.$positionY.'%;transform:scale('.$scale.');transform-origin:'.$positionX.'% '.$positionY.'%" /></div>'
             .'<figcaption style="padding:.7rem .85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;color:rgb(148 163 184)">'.e($media->original_name).'</figcaption>'
             .'</figure>',
         );

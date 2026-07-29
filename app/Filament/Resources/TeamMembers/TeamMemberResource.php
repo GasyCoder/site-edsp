@@ -144,10 +144,11 @@ class TeamMemberResource extends Resource
         return $table
             ->recordTitleAttribute('last_name')
             ->defaultSort('display_order')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('photo'))
             ->columns([
-                ImageColumn::make('photo.path')
+                ImageColumn::make('photo_preview')
                     ->label('Photo')
-                    ->disk('public')
+                    ->state(fn (TeamMember $record): ?string => $record->photo?->thumbnail_url)
                     ->circular(),
                 TextColumn::make('last_name')
                     ->label('Membre')

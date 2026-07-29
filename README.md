@@ -17,7 +17,20 @@ npm run build
 php artisan serve
 ```
 
-Configurer `DB_CONNECTION=mysql`, les paramètres `DB_*`, la messagerie et une queue persistante dans `.env`. Le compte super administrateur initial n’est créé que si `EDSP_ADMIN_EMAIL` et `EDSP_ADMIN_PASSWORD` (12 caractères minimum) sont fournis au moment du seeding ; aucun mot de passe n’est versionné.
+Configurer `APP_URL` avec l’URL HTTPS publique exacte, `DB_CONNECTION=mysql`, les paramètres `DB_*`, la messagerie et une queue persistante dans `.env`. Le compte super administrateur initial n’est créé que si `EDSP_ADMIN_EMAIL` et `EDSP_ADMIN_PASSWORD` (12 caractères minimum) sont fournis au moment du seeding ; aucun mot de passe n’est versionné.
+
+Pour que l’édition visuelle reste authentifiée en production :
+
+```dotenv
+APP_ENV=production
+APP_URL=https://votre-domaine.mg
+SESSION_DRIVER=database
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
+MEDIA_OPTIMIZE_AFTER_RESPONSE=true
+```
+
+Le serveur web doit transmettre PHP les cookies et les en-têtes `X-XSRF-TOKEN`, `X-Forwarded-Proto` et `Authorization`. L’éditeur utilise volontairement `POST` afin de rester compatible avec les reverse proxies et pare-feux qui refusent `PATCH`.
 
 ## Processus permanents
 
@@ -26,14 +39,33 @@ php artisan queue:work --tries=3
 php artisan schedule:work
 ```
 
-Pour régénérer les variantes WebP de médias déjà présents : `php artisan media:optimize`.
+Les nouvelles images sont optimisées en WebP après la réponse HTTP sans dépendre du worker. Sur une infrastructure possédant un worker fiable, `MEDIA_OPTIMIZE_AFTER_RESPONSE=false` permet de déléguer ce traitement à la queue.
+
+Pour générer les variantes WebP manquantes de médias déjà présents :
+
+```bash
+php artisan media:optimize
+```
+
+Utiliser `--force` pour tout régénérer et `--queue` uniquement si le worker est actif. Les listes du back-office et les cartes publiques utilisent les miniatures de 640 px ; les visuels principaux utilisent la variante optimisée de 1920 px.
 
 En production, exécuter plutôt `php artisan schedule:run` chaque minute via cron et superviser `queue:work`. L’extension `intl` doit être activée pour PHP CLI, PHP-FPM et les workers Filament. Après déploiement :
 
 ```bash
 php artisan migrate --force
-php artisan optimize
 php artisan storage:link
 npm ci
 npm run build
+php artisan media:optimize
+php artisan optimize
+```
+
+Avec Nginx, ajouter une politique de cache pour les fichiers générés (Apache utilise déjà `public/.htaccess`) :
+
+```nginx
+location ^~ /storage/ {
+    try_files $uri =404;
+    expires 30d;
+    add_header Cache-Control "public, max-age=2592000";
+}
 ```

@@ -13,18 +13,58 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('media:optimize', function (): void {
-    $queued = 0;
+Artisan::command('media:optimize {--force : Régénérer toutes les variantes} {--queue : Utiliser la file d’attente}', function (): int {
+    $query = Media::query()->where('mime_type', 'like', 'image/%');
 
-    Media::query()
-        ->where('mime_type', 'like', 'image/%')
-        ->eachById(function (Media $media) use (&$queued): void {
-            OptimizeMediaImage::dispatch($media->id);
-            $queued++;
+    if (! $this->option('force')) {
+        $query->where(function ($query): void {
+            $query->whereNull('optimized_path')->orWhereNull('thumbnail_path');
         });
+    }
 
-    $this->info($queued.' image(s) ajoutée(s) à la file d’optimisation.');
-})->purpose('Générer ou régénérer les variantes WebP des médias image');
+    $total = (clone $query)->count();
+    $processed = 0;
+    $failed = 0;
+
+    if ($total === 0) {
+        $this->info('Toutes les images possèdent déjà leurs variantes WebP.');
+
+        return 0;
+    }
+
+    $bar = $this->output->createProgressBar($total);
+    $bar->start();
+
+    $query->eachById(function (Media $media) use (&$processed, &$failed, $bar): void {
+        try {
+            if ($this->option('queue')) {
+                OptimizeMediaImage::dispatch($media->id);
+            } else {
+                OptimizeMediaImage::dispatchSync($media->id);
+            }
+
+            $processed++;
+        } catch (Throwable $exception) {
+            report($exception);
+            $failed++;
+        } finally {
+            $bar->advance();
+        }
+    });
+
+    $bar->finish();
+    $this->newLine(2);
+    $mode = $this->option('queue') ? 'mise(s) en file' : 'optimisée(s)';
+    $this->info("{$processed} image(s) {$mode}.");
+
+    if ($failed > 0) {
+        $this->error("{$failed} image(s) n’ont pas pu être traitées.");
+
+        return 1;
+    }
+
+    return 0;
+})->purpose('Générer les variantes WebP manquantes sans dépendre d’un worker');
 
 Schedule::call(fn () => app(PublicationService::class)->publishDue())
     ->name('publish-scheduled-content')

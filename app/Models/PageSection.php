@@ -17,7 +17,16 @@ class PageSection extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['image_url', 'secondary_image_url', 'tertiary_image_url'];
+    protected $appends = [
+        'image_url',
+        'secondary_image_url',
+        'secondary_thumbnail_url',
+        'tertiary_image_url',
+        'tertiary_thumbnail_url',
+    ];
+
+    /** @var array<string, Media|null> */
+    private array $settingMediaCache = [];
 
     protected function casts(): array
     {
@@ -60,19 +69,35 @@ class PageSection extends Model
 
     public function getSecondaryImageUrlAttribute(): ?string
     {
-        return $this->settingMediaUrl('secondary_media_id');
+        return $this->settingMedia('secondary_media_id')?->image_url;
+    }
+
+    public function getSecondaryThumbnailUrlAttribute(): ?string
+    {
+        return $this->settingMedia('secondary_media_id')?->thumbnail_url;
     }
 
     public function getTertiaryImageUrlAttribute(): ?string
     {
-        return $this->settingMediaUrl('tertiary_media_id');
+        return $this->settingMedia('tertiary_media_id')?->image_url;
     }
 
-    private function settingMediaUrl(string $key): ?string
+    public function getTertiaryThumbnailUrlAttribute(): ?string
     {
+        return $this->settingMedia('tertiary_media_id')?->thumbnail_url;
+    }
+
+    private function settingMedia(string $key): ?Media
+    {
+        if (array_key_exists($key, $this->settingMediaCache)) {
+            return $this->settingMediaCache[$key];
+        }
+
         $mediaId = $this->settings[$key] ?? null;
 
-        return is_numeric($mediaId) ? Media::query()->find((int) $mediaId)?->image_url : null;
+        return $this->settingMediaCache[$key] = is_numeric($mediaId)
+            ? Media::query()->find((int) $mediaId)
+            : null;
     }
 
     public function revisions(): MorphMany

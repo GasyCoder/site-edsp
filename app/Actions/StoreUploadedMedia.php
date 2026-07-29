@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Jobs\OptimizeMediaImage;
 use App\Models\Media;
+use App\Services\MediaVariantDispatcher;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -62,7 +62,7 @@ final class StoreUploadedMedia
             ]);
 
             if (str_starts_with($mime, 'image/')) {
-                OptimizeMediaImage::dispatch($media->id)->afterCommit();
+                app(MediaVariantDispatcher::class)->dispatch($media);
             }
 
             return $media;
