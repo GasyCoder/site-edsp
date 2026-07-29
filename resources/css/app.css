@@ -148,6 +148,18 @@
         @apply px-3 py-2 text-xs;
     }
 
+    .button-primary.presentation-action-button {
+        @apply px-3.5 py-2.5 text-xs;
+    }
+
+    .institution-card.director-feature-card {
+        @apply p-4;
+    }
+
+    .feature-icon.director-feature-icon {
+        @apply size-10;
+    }
+
     .form-control {
         @apply block w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-edsp-green focus:ring-2 focus:ring-edsp-green/15 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
     }
@@ -276,6 +288,18 @@
     .final-cta-action,
     .button-primary.final-cta-action {
         @apply px-6 py-3 text-sm;
+    }
+
+    .button-primary.presentation-action-button {
+        @apply px-5 py-3 text-sm;
+    }
+
+    .institution-card.director-feature-card {
+        @apply p-6;
+    }
+
+    .feature-icon.director-feature-icon {
+        @apply size-12;
     }
 }
 

@@ -66,6 +66,7 @@ const content = computed(
             'Dear students, EDSP welcomes you to an environment where academic excellence, critical thinking and a sense of responsibility guide every programme. Our ambition is to educate legal professionals and political science specialists who are ready to serve society and support Madagascar’s transformation.',
         ),
 );
+const mobileContent = computed(() => excerptFromHtml(content.value, 190));
 const directorPosition = computed(() =>
     sectionSetting(source.value, 'director_position', tr("Directeur de l’EDSP", 'Director of EDSP')),
 );
@@ -122,14 +123,14 @@ const features = computed(() => [
 <template>
     <section id="ecole" :class="background" class="public-section overflow-hidden">
         <div :class="container" class="mx-auto">
-            <div class="grid items-center gap-9 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
-                <div class="relative mx-auto w-full max-w-xl pb-5 pr-4 sm:pb-7 sm:pr-7 lg:mx-0">
+            <div class="grid items-center gap-7 sm:gap-9 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+                <div class="relative mx-auto w-full max-w-xl pb-4 pr-3 sm:pb-7 sm:pr-7 lg:mx-0">
                     <div
-                        class="pointer-events-none absolute inset-3 bottom-0 left-3 rounded-xl border border-dashed"
+                        class="pointer-events-none absolute inset-2 bottom-0 left-2 rounded-xl border border-dashed sm:inset-3 sm:bottom-0 sm:left-3"
                         :class="dark ? 'border-emerald-400/35 bg-emerald-400/5' : 'border-slate-300 bg-slate-100/70 dark:border-emerald-400/35 dark:bg-emerald-400/5'"
                         aria-hidden="true"
                     ></div>
-                    <div class="relative h-72 overflow-hidden rounded-xl border border-slate-200 shadow-[0_10px_28px_rgba(11,31,85,0.09)] sm:h-[24rem] dark:border-slate-700">
+                    <div class="relative h-52 overflow-hidden rounded-xl border border-slate-200 shadow-[0_8px_22px_rgba(11,31,85,0.08)] sm:h-[24rem] dark:border-slate-700">
                         <MediaPlaceholder
                             :image-url="image"
                             :alt="imageAlt"
@@ -151,15 +152,15 @@ const features = computed(() => [
                         </button>
                     </div>
                     <div
-                        class="absolute bottom-0 left-4 right-8 flex items-center gap-3 rounded-lg border px-4 py-3 shadow-md sm:left-6 sm:right-auto sm:min-w-64"
+                        class="absolute bottom-0 left-3 right-6 flex items-center gap-2.5 rounded-lg border px-3 py-2 shadow-md sm:left-6 sm:right-auto sm:min-w-64 sm:gap-3 sm:px-4 sm:py-3"
                         :class="dark ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-100 bg-white text-navy dark:border-slate-700 dark:bg-slate-900 dark:text-white'"
                     >
-                        <span class="grid size-10 flex-none place-items-center rounded-lg bg-gold/20 text-[#9A6B06]">
-                            <Quote :size="20" aria-hidden="true" />
+                        <span class="grid size-8 flex-none place-items-center rounded-md bg-edsp-green/10 text-edsp-green sm:size-10 sm:rounded-lg">
+                            <Quote :size="17" aria-hidden="true" />
                         </span>
                         <span>
-                            <strong class="block font-heading text-sm font-semibold">{{ title }}</strong>
-                            <span class="mt-0.5 block text-xs" :class="dark ? 'text-slate-300' : 'text-slate-500'">
+                            <strong class="block truncate font-heading text-xs font-semibold sm:text-sm">{{ title }}</strong>
+                            <span class="mt-0.5 block text-[11px] sm:text-xs" :class="dark ? 'text-slate-300' : 'text-slate-500'">
                                 {{ directorPosition }}
                             </span>
                         </span>
@@ -168,10 +169,10 @@ const features = computed(() => [
 
                 <div :class="alignment === 'center' ? 'text-center lg:text-left' : 'text-left'">
                     <div
-                        class="mb-5 inline-flex size-11 items-center justify-center rounded-xl"
-                        :class="dark ? 'bg-gold/15 text-gold' : 'bg-edsp-green/10 text-edsp-green'"
+                        class="mb-3 inline-flex size-9 items-center justify-center rounded-lg sm:mb-5 sm:size-11 sm:rounded-xl"
+                        :class="dark ? 'bg-white/8 text-emerald-300' : 'bg-edsp-green/10 text-edsp-green'"
                     >
-                        <Quote :size="22" aria-hidden="true" />
+                        <Quote :size="19" aria-hidden="true" />
                     </div>
                     <p class="section-eyebrow" :class="dark ? 'text-gold' : 'text-edsp-green'">
                         {{ eyebrow }}
@@ -183,42 +184,43 @@ const features = computed(() => [
                         {{ directorPosition }}
                     </p>
                     <blockquote
-                        class="mt-5 max-w-2xl border-l-2 pl-5 text-pretty text-[0.95rem] leading-7 sm:text-base"
-                        :class="dark ? 'border-gold/70 text-slate-300' : 'border-edsp-green/50 text-slate-600'"
+                        class="mt-4 max-w-2xl border-l-2 pl-4 text-pretty text-sm leading-6.5 sm:mt-5 sm:pl-5 sm:text-base sm:leading-7"
+                        :class="dark ? 'border-emerald-400/50 text-slate-300' : 'border-edsp-green/50 text-slate-600'"
                     >
-                        <p class="whitespace-pre-line">{{ content }}</p>
-                        <footer class="mt-4 font-heading text-sm font-semibold" :class="dark ? 'text-white' : 'text-navy'">
+                        <p class="whitespace-pre-line sm:hidden">{{ mobileContent }}</p>
+                        <p class="hidden whitespace-pre-line sm:block">{{ content }}</p>
+                        <footer class="mt-3 font-heading text-xs font-semibold sm:mt-4 sm:text-sm" :class="dark ? 'text-white' : 'text-navy'">
                             {{ signature }}
                         </footer>
                     </blockquote>
-                    <SmartLink :href="buttonUrl" class="button-primary mt-7">
+                    <SmartLink :href="buttonUrl" class="button-primary presentation-action-button mt-5 sm:mt-7">
                         {{ buttonText }}
-                        <ArrowRight :size="17" aria-hidden="true" />
+                        <ArrowRight :size="16" aria-hidden="true" />
                     </SmartLink>
                 </div>
             </div>
 
-            <div class="mt-12 grid gap-4 border-t pt-8 md:grid-cols-3" :class="dark ? 'border-white/10' : 'border-slate-200/80'">
-                <article class="institution-card">
-                    <span class="feature-icon bg-edsp-green/10 text-edsp-green">
-                        <GraduationCap :size="25" aria-hidden="true" />
+            <div class="mt-8 grid gap-3 border-t pt-6 sm:mt-12 sm:gap-4 sm:pt-8 md:grid-cols-3" :class="dark ? 'border-white/10' : 'border-slate-200/80'">
+                <article class="institution-card director-feature-card">
+                    <span class="feature-icon director-feature-icon bg-edsp-green/10 text-edsp-green">
+                        <GraduationCap :size="21" aria-hidden="true" />
                     </span>
-                    <h3 class="mt-4 text-lg font-semibold text-navy">{{ features[0].title }}</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ features[0].description }}</p>
+                    <h3 class="mt-3 text-base font-semibold text-navy sm:mt-4 sm:text-lg">{{ features[0].title }}</h3>
+                    <p class="mt-1.5 line-clamp-3 text-sm leading-5.5 text-slate-600 sm:mt-2 sm:line-clamp-none sm:leading-6">{{ features[0].description }}</p>
                 </article>
-                <article class="institution-card">
-                    <span class="feature-icon bg-institutional/10 text-institutional dark:text-blue-300">
-                        <UsersRound :size="25" aria-hidden="true" />
+                <article class="institution-card director-feature-card">
+                    <span class="feature-icon director-feature-icon bg-institutional/10 text-institutional dark:text-blue-300">
+                        <UsersRound :size="21" aria-hidden="true" />
                     </span>
-                    <h3 class="mt-4 text-lg font-semibold text-navy">{{ features[1].title }}</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ features[1].description }}</p>
+                    <h3 class="mt-3 text-base font-semibold text-navy sm:mt-4 sm:text-lg">{{ features[1].title }}</h3>
+                    <p class="mt-1.5 line-clamp-3 text-sm leading-5.5 text-slate-600 sm:mt-2 sm:line-clamp-none sm:leading-6">{{ features[1].description }}</p>
                 </article>
-                <article class="institution-card">
-                    <span class="feature-icon bg-gold/20 text-[#8A6410] dark:text-gold">
-                        <BriefcaseBusiness :size="25" aria-hidden="true" />
+                <article class="institution-card director-feature-card">
+                    <span class="feature-icon director-feature-icon bg-gold/20 text-[#8A6410] dark:text-gold">
+                        <BriefcaseBusiness :size="21" aria-hidden="true" />
                     </span>
-                    <h3 class="mt-4 text-lg font-semibold text-navy">{{ features[2].title }}</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ features[2].description }}</p>
+                    <h3 class="mt-3 text-base font-semibold text-navy sm:mt-4 sm:text-lg">{{ features[2].title }}</h3>
+                    <p class="mt-1.5 line-clamp-3 text-sm leading-5.5 text-slate-600 sm:mt-2 sm:line-clamp-none sm:leading-6">{{ features[2].description }}</p>
                 </article>
             </div>
         </div>
