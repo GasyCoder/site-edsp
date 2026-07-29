@@ -2,6 +2,7 @@
 
 use App\Filament\Resources\Faqs\FaqResource;
 use App\Models\Faq;
+use Database\Seeders\FaqSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('the public faq only exposes visible questions in display order', function (): void {
@@ -85,4 +86,16 @@ test('faq answers are sanitized before persistence', function (): void {
     expect($faq->fresh()->answer)
         ->toContain('<p>Texte autorisé</p>')
         ->not->toContain('<script');
+});
+
+test('the faq seeder provides bilingual questions without duplicates', function (): void {
+    $this->seed(FaqSeeder::class);
+    $this->seed(FaqSeeder::class);
+
+    expect(Faq::query()->count())->toBe(13);
+
+    $faq = Faq::query()->where('question', 'Quelles formations sont proposées par l’EDSP ?')->firstOrFail();
+
+    expect($faq->translations['en']['question'])->toBe('Which programmes does EDSP offer?')
+        ->and($faq->is_visible)->toBeTrue();
 });

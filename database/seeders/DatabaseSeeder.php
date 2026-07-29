@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CommunitySeeder::class,
             GallerySeeder::class,
             AdmissionsSeeder::class,
+            FaqSeeder::class,
         ]);
     }
 }
