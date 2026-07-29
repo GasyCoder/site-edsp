@@ -337,10 +337,8 @@ const submit = (): void => {
     />
 
     <PublicLayout>
-        <header class="relative isolate overflow-hidden border-b border-slate-200 bg-soft">
-            <div class="absolute inset-y-0 right-0 -z-10 hidden w-[30%] bg-navy lg:block" aria-hidden="true" />
-            <div class="absolute -left-24 -top-32 -z-10 size-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
-            <div class="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:py-16">
+        <header class="public-page-hero bg-soft">
+            <div class="mx-auto max-w-7xl">
                 <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-7">
                     <ol class="flex items-center gap-2 text-sm text-slate-500">
                         <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
@@ -349,9 +347,9 @@ const submit = (): void => {
                     </ol>
                 </nav>
                 <div class="max-w-3xl">
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">{{ tr('Rejoindre l’EDSP', 'Join EDSP') }}</p>
-                    <h1 class="mt-2 text-3xl font-extrabold leading-tight text-navy sm:text-4xl">{{ tr('Votre dossier d’inscription', 'Your application') }}</h1>
-                    <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+                    <p class="section-eyebrow">{{ tr('Rejoindre l’EDSP', 'Join EDSP') }}</p>
+                    <h1 class="page-title mt-2 text-navy">{{ tr('Votre dossier d’inscription', 'Your application') }}</h1>
+                    <p class="section-description max-w-2xl">
                         {{ tr('Renseignez votre situation, choisissez votre parcours et vérifiez votre dossier avant l’envoi.', 'Enter your details, choose your programme and review your application before submitting it.') }}
                     </p>
                 </div>
@@ -360,7 +358,7 @@ const submit = (): void => {
 
         <div class="bg-white">
             <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-                <div v-if="!campaign" class="mx-auto max-w-3xl rounded-2xl border border-amber-200 bg-amber-50 px-6 py-10 text-center" role="status">
+                <div v-if="!campaign" class="mx-auto max-w-3xl rounded-lg border border-amber-200 bg-amber-50 px-6 py-10 text-center" role="status">
                     <CalendarClock :size="40" class="mx-auto text-[#8A6410]" aria-hidden="true" />
                     <h2 class="mt-5 text-2xl font-bold text-navy">{{ tr('Campagne actuellement fermée', 'Applications are currently closed') }}</h2>
                     <p class="mx-auto mt-3 max-w-xl leading-7 text-amber-950">{{ tr('Aucune campagne d’inscription n’est ouverte actuellement.', 'There is no open application round at present.') }}</p>
@@ -368,7 +366,7 @@ const submit = (): void => {
                 </div>
 
                 <div v-else class="grid items-start gap-8 xl:grid-cols-[19rem_minmax(0,1fr)] xl:gap-12">
-                    <aside class="rounded-2xl bg-navy p-6 text-white xl:sticky xl:top-28" aria-labelledby="campaign-title">
+                    <aside class="rounded-xl bg-navy p-6 text-white xl:sticky xl:top-28" aria-labelledby="campaign-title">
                         <span class="grid size-11 place-items-center rounded-xl bg-white/10 text-gold"><ClipboardList :size="23" aria-hidden="true" /></span>
                         <p class="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-gold">{{ tr('Campagne ouverte', 'Applications open') }}</p>
                         <h2 id="campaign-title" class="mt-2 text-xl font-bold leading-snug">{{ campaign.title }}</h2>
@@ -386,7 +384,7 @@ const submit = (): void => {
                             :href="tutorialVideoUrl"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="mt-5 flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 p-3.5 text-left transition hover:border-gold/60 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                            class="mt-5 flex items-center gap-3 rounded-lg border border-white/20 bg-white/10 p-3.5 text-left transition hover:border-gold/60 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                             :aria-label="tr('Voir le tutoriel vidéo dans un nouvel onglet', 'Watch the video guide in a new tab')"
                         >
                             <span class="grid size-10 flex-none place-items-center rounded-lg bg-gold text-navy">
@@ -433,7 +431,7 @@ const submit = (): void => {
                             <input v-model="form.admission_campaign_id" type="hidden" name="admission_campaign_id">
                             <input v-model="form.program_id" type="hidden" name="program_id">
 
-                            <fieldset v-show="currentStep === 1" id="application-step-1" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
+                            <fieldset v-show="currentStep === 1" id="application-step-1" class="grid gap-5 rounded-lg border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
                                 <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><IdCard :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('État civil et coordonnées', 'Personal details and contact information') }}</span></legend>
                                 <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">{{ tr('Renseignez les informations telles qu’elles figurent sur vos pièces officielles.', 'Enter your information exactly as it appears on your official documents.') }}</p>
 
@@ -514,7 +512,7 @@ const submit = (): void => {
                                 </div>
                             </fieldset>
 
-                            <fieldset v-show="currentStep === 2" id="application-step-2" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
+                            <fieldset v-show="currentStep === 2" id="application-step-2" class="grid gap-5 rounded-lg border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
                                 <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><HeartHandshake :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('Parents et répondant', 'Parents and guardian') }}</span></legend>
                                 <div class="-mt-1 rounded-lg bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-950 sm:col-span-2">{{ tr('Indiquez au minimum un numéro joignable : téléphone des parents ou téléphone du répondant.', 'Provide at least one reachable number: a parent’s or guardian’s phone number.') }}</div>
                                 <div>
@@ -546,7 +544,7 @@ const submit = (): void => {
                                 </div>
                             </fieldset>
 
-                            <fieldset v-show="currentStep === 3" id="application-step-3" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
+                            <fieldset v-show="currentStep === 3" id="application-step-3" class="grid gap-5 rounded-lg border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
                                 <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><GraduationCap :size="22" class="text-edsp-green" aria-hidden="true" /> {{ tr('Orientation pédagogique', 'Academic choices') }}</span></legend>
                                 <p class="-mt-1 text-sm text-slate-500 sm:col-span-2">{{ tr('Les mentions et parcours proposés s’adaptent automatiquement au niveau choisi.', 'Available specialisations and pathways update automatically for the selected level.') }}</p>
                                 <div>
@@ -594,7 +592,7 @@ const submit = (): void => {
                                 </div>
                             </fieldset>
 
-                            <fieldset v-show="currentStep === 4" id="application-step-4" class="grid gap-5 rounded-2xl border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
+                            <fieldset v-show="currentStep === 4" id="application-step-4" class="grid gap-5 rounded-lg border border-slate-200 p-5 sm:grid-cols-2 sm:p-7">
                                 <legend class="px-2"><span class="inline-flex items-center gap-2 font-heading text-lg font-bold text-navy"><Upload :size="21" class="text-edsp-green" aria-hidden="true" /> {{ tr('Pièces et confirmation', 'Documents and confirmation') }}</span></legend>
 
                                 <div v-if="campaign.required_documents?.length" class="grid gap-4 sm:col-span-2 sm:grid-cols-2">

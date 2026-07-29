@@ -59,18 +59,9 @@ const formatDate = (date: string | null): string => {
     />
 
     <PublicLayout>
-        <header class="relative isolate overflow-hidden bg-soft">
-            <div
-                class="absolute inset-y-0 right-0 -z-10 hidden w-[32%] bg-navy lg:block"
-                aria-hidden="true"
-            />
-            <div
-                class="absolute -left-24 -top-32 -z-10 h-80 w-80 rounded-full bg-gold/15 blur-3xl"
-                aria-hidden="true"
-            />
-
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
+        <header class="public-page-hero bg-soft">
+            <div class="mx-auto max-w-7xl">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-6">
                     <ol class="flex items-center gap-2 text-sm text-gray-500">
                         <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
@@ -79,13 +70,13 @@ const formatDate = (date: string | null): string => {
                 </nav>
 
                 <div class="max-w-3xl">
-                    <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
+                    <p class="section-eyebrow mb-2 text-edsp-green">
                         {{ tr('À la une', 'Latest news') }}
                     </p>
-                    <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
+                    <h1 class="page-title text-navy">
                         {{ tr('Actualités et communiqués', 'News and announcements') }}
                     </h1>
-                    <p class="mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
+                    <p class="section-description mt-4 text-gray-600">
                         {{ tr('Retrouvez les informations officiellement publiées par l’EDSP et suivez la vie de l’établissement.', 'Read official EDSP updates and keep up with life at the School.') }}
                     </p>
                 </div>
@@ -93,7 +84,7 @@ const formatDate = (date: string | null): string => {
         </header>
 
         <div class="bg-white">
-            <section class="mx-auto max-w-7xl px-6 py-16 sm:py-20" aria-labelledby="news-heading">
+            <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16" aria-labelledby="news-heading">
                 <div class="mb-9 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.16em] text-edsp-green">
@@ -108,25 +99,23 @@ const formatDate = (date: string | null): string => {
                     </p>
                 </div>
 
-                <div v-if="news.data.length" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
+                <div v-if="news.data.length" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     <article
                         v-for="item in news.data"
                         :key="item.id"
-                        class="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-institutional/30 hover:shadow-xl"
+                        class="group surface-card relative flex min-w-0 flex-col overflow-hidden transition-colors hover:border-institutional/30"
                     >
                         <div class="relative flex h-40 items-center justify-center overflow-hidden bg-navy sm:h-44" aria-hidden="true">
-                            <div class="absolute -right-10 -top-12 h-36 w-36 rounded-full border-[26px] border-white/5" />
-                            <div class="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-edsp-green/25 blur-2xl" />
-                            <Newspaper :size="38" class="relative text-gold" :stroke-width="1.5" />
+                            <Newspaper :size="34" class="text-gold" :stroke-width="1.5" />
                         </div>
 
-                        <div class="flex flex-1 flex-col p-6">
+                        <div class="flex flex-1 flex-col p-5 sm:p-6">
                             <div class="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-500">
                                 <time :datetime="item.published_at ?? undefined" class="inline-flex items-center gap-2">
                                     <CalendarDays :size="15" class="text-edsp-green" aria-hidden="true" />
                                     {{ formatDate(item.published_at) }}
                                 </time>
-                                <span v-if="item.is_featured" class="rounded-full bg-gold/20 px-2.5 py-1 text-[#8A6410]">
+                                <span v-if="item.is_featured" class="rounded bg-gold/20 px-2.5 py-1 text-[#8A6410]">
                                     {{ tr('À la une', 'Featured') }}
                                 </span>
                             </div>

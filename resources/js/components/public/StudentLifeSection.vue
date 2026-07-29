@@ -48,14 +48,14 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
 </script>
 
 <template>
-    <section id="vie-etudiante" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section id="vie-etudiante" :class="background" class="public-section">
         <div :class="container" class="mx-auto grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14">
             <div :class="alignment === 'center' ? 'text-center lg:text-left' : 'text-left'">
-                <p class="text-xs font-bold uppercase tracking-[0.13em] sm:text-sm" :class="dark ? 'text-gold' : 'text-edsp-green'">
+                <p class="section-eyebrow" :class="dark ? 'text-gold' : 'text-edsp-green'">
                     {{ eyebrow }}
                 </p>
-                <h2 class="mt-2 text-balance text-3xl font-bold sm:text-4xl" :class="dark ? 'text-white' : 'text-navy'">{{ title }}</h2>
-                <p class="mt-5 text-pretty leading-7" :class="dark ? 'text-[#C9D4EE]' : 'text-slate-600'">{{ content }}</p>
+                <h2 class="section-title mt-2" :class="dark ? 'text-white' : 'text-navy'">{{ title }}</h2>
+                <p class="section-description mt-4" :class="dark ? 'text-[#C9D4EE]' : 'text-slate-600'">{{ content }}</p>
                 <ul class="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
                     <li v-for="(activity, index) in activities" :key="index" class="life-item" :class="dark ? 'text-[#C9D4EE]' : ''">
                         <span :class="index % 3 === 0 ? 'bg-edsp-green' : index % 3 === 1 ? 'bg-institutional' : 'bg-gold'" />{{ activity }}
@@ -67,8 +67,8 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
                 </SmartLink>
             </div>
 
-            <div class="grid h-[25rem] grid-cols-2 gap-3 sm:grid-cols-[2fr_1fr] sm:grid-rows-2">
-                <div class="relative col-span-2 overflow-hidden rounded-xl sm:col-span-1 sm:row-span-2">
+            <div class="grid grid-cols-2 gap-3 sm:h-[23rem] sm:grid-cols-[2fr_1fr] sm:grid-rows-2">
+                <div class="relative col-span-2 h-64 overflow-hidden rounded-lg sm:col-span-1 sm:row-span-2 sm:h-auto">
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="title"
@@ -86,7 +86,7 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
                         <span class="hidden sm:inline">Changer la photo</span>
                     </button>
                 </div>
-                <div class="relative overflow-hidden rounded-xl">
+                <div class="relative h-36 overflow-hidden rounded-lg sm:h-auto">
                     <MediaPlaceholder :image-url="secondaryImage" :alt="secondaryMediaLabel" :label="secondaryMediaLabel" />
                     <button
                         v-if="editing"
@@ -99,7 +99,7 @@ const tertiaryMediaLabel = computed(() => sectionSetting(props.section, 'tertiar
                         <Camera :size="16" aria-hidden="true" />
                     </button>
                 </div>
-                <div class="relative overflow-hidden rounded-xl">
+                <div class="relative h-36 overflow-hidden rounded-lg sm:h-auto">
                     <MediaPlaceholder :image-url="tertiaryImage" :alt="tertiaryMediaLabel" :label="tertiaryMediaLabel" />
                     <button
                         v-if="editing"

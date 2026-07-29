@@ -15,9 +15,9 @@ const image = computed(() => mediaThumbnailUrl(props.testimonial.photo) || props
 </script>
 
 <template>
-    <figure class="flex h-full flex-col rounded-xl bg-soft p-7 sm:p-8">
-        <Quote class="text-gold" :size="30" fill="currentColor" aria-hidden="true" />
-        <blockquote class="mt-5 flex-1 text-pretty italic leading-7 text-slate-700">
+    <figure class="surface-card flex h-full flex-col p-5 sm:p-6">
+        <Quote class="text-gold" :size="24" aria-hidden="true" />
+        <blockquote class="mt-4 flex-1 text-pretty text-[0.95rem] leading-7 text-slate-700">
             « {{ testimonial.content }} »
         </blockquote>
         <figcaption class="mt-6 flex items-center gap-4">

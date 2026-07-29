@@ -59,11 +59,11 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
 </script>
 
 <template>
-    <section id="admissions" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section id="admissions" :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <SectionHeading :eyebrow="eyebrow" :title="title" :description="content" :align="alignment" :dark="dark" />
 
-            <ol class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <ol class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <li v-for="(step, index) in steps" :key="index" class="admission-step">
                     <template v-if="index === 0">
                     <span class="admission-step-number bg-navy text-white">1</span>

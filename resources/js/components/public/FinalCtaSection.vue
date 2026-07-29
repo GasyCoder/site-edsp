@@ -29,21 +29,12 @@ const secondaryButtonUrl = computed(() => sectionSetting(props.section, 'seconda
 </script>
 
 <template>
-    <section class="relative overflow-hidden border-t border-slate-200/80 bg-white px-4 py-12 sm:px-6 sm:py-16">
-        <div class="pointer-events-none absolute left-1/2 top-0 h-56 w-2/3 -translate-x-1/2 rounded-full bg-edsp-green/8 blur-3xl" aria-hidden="true" />
+    <section class="border-t border-slate-200/80 bg-white px-4 py-10 sm:px-6 sm:py-12">
         <div
-            :class="[
-                container,
-                'border-slate-200 bg-white text-navy shadow-[0_20px_50px_rgba(11,31,85,0.12)]',
-            ]"
-            class="relative mx-auto overflow-hidden rounded-3xl border px-6 py-9 sm:px-10 sm:py-11 lg:px-12"
+            :class="container"
+            class="mx-auto rounded-xl border border-slate-200 bg-soft px-5 py-7 text-navy sm:px-8 sm:py-8 lg:px-10"
         >
-            <div
-                class="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-edsp-green/8"
-                aria-hidden="true"
-            />
-
-            <div class="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
+            <div class="grid items-center gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-10">
                 <div :class="alignment === 'center' ? 'text-center lg:text-left' : 'text-left'">
                     <div
                         class="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-edsp-green/10 text-edsp-green ring-1 ring-edsp-green/10"

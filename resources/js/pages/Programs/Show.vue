@@ -83,18 +83,9 @@ const formatFileSize = (bytes?: number | null): string | null => {
     />
 
     <PublicLayout>
-        <header class="relative isolate overflow-hidden bg-navy text-white">
-            <div
-                class="absolute -right-24 -top-32 -z-10 h-96 w-96 rounded-full border-[70px] border-white/5"
-                aria-hidden="true"
-            />
-            <div
-                class="absolute -bottom-24 left-1/4 -z-10 h-64 w-64 rounded-full bg-edsp-green/20 blur-3xl"
-                aria-hidden="true"
-            />
-
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-9">
+        <header class="public-page-hero bg-navy text-white">
+            <div class="mx-auto max-w-7xl">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-7">
                     <ol class="flex flex-wrap items-center gap-2 text-sm text-blue-100/80">
                         <li><Link href="/" class="transition hover:text-white">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
@@ -105,13 +96,13 @@ const formatFileSize = (bytes?: number | null): string | null => {
                 </nav>
 
                 <div class="max-w-4xl">
-                    <span class="inline-flex rounded-full bg-gold px-3 py-1 text-xs font-bold text-navy">
+                    <span class="inline-flex rounded-md bg-gold px-3 py-1 text-xs font-bold text-navy">
                         {{ levelLabel }}
                     </span>
-                    <h1 class="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+                    <h1 class="page-title mt-4">
                         {{ program.title }}
                     </h1>
-                    <p class="mt-6 max-w-3xl text-base leading-8 text-blue-100 sm:text-lg">
+                    <p class="mt-5 max-w-3xl text-base leading-7 text-blue-100">
                         {{ program.description }}
                     </p>
                 </div>
@@ -119,11 +110,11 @@ const formatFileSize = (bytes?: number | null): string | null => {
         </header>
 
         <div class="bg-white">
-            <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 sm:py-20 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
+            <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
                 <article class="min-w-0">
                     <figure
                         v-if="programImage"
-                        class="mb-12 overflow-hidden rounded-2xl bg-soft shadow-[0_16px_45px_rgba(11,31,85,0.12)]"
+                        class="mb-10 overflow-hidden rounded-xl border border-slate-200 bg-soft"
                     >
                         <div class="h-72 sm:h-[26rem]">
                             <MediaPlaceholder

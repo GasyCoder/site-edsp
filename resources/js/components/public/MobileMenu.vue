@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
                         <ArrowRight :size="16" aria-hidden="true" />
                     </Link>
 
-                    <div class="mt-4 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
+                    <div class="mt-4 border-l-2 border-slate-200 pl-2 dark:border-slate-700">
                         <p class="nav-group-label mt-1">{{ tr("L'École", 'The School') }}</p>
                         <Link href="/presentation" class="mobile-nav-sublink block" @click="close">{{ tr('Mot du directeur', "Director's message") }}</Link>
                         <Link href="/historique" class="mobile-nav-sublink block" @click="close">{{ tr('Historique', 'History') }}</Link>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
                         <Link href="/documents" class="mobile-nav-sublink block" @click="close">{{ tr('Documents publics', 'Public documents') }}</Link>
                     </div>
 
-                    <div class="mt-3 rounded-2xl border border-slate-200 bg-soft/70 p-2 dark:border-slate-700 dark:bg-slate-900/80">
+                    <div class="mt-3 border-l-2 border-slate-200 pl-2 dark:border-slate-700">
                         <p class="nav-group-label mt-1">{{ tr('Formations', 'Programmes') }}</p>
                         <Link href="/formations" class="mobile-nav-sublink block" @click="close">{{ tr('Nos parcours', 'Our programmes') }}</Link>
                         <Link href="/admissions" class="mobile-nav-sublink block" @click="close">{{ tr('Admissions', 'Admissions') }}</Link>
@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
 
                     <Link
                         href="/inscription"
-                        class="mt-5 flex items-center justify-center gap-2 rounded-xl bg-edsp-green px-5 py-3.5 text-center font-heading text-sm font-bold text-white shadow-[0_10px_24px_rgba(7,139,62,0.2)] transition hover:bg-[#067735]"
+                        class="mt-5 flex items-center justify-center gap-2 rounded-md bg-edsp-green px-5 py-3 text-center font-heading text-sm font-bold text-white transition hover:bg-[#067735]"
                         @click="close"
                     >
                         <UserPlus :size="18" aria-hidden="true" />
@@ -203,7 +203,7 @@ onBeforeUnmount(() => {
                     <a
                         v-if="canAccessAdmin"
                         href="/admin"
-                        class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-navy/15 bg-navy px-5 py-3.5 text-center font-heading text-sm font-bold text-white transition hover:bg-institutional dark:border-institutional dark:bg-institutional/80 dark:hover:bg-institutional"
+                        class="mt-3 flex items-center justify-center gap-2 rounded-md border border-navy/15 bg-navy px-5 py-3 text-center font-heading text-sm font-bold text-white transition hover:bg-institutional dark:border-institutional dark:bg-institutional/80 dark:hover:bg-institutional"
                         @click="close"
                     >
                         <LayoutDashboard :size="18" aria-hidden="true" />

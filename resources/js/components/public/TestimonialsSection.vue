@@ -24,7 +24,7 @@ const dark = computed(() => isDarkSection(props.section));
 </script>
 
 <template>
-    <section :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <SectionHeading
                 :eyebrow="section?.subtitle || tr('Ils en parlent', 'Their experience')"
@@ -33,7 +33,7 @@ const dark = computed(() => isDarkSection(props.section));
                 :align="alignment"
                 :dark="dark"
             />
-            <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 <TestimonialCard
                     v-for="testimonial in testimonials"
                     :key="testimonial.id"

@@ -226,26 +226,11 @@ const submitContact = (): void => {
 
     <PublicLayout :editing="editing">
         <header
-            class="relative isolate overflow-hidden"
+            class="public-page-hero"
             :class="page.slug === 'galerie' ? 'bg-navy' : 'bg-soft'"
         >
-            <div
-                v-if="page.slug !== 'galerie'"
-                class="absolute inset-y-0 right-0 -z-10 hidden w-1/3 bg-navy lg:block"
-                aria-hidden="true"
-            />
-            <div
-                class="absolute -left-28 -top-36 -z-10 h-80 w-80 rounded-full bg-edsp-green/10 blur-3xl"
-                aria-hidden="true"
-            />
-            <div
-                v-if="page.slug === 'galerie'"
-                class="absolute -right-28 -top-32 -z-10 size-96 rounded-full bg-institutional/30 blur-3xl"
-                aria-hidden="true"
-            />
-
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
+            <div class="mx-auto max-w-7xl">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-6">
                     <ol class="flex flex-wrap items-center gap-2 text-sm" :class="page.slug === 'galerie' ? 'text-slate-300' : 'text-gray-500'">
                         <li>
                             <Link href="/" class="transition" :class="page.slug === 'galerie' ? 'hover:text-white' : 'hover:text-edsp-green'">{{ tr('Accueil', 'Home') }}</Link>
@@ -257,18 +242,18 @@ const submitContact = (): void => {
 
                 <div :class="heroImage ? 'grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]' : 'max-w-3xl'">
                     <div>
-                        <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
+                        <p class="section-eyebrow mb-3">
                             {{ tr('École de Droit et Science Politique', 'School of Law and Political Science') }}
                         </p>
-                        <h1 class="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl" :class="page.slug === 'galerie' ? 'text-white' : 'text-navy'">
+                        <h1 class="page-title" :class="page.slug === 'galerie' ? 'text-white' : 'text-navy'">
                             {{ page.title }}
                         </h1>
-                        <p v-if="page.meta_description" class="mt-5 max-w-2xl text-base leading-7 sm:text-lg" :class="page.slug === 'galerie' ? 'text-slate-300' : 'text-gray-600'">
+                        <p v-if="page.meta_description" class="section-description max-w-2xl" :class="page.slug === 'galerie' ? 'text-slate-300' : 'text-gray-600'">
                             {{ page.meta_description }}
                         </p>
                     </div>
 
-                    <div v-if="heroImage" class="h-60 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/20 sm:h-72">
+                    <div v-if="heroImage" class="h-56 overflow-hidden rounded-xl border border-slate-200 sm:h-64 dark:border-white/15">
                         <MediaPlaceholder
                             :image-url="heroImage.url"
                             :alt="heroImage.alt"
@@ -294,7 +279,7 @@ const submitContact = (): void => {
                     />
                     <article
                         v-else-if="page.slug === 'missions-et-valeurs'"
-                        class="h-full rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition hover:shadow-md"
+                        class="surface-card h-full p-6"
                         :aria-labelledby="section.title ? `section-${section.id}` : undefined"
                     >
                         <span class="grid size-12 place-items-center rounded-xl bg-edsp-green/10 text-edsp-green" aria-hidden="true">
@@ -388,7 +373,7 @@ const submitContact = (): void => {
                             </SmartLink>
                             </div>
 
-                            <div v-if="mediaUrl(section)" class="h-72 overflow-hidden rounded-xl shadow-lg sm:h-88">
+                            <div v-if="mediaUrl(section)" class="h-64 overflow-hidden rounded-xl border border-slate-200 sm:h-80">
                                 <MediaPlaceholder
                                     :image-url="mediaUrl(section)"
                                     :alt="section.image?.alt_text || section.title"
@@ -400,7 +385,7 @@ const submitContact = (): void => {
                 </EditableSection>
             </div>
 
-            <section v-if="page.slug === 'equipe' && teamMembers.length" class="bg-soft px-6 py-14 sm:py-16" aria-labelledby="team-list-title">
+            <section v-if="page.slug === 'equipe' && teamMembers.length" class="public-section bg-soft" aria-labelledby="team-list-title">
                 <div class="mx-auto max-w-7xl">
                     <h2 id="team-list-title" class="sr-only">{{ tr('Membres de l’équipe', 'Team members') }}</h2>
 
@@ -408,9 +393,9 @@ const submitContact = (): void => {
                         <article
                             v-for="member in directionMembers"
                             :key="member.id"
-                            class="flex flex-col items-center gap-7 rounded-2xl bg-white p-7 text-center shadow-sm sm:flex-row sm:p-9 sm:text-left"
+                            class="surface-card flex flex-col items-center gap-6 p-6 text-center sm:flex-row sm:p-8 sm:text-left"
                         >
-                            <div class="size-36 flex-none overflow-hidden rounded-2xl ring-4 ring-soft sm:size-44">
+                            <div class="size-36 flex-none overflow-hidden rounded-xl border border-slate-200 sm:size-40">
                                 <MediaPlaceholder
                                     :image-url="mediaThumbnailUrl(member.photo) || member.photo_url"
                                     :alt="member.photo?.alt_text || `${member.first_name} ${member.last_name}`"
@@ -425,14 +410,14 @@ const submitContact = (): void => {
                                     <a
                                         v-if="member.email"
                                         :href="`mailto:${member.email}`"
-                                        class="inline-flex items-center gap-2 rounded-full bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:bg-edsp-green hover:text-white"
+                                        class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
                                     >
                                         <Mail :size="15" aria-hidden="true" /> {{ member.email }}
                                     </a>
                                     <a
                                         v-if="member.phone"
                                         :href="`tel:${member.phone.replace(/\s+/g, '')}`"
-                                        class="inline-flex items-center gap-2 rounded-full bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:bg-edsp-green hover:text-white"
+                                        class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-soft px-4 py-2 text-sm font-semibold text-navy transition hover:border-edsp-green hover:text-edsp-green"
                                     >
                                         <Phone :size="15" aria-hidden="true" /> {{ member.phone }}
                                     </a>
@@ -449,11 +434,11 @@ const submitContact = (): void => {
 
             <GalleryCollection v-if="page.slug === 'galerie'" :galleries="galleries" />
 
-            <section v-if="page.slug === 'partenaires' && partners.length" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="partners-list-title">
+            <section v-if="page.slug === 'partenaires' && partners.length" class="public-section bg-soft" aria-labelledby="partners-list-title">
                 <div class="mx-auto max-w-7xl">
                     <h2 id="partners-list-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Partenaires', 'Partners') }}</h2>
                     <div class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        <article v-for="partner in partners" :key="partner.id" class="rounded-xl bg-white p-6 shadow-sm">
+                        <article v-for="partner in partners" :key="partner.id" class="surface-card p-6">
                             <div class="h-28 overflow-hidden rounded-lg">
                                 <MediaPlaceholder
                                     :image-url="mediaThumbnailUrl(partner.logo)"
@@ -471,10 +456,10 @@ const submitContact = (): void => {
                 </div>
             </section>
 
-            <section v-if="page.slug === 'bibliotheque' && documents.length" class="bg-soft px-6 py-16 sm:py-20" aria-labelledby="documents-list-title">
+            <section v-if="page.slug === 'bibliotheque' && documents.length" class="public-section bg-soft" aria-labelledby="documents-list-title">
                 <div class="mx-auto max-w-5xl">
                     <h2 id="documents-list-title" class="text-2xl font-bold text-navy sm:text-3xl">{{ tr('Ressources disponibles', 'Available resources') }}</h2>
-                    <ul class="mt-8 divide-y divide-gray-200 rounded-xl bg-white px-6 shadow-sm">
+                    <ul class="surface-card mt-8 divide-y divide-gray-200 px-6">
                         <li v-for="document in documents" :key="document.id" class="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <p v-if="document.category" class="text-xs font-bold uppercase tracking-wide text-edsp-green">{{ document.category }}</p>
@@ -502,7 +487,7 @@ const submitContact = (): void => {
                             </div>
                             <p
                                 v-if="campaign.closes_at"
-                                class="inline-flex items-center gap-2 rounded-full border border-edsp-green/30 bg-edsp-green/10 px-4 py-2 text-sm font-bold text-edsp-green"
+                                class="inline-flex items-center gap-2 rounded-md border border-edsp-green/30 bg-edsp-green/10 px-4 py-2 text-sm font-bold text-edsp-green"
                             >
                                 <CalendarDays :size="16" aria-hidden="true" />
                                 {{ tr('Ouverte jusqu’au', 'Open until') }} {{ formatPublicDate(campaign.closes_at, languageTag) }}
@@ -510,7 +495,7 @@ const submitContact = (): void => {
                         </div>
 
                         <div class="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-                            <article class="rounded-2xl bg-white p-7 shadow-sm sm:p-9">
+                            <article class="surface-card p-7 sm:p-8">
                                 <h3 class="text-xl font-bold text-navy">{{ tr('Comment candidater', 'How to apply') }}</h3>
                                 <RichText v-if="campaign.instructions" :html="campaign.instructions" class="mt-4 leading-7 text-gray-600" />
                                 <div class="mt-7 flex flex-wrap gap-3">
@@ -529,7 +514,7 @@ const submitContact = (): void => {
                                 </div>
                             </article>
 
-                            <aside class="rounded-2xl bg-white p-7 shadow-sm sm:p-9" aria-labelledby="required-documents-title">
+                            <aside class="surface-card p-7 sm:p-8" aria-labelledby="required-documents-title">
                                 <h3 id="required-documents-title" class="text-xl font-bold text-navy">{{ tr('Pièces à fournir', 'Required documents') }}</h3>
                                 <ul v-if="campaign.required_documents?.length" class="mt-5 space-y-3.5">
                                     <li
@@ -548,7 +533,7 @@ const submitContact = (): void => {
                         </div>
                     </template>
 
-                    <div v-else class="mx-auto max-w-2xl rounded-2xl bg-white p-9 text-center shadow-sm">
+                    <div v-else class="surface-card mx-auto max-w-2xl p-8 text-center">
                         <h2 id="campaign-information-title" class="text-2xl font-bold text-navy">
                             {{ tr('Aucune campagne n’est ouverte actuellement', 'No admission round is currently open') }}
                         </h2>
@@ -607,7 +592,7 @@ const submitContact = (): void => {
                         v-for="image in studentLifePhotos"
                         :key="image.id"
                         href="/galerie"
-                        class="group relative h-72 w-[86%] flex-none snap-center overflow-hidden rounded-2xl bg-slate-100 shadow-sm ring-1 ring-slate-900/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 sm:h-96 sm:w-[62%] lg:w-[44%]"
+                        class="group relative h-64 w-[86%] flex-none snap-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 sm:h-80 sm:w-[62%] lg:w-[44%]"
                         :aria-label="tr('Ouvrir la galerie', 'Open the gallery')"
                     >
                         <span class="absolute inset-0 transition duration-500 ease-out group-hover:scale-[1.03]">
@@ -617,8 +602,7 @@ const submitContact = (): void => {
                                 :label="tr('Vie étudiante à l’EDSP', 'Student life at EDSP')"
                             />
                         </span>
-                        <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/75 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" aria-hidden="true" />
-                        <span v-if="image.title || image.caption" class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-white opacity-0 transition group-hover:opacity-100">
+                        <span v-if="image.title || image.caption" class="pointer-events-none absolute inset-x-0 bottom-0 bg-navy/90 p-4 text-white">
                             <span class="block truncate font-heading text-sm font-bold">{{ image.title || image.caption }}</span>
                         </span>
                     </Link>

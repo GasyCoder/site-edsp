@@ -31,11 +31,11 @@ const imageAlt = computed(() => sectionSetting(props.section, 'alt_text', tr('Po
 </script>
 
 <template>
-    <section class="border-b border-slate-200 bg-white px-4 py-14 sm:px-6 sm:py-18 lg:py-22" :aria-labelledby="`section-${section.id}`">
-        <div class="mx-auto grid max-w-7xl items-start gap-10 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-16 xl:grid-cols-[25rem_minmax(0,1fr)] xl:gap-20">
+    <section class="public-section border-b border-slate-200 bg-white" :aria-labelledby="`section-${section.id}`">
+        <div class="mx-auto grid max-w-7xl items-start gap-9 lg:grid-cols-[21rem_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[23rem_minmax(0,1fr)]">
             <aside class="relative mx-auto w-full max-w-md pb-6 pr-5 lg:sticky lg:top-32">
-                <div class="pointer-events-none absolute inset-5 bottom-0 left-5 rounded-2xl border border-dashed border-edsp-green/25 bg-edsp-green/[0.035] dark:border-emerald-400/30 dark:bg-emerald-400/5" aria-hidden="true" />
-                <div class="relative h-[25rem] overflow-hidden rounded-2xl border border-slate-200 bg-soft shadow-[0_18px_45px_rgba(11,31,85,0.13)] sm:h-[30rem] dark:border-slate-700">
+                <div class="pointer-events-none absolute inset-4 bottom-0 left-4 rounded-xl border border-dashed border-edsp-green/25 bg-edsp-green/[0.025] dark:border-emerald-400/30 dark:bg-emerald-400/5" aria-hidden="true" />
+                <div class="relative h-[22rem] overflow-hidden rounded-xl border border-slate-200 bg-soft shadow-[0_10px_28px_rgba(11,31,85,0.09)] sm:h-[27rem] dark:border-slate-700">
                     <MediaPlaceholder
                         :image-url="image"
                         :alt="imageAlt"
@@ -56,7 +56,7 @@ const imageAlt = computed(() => sectionSetting(props.section, 'alt_text', tr('Po
                         <span class="hidden sm:inline">Changer la photo</span>
                     </button>
                 </div>
-                <div class="absolute bottom-0 left-5 right-9 rounded-xl border border-slate-100 bg-white px-5 py-4 shadow-[0_12px_30px_rgba(11,31,85,0.14)] sm:left-7 dark:border-slate-700 dark:bg-slate-900">
+                <div class="absolute bottom-0 left-4 right-8 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-md sm:left-6 dark:border-slate-700 dark:bg-slate-900">
                     <p class="font-heading text-base font-semibold text-navy">{{ section.title }}</p>
                     <p class="mt-1 text-sm font-semibold text-edsp-green dark:text-emerald-300">{{ position }}</p>
                 </div>
@@ -66,15 +66,15 @@ const imageAlt = computed(() => sectionSetting(props.section, 'alt_text', tr('Po
                 <div class="flex size-12 items-center justify-center rounded-xl bg-gold/20 text-[#966807] dark:text-gold">
                     <Quote :size="24" aria-hidden="true" />
                 </div>
-                <p class="mt-6 text-xs font-bold uppercase tracking-[0.17em] text-edsp-green sm:text-sm dark:text-emerald-300">
+                <p class="section-eyebrow mt-5 text-edsp-green dark:text-emerald-300">
                     {{ section.subtitle || tr('Mot du directeur', "Director's message") }}
                 </p>
-                <h2 :id="`section-${section.id}`" class="mt-2 text-balance text-3xl font-bold leading-tight text-navy sm:text-4xl">
+                <h2 :id="`section-${section.id}`" class="section-title mt-2 text-navy">
                     {{ section.title || 'Pr. Liva Jackson Raharinaivo' }}
                 </h2>
                 <p class="mt-2 font-heading text-sm font-semibold text-edsp-green dark:text-emerald-300">{{ position }}</p>
-                <div class="mt-8 border-l-2 border-edsp-green/40 pl-5 sm:pl-7 dark:border-emerald-400/40">
-                    <RichText v-if="section.content" :html="section.content" class="director-message text-[1.02rem] leading-8 text-slate-600 sm:text-[1.08rem]" />
+                <div class="mt-6 border-l-2 border-edsp-green/40 pl-5 sm:pl-6 dark:border-emerald-400/40">
+                    <RichText v-if="section.content" :html="section.content" class="director-message text-[0.96rem] leading-7 text-slate-600 sm:text-base" />
                 </div>
 
                 <footer class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">

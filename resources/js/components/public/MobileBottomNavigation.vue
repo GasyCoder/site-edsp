@@ -23,7 +23,7 @@ const { tr } = useI18n();
 
 <template>
     <nav
-        class="fixed inset-x-0 bottom-0 z-[70] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(11,31,85,0.12)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95 min-[1280px]:hidden"
+        class="fixed inset-x-0 bottom-0 z-[70] border-t border-slate-200 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-3px_12px_rgba(11,31,85,0.08)] dark:border-slate-700 dark:bg-slate-950 min-[1280px]:hidden"
         :aria-label="tr('Navigation rapide mobile', 'Quick mobile navigation')"
     >
         <div class="mx-auto grid max-w-xl grid-cols-5 px-1.5 py-1.5">

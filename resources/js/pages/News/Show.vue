@@ -90,18 +90,9 @@ const formatDate = (date: string | null): string => {
 
     <PublicLayout>
         <article>
-            <header class="relative isolate overflow-hidden bg-navy text-white">
-                <div
-                    class="absolute -right-24 -top-32 -z-10 h-96 w-96 rounded-full border-[70px] border-white/5"
-                    aria-hidden="true"
-                />
-                <div
-                    class="absolute -bottom-24 left-1/4 -z-10 h-64 w-64 rounded-full bg-edsp-green/20 blur-3xl"
-                    aria-hidden="true"
-                />
-
-                <div class="mx-auto max-w-5xl px-6 py-14 sm:py-16 lg:py-20">
-                    <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-9">
+            <header class="public-page-hero bg-navy text-white">
+                <div class="mx-auto max-w-5xl">
+                    <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-7">
                         <ol class="flex flex-wrap items-center gap-2 text-sm text-blue-100/80">
                             <li><Link href="/" class="transition hover:text-white">{{ tr('Accueil', 'Home') }}</Link></li>
                             <li aria-hidden="true"><ChevronRight :size="15" /></li>
@@ -114,39 +105,39 @@ const formatDate = (date: string | null): string => {
                     </nav>
 
                     <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-blue-100">
-                        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5">
+                        <span class="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-1.5">
                             <CalendarDays :size="15" class="text-gold" aria-hidden="true" />
                             <time :datetime="article.published_at ?? undefined">{{ formatDate(article.published_at) }}</time>
                         </span>
                         <span
                             v-if="article.category?.name"
-                            class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5"
+                            class="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-1.5"
                         >
                             <Tag :size="14" class="text-gold" aria-hidden="true" />
                             {{ article.category.name }}
                         </span>
                         <span
                             v-if="article.author_name"
-                            class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5"
+                            class="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-1.5"
                         >
                             <UserRound :size="14" class="text-gold" aria-hidden="true" />
                             {{ article.author_name }}
                         </span>
                     </div>
 
-                    <h1 class="mt-5 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+                    <h1 class="page-title mt-5">
                         {{ article.title }}
                     </h1>
-                    <p class="mt-6 max-w-3xl text-base leading-8 text-blue-100 sm:text-lg">
+                    <p class="mt-5 max-w-3xl text-base leading-7 text-blue-100">
                         {{ article.excerpt }}
                     </p>
                 </div>
             </header>
 
-            <div class="mx-auto max-w-5xl px-6 py-16 sm:py-20">
+            <div class="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
                 <figure
                     v-if="featuredImage"
-                    class="mb-12 overflow-hidden rounded-2xl bg-soft shadow-[0_16px_45px_rgba(11,31,85,0.12)]"
+                    class="mb-10 overflow-hidden rounded-xl border border-slate-200 bg-soft"
                 >
                     <div class="h-72 sm:h-[30rem]">
                         <MediaPlaceholder

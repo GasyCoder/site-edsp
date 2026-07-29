@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
                     <template v-if="albumGroups.length > 1">
                         <button
                             type="button"
-                            class="flex-none rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            class="flex-none rounded-md border px-4 py-2 text-sm font-semibold transition"
                             :class="activeGroupKey === 'all'
                                 ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
                                 : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
                             v-for="group in albumGroups"
                             :key="group.key"
                             type="button"
-                            class="flex-none rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            class="flex-none rounded-md border px-4 py-2 text-sm font-semibold transition"
                             :class="activeGroupKey === group.key
                                 ? 'border-edsp-green bg-edsp-green text-white shadow-sm'
                                 : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'"
@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
 
             <div
                 v-if="activeGroupData?.description"
-                class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900"
+                class="mt-7 rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900"
             >
                 <h3 class="text-lg font-bold text-navy dark:text-white sm:text-xl">{{ activeGroupData.title }}</h3>
                 <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
                 <article v-for="group in visibleGroups" :key="group.key" class="group">
                     <button
                         type="button"
-                        class="relative block h-64 w-full overflow-hidden rounded-2xl bg-slate-100 text-left shadow-sm ring-1 ring-slate-900/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 dark:bg-slate-900 dark:ring-white/10 sm:h-72"
+                        class="relative block h-64 w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-100 text-left focus:outline-none focus-visible:ring-4 focus-visible:ring-edsp-green/50 dark:border-slate-700 dark:bg-slate-900 sm:h-72"
                         :aria-label="tr(
                             `Ouvrir l’album ${group.title} (${group.items.length} photos)`,
                             `Open the ${group.title} album (${group.items.length} photos)`,
@@ -200,15 +200,14 @@ onBeforeUnmount(() => {
                                 :label="group.title"
                             />
                         </span>
-                        <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/15 to-transparent" aria-hidden="true" />
                         <span
                             v-if="group.items.length > 1"
-                            class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-navy shadow-md"
+                            class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-navy"
                         >
                             <Images :size="14" class="text-edsp-green" aria-hidden="true" />
                             +{{ group.items.length }} photos
                         </span>
-                        <span class="pointer-events-none absolute inset-x-0 bottom-0 p-5 text-white">
+                        <span class="pointer-events-none absolute inset-x-0 bottom-0 bg-navy/90 p-4 text-white">
                             <span class="block truncate font-heading text-base font-bold">{{ group.title }}</span>
                             <span class="mt-1 block text-xs font-semibold uppercase tracking-wide text-white/75">
                                 {{ group.items.length }} {{ tr(group.items.length > 1 ? 'photos' : 'photo', group.items.length > 1 ? 'photos' : 'photo') }}
@@ -219,7 +218,7 @@ onBeforeUnmount(() => {
                 </article>
             </div>
 
-            <div v-else class="mt-9 grid min-h-72 place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center dark:border-slate-700 dark:bg-slate-900">
+            <div v-else class="mt-9 grid min-h-64 place-items-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-6 text-center dark:border-slate-700 dark:bg-slate-900">
                 <div class="max-w-md">
                     <span class="mx-auto grid size-14 place-items-center rounded-full bg-edsp-green/10 text-edsp-green">
                         <Images :size="26" aria-hidden="true" />

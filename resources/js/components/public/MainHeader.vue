@@ -94,12 +94,12 @@ onBeforeUnmount(() => {
 <template>
     <header
         ref="header"
-        class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-[0_4px_14px_rgba(11,31,85,0.06)] dark:border-slate-700 dark:bg-slate-950"
+        class="sticky top-0 z-50 border-b border-slate-200 bg-white/98 dark:border-slate-700 dark:bg-slate-950"
     >
         <div class="px-4 sm:px-6">
-            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 py-2.5">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 py-2">
             <Link href="/" class="flex min-w-0 items-center gap-3" :aria-label="tr(`Accueil de l'EDSP`, 'EDSP home')">
-                <span class="grid size-14 flex-none place-items-center overflow-hidden rounded-xl sm:size-16 dark:bg-white/95 dark:p-1 dark:shadow-sm">
+                <span class="grid size-12 flex-none place-items-center overflow-hidden rounded-lg sm:size-14 dark:bg-white/95 dark:p-1">
                     <img :src="logoUrl" :alt="`Logo — ${siteName}`" class="max-h-full max-w-full object-contain dark:hidden" />
                     <img :src="darkLogoUrl" :alt="`Logo — ${siteName}`" class="hidden max-h-full max-w-full object-contain dark:block" />
                 </span>
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
                 </span>
             </Link>
 
-            <nav class="hidden items-center gap-3.5 min-[1280px]:flex" :aria-label="tr('Navigation principale', 'Main navigation')">
+            <nav class="hidden items-center gap-3 min-[1280px]:flex" :aria-label="tr('Navigation principale', 'Main navigation')">
                 <Link href="/" class="desktop-nav-link" :class="{ 'text-edsp-green': isCurrent('/') }">{{ tr('Accueil', 'Home') }}</Link>
 
                 <div

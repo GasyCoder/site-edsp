@@ -120,16 +120,16 @@ const features = computed(() => [
 </script>
 
 <template>
-    <section id="ecole" :class="background" class="overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <section id="ecole" :class="background" class="public-section overflow-hidden">
         <div :class="container" class="mx-auto">
-            <div class="grid items-center gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 xl:gap-20">
+            <div class="grid items-center gap-9 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
                 <div class="relative mx-auto w-full max-w-xl pb-5 pr-4 sm:pb-7 sm:pr-7 lg:mx-0">
                     <div
-                        class="pointer-events-none absolute inset-4 bottom-0 left-4 rounded-2xl border border-dashed"
+                        class="pointer-events-none absolute inset-3 bottom-0 left-3 rounded-xl border border-dashed"
                         :class="dark ? 'border-emerald-400/35 bg-emerald-400/5' : 'border-slate-300 bg-slate-100/70 dark:border-emerald-400/35 dark:bg-emerald-400/5'"
                         aria-hidden="true"
                     ></div>
-                    <div class="relative h-80 overflow-hidden rounded-2xl shadow-[0_20px_45px_rgba(11,31,85,0.14)] sm:h-[27rem]">
+                    <div class="relative h-72 overflow-hidden rounded-xl border border-slate-200 shadow-[0_10px_28px_rgba(11,31,85,0.09)] sm:h-[24rem] dark:border-slate-700">
                         <MediaPlaceholder
                             :image-url="image"
                             :alt="imageAlt"
@@ -151,7 +151,7 @@ const features = computed(() => [
                         </button>
                     </div>
                     <div
-                        class="absolute bottom-0 left-5 right-9 flex items-center gap-3 rounded-xl border px-4 py-3 shadow-[0_12px_30px_rgba(11,31,85,0.14)] sm:left-7 sm:right-auto sm:min-w-64"
+                        class="absolute bottom-0 left-4 right-8 flex items-center gap-3 rounded-lg border px-4 py-3 shadow-md sm:left-6 sm:right-auto sm:min-w-64"
                         :class="dark ? 'border-slate-700 bg-slate-900 text-white' : 'border-slate-100 bg-white text-navy dark:border-slate-700 dark:bg-slate-900 dark:text-white'"
                     >
                         <span class="grid size-10 flex-none place-items-center rounded-lg bg-gold/20 text-[#9A6B06]">
@@ -173,17 +173,17 @@ const features = computed(() => [
                     >
                         <Quote :size="22" aria-hidden="true" />
                     </div>
-                    <p class="text-xs font-bold uppercase tracking-[0.16em] sm:text-sm" :class="dark ? 'text-gold' : 'text-edsp-green'">
+                    <p class="section-eyebrow" :class="dark ? 'text-gold' : 'text-edsp-green'">
                         {{ eyebrow }}
                     </p>
-                    <h2 class="mt-2 text-balance text-3xl font-bold leading-tight sm:text-4xl" :class="dark ? 'text-white' : 'text-navy'">
+                    <h2 class="section-title mt-2" :class="dark ? 'text-white' : 'text-navy'">
                         {{ title }}
                     </h2>
                     <p class="mt-2 font-heading text-sm font-semibold" :class="dark ? 'text-emerald-300' : 'text-edsp-green'">
                         {{ directorPosition }}
                     </p>
                     <blockquote
-                        class="mt-6 max-w-2xl border-l-2 pl-5 text-pretty text-base leading-8 sm:text-[1.05rem]"
+                        class="mt-5 max-w-2xl border-l-2 pl-5 text-pretty text-[0.95rem] leading-7 sm:text-base"
                         :class="dark ? 'border-gold/70 text-slate-300' : 'border-edsp-green/50 text-slate-600'"
                     >
                         <p class="whitespace-pre-line">{{ content }}</p>
@@ -198,7 +198,7 @@ const features = computed(() => [
                 </div>
             </div>
 
-            <div class="mt-14 grid gap-5 border-t pt-10 md:grid-cols-3" :class="dark ? 'border-white/10' : 'border-slate-200/80'">
+            <div class="mt-12 grid gap-4 border-t pt-8 md:grid-cols-3" :class="dark ? 'border-white/10' : 'border-slate-200/80'">
                 <article class="institution-card">
                     <span class="feature-icon bg-edsp-green/10 text-edsp-green">
                         <GraduationCap :size="25" aria-hidden="true" />

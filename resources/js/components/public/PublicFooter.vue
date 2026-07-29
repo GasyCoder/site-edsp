@@ -76,18 +76,14 @@ const submitNewsletter = (): void => {
 </script>
 
 <template>
-    <footer id="contact" class="relative overflow-hidden bg-[#071943] px-4 text-[#C9D4EE] sm:px-6">
-        <div class="pointer-events-none absolute -left-32 top-8 size-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
-        <div class="pointer-events-none absolute -right-24 top-28 size-72 rounded-full bg-institutional/20 blur-3xl" aria-hidden="true" />
-
-        <div class="relative mx-auto max-w-7xl pt-12 sm:pt-16">
+    <footer id="contact" class="bg-[#071943] px-4 text-[#C9D4EE] sm:px-6">
+        <div class="mx-auto max-w-7xl pt-10 sm:pt-12">
             <section
                 id="newsletter"
                 aria-labelledby="newsletter-title"
-                class="relative isolate overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-[#102966] to-[#0B1F55] px-5 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:px-8 sm:py-9 lg:px-10"
+                class="rounded-xl border border-white/15 bg-[#0d285f] px-5 py-6 sm:px-7 sm:py-7 lg:px-8"
             >
-                <div class="absolute inset-y-0 right-0 -z-10 hidden w-2/5 bg-edsp-green/7 lg:block" aria-hidden="true" />
-                <div class="grid items-center gap-7 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+                <div class="grid items-center gap-7 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
                     <div>
                         <div class="mb-4 flex size-11 items-center justify-center rounded-xl bg-gold/15 text-gold ring-1 ring-gold/20">
                             <Mail :size="21" aria-hidden="true" />
@@ -128,7 +124,7 @@ const submitNewsletter = (): void => {
                             </div>
                             <button
                                 type="submit"
-                                class="inline-flex h-12 flex-none items-center justify-center gap-2 rounded-lg bg-edsp-green px-5 font-heading text-sm font-bold text-white shadow-[0_10px_24px_rgba(7,139,62,0.25)] transition hover:bg-[#069344] disabled:cursor-wait disabled:opacity-70"
+                                class="inline-flex h-12 flex-none items-center justify-center gap-2 rounded-md bg-edsp-green px-5 font-heading text-sm font-bold text-white transition hover:bg-[#069344] disabled:cursor-wait disabled:opacity-70"
                                 :disabled="newsletterForm.processing"
                             >
                                 <LoaderCircle v-if="newsletterForm.processing" :size="18" class="animate-spin" aria-hidden="true" />
@@ -172,7 +168,7 @@ const submitNewsletter = (): void => {
                 </div>
             </section>
 
-            <div class="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-14">
+            <div class="grid gap-9 py-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8 lg:py-12">
                 <div class="lg:col-span-4 lg:pr-10">
                     <div class="mb-5 flex items-center gap-3">
                         <span class="grid size-16 place-items-center rounded-xl bg-white p-1.5 shadow-sm">

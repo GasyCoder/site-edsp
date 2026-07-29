@@ -19,17 +19,17 @@ const { tr } = useI18n();
 </script>
 
 <template>
-    <div class="bg-navy px-4 py-2 text-xs text-[#C9D4EE] sm:px-6">
+    <div class="bg-navy px-4 py-1.5 text-[11px] text-[#C9D4EE] sm:px-6 sm:text-xs">
         <div
-            class="mx-auto flex max-w-7xl flex-col gap-2 min-[760px]:flex-row min-[760px]:items-center min-[760px]:justify-between"
+            class="mx-auto flex max-w-7xl items-center justify-between gap-4"
         >
-            <div class="flex items-center">
-                <span class="inline-flex items-center gap-1.5">
+            <div class="min-w-0">
+                <span class="flex min-w-0 items-center gap-1.5">
                     <MapPin :size="13" class="text-gold" aria-hidden="true" />
-                    {{ address }}
+                    <span class="truncate">{{ address }}</span>
                 </span>
             </div>
-            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 min-[760px]:justify-end">
+            <div class="hidden flex-wrap items-center gap-x-5 gap-y-2 min-[760px]:flex min-[760px]:justify-end">
                 <a
                     :href="`tel:${phone.replace(/\s/g, '')}`"
                     class="inline-flex items-center gap-1.5 transition hover:text-white"

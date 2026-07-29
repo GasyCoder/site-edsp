@@ -26,12 +26,9 @@ const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.c
     />
 
     <PublicLayout>
-        <header class="relative isolate overflow-hidden bg-soft">
-            <div class="absolute inset-y-0 right-0 -z-10 hidden w-[30%] bg-navy lg:block" aria-hidden="true" />
-            <div class="absolute -left-24 -top-32 -z-10 h-80 w-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
-
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
+        <header class="public-page-hero bg-soft">
+            <div class="mx-auto max-w-7xl">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-6">
                     <ol class="flex items-center gap-2 text-sm text-gray-500">
                         <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
@@ -40,33 +37,33 @@ const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.c
                 </nav>
 
                 <div class="max-w-3xl">
-                    <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
+                    <p class="section-eyebrow mb-3">
                         {{ tr('Offre académique', 'Academic offering') }}
                     </p>
-                    <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
+                    <h1 class="page-title text-navy">
                         {{ tr('Deux mentions, des parcours adaptés à chaque niveau', 'Two subject areas, pathways tailored to every level') }}
                     </h1>
-                    <p class="mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
+                    <p class="section-description max-w-2xl">
                         {{ tr('Le parcours évolue progressivement de la L1 au M2. Les affectations ci-dessous reprennent directement le référentiel officiel de la scolarité.', 'Pathways progress from L1 to M2. The structure below comes directly from EDSP’s official academic records.') }}
                     </p>
 
                     <dl class="mt-7 flex flex-wrap gap-3 text-sm">
-                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 text-slate-700">
+                        <div class="rounded-md border border-slate-200 bg-white px-4 py-2 text-slate-700">
                             <dt class="sr-only">{{ tr('Mentions', 'Subject areas') }}</dt>
                             <dd><strong class="text-navy">{{ mentions.length }}</strong> {{ tr('mentions', 'subject areas') }}</dd>
                         </div>
-                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 text-slate-700">
+                        <div class="rounded-md border border-slate-200 bg-white px-4 py-2 text-slate-700">
                             <dt class="sr-only">{{ tr('Parcours', 'Pathways') }}</dt>
                             <dd><strong class="text-navy">{{ pathwayCount }}</strong> {{ tr('parcours', 'pathways') }}</dd>
                         </div>
-                        <div class="rounded-full border border-edsp-green/20 bg-white px-4 py-2 font-semibold text-navy">L1 → M2</div>
+                        <div class="rounded-md border border-slate-200 bg-white px-4 py-2 font-semibold text-navy">L1 → M2</div>
                     </dl>
                 </div>
             </div>
         </header>
 
         <main class="bg-white">
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-20">
+            <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
                 <nav v-if="mentions.length" :aria-label="tr('Accès rapide aux mentions', 'Subject-area shortcuts')" class="mb-10 flex flex-wrap gap-3">
                     <a
                         v-for="mention in mentions"
@@ -79,12 +76,12 @@ const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.c
                     </a>
                 </nav>
 
-                <div v-if="mentions.length" class="space-y-12">
+                <div v-if="mentions.length" class="space-y-8">
                     <section
                         v-for="(mention, mentionIndex) in mentions"
                         :id="mentionAnchor(mention)"
                         :key="mention.id"
-                        class="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_35px_rgba(11,31,85,0.07)]"
+                        class="scroll-mt-28 overflow-hidden rounded-xl border border-slate-200 bg-white"
                         :aria-labelledby="`mention-title-${mention.id}`"
                     >
                         <div class="grid gap-6 border-b border-slate-200 bg-soft px-6 py-7 sm:px-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
@@ -122,7 +119,7 @@ const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.c
                             <article
                                 v-for="pathway in mention.parcours"
                                 :key="pathway.id"
-                                class="flex min-w-0 flex-col rounded-xl border border-slate-200 p-5 transition hover:border-edsp-green/40 hover:shadow-[0_10px_28px_rgba(11,31,85,0.08)] sm:p-6"
+                                class="flex min-w-0 flex-col rounded-lg border border-slate-200 p-5 transition hover:border-edsp-green/50"
                             >
                                 <div class="flex items-start justify-between gap-4">
                                     <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-edsp-green/10 text-edsp-green">
@@ -143,7 +140,7 @@ const mentionAnchor = (mention: AcademicMention): string => `mention-${mention.c
                                         <span
                                             v-for="link in levels(pathway)"
                                             :key="link.id"
-                                            class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold"
+                                            class="inline-flex items-center gap-1.5 rounded-md border px-3 py-1 text-xs font-bold"
                                             :class="link.is_common_core ? 'border-gold/50 bg-gold/15 text-[#795707]' : 'border-edsp-green/20 bg-edsp-green/8 text-edsp-green'"
                                         >
                                             {{ link.level?.code }}

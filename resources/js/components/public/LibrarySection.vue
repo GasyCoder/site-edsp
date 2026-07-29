@@ -34,7 +34,7 @@ const alignment = computed(() => sectionAlignment(props.section));
 </script>
 
 <template>
-    <section id="bibliotheque" :class="background" class="px-4 py-12 sm:px-6 sm:py-16">
+    <section id="bibliotheque" :class="background" class="public-section">
         <div
             :class="[container, alignment === 'center' ? 'text-center lg:justify-center' : 'text-left']"
             class="mx-auto flex flex-col items-start gap-6 rounded-xl bg-navy px-6 py-9 text-white sm:px-10 sm:py-11 lg:flex-row lg:items-center"

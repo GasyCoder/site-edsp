@@ -36,10 +36,10 @@ const degreeBadges = computed(() => [tr('Licence (L3)', "Bachelor's degree (L3)"
 </script>
 
 <template>
-    <section id="formations" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section id="formations" :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <SectionHeading :eyebrow="eyebrow" :title="title" :description="content" :align="alignment" :dark="dark" />
-            <div v-if="programs.length" class="mt-10 grid gap-6 lg:grid-cols-2">
+            <div v-if="programs.length" class="mt-8 grid gap-5 lg:grid-cols-2">
                 <ProgramCard v-for="program in programs" :key="program.id" :program="program" />
             </div>
             <EmptyState v-else class="mt-10" :message="tr('Les parcours de formation seront bientôt publiés.', 'Degree programmes will be published soon.')" />

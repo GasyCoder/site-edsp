@@ -17,9 +17,9 @@ const image = computed(() => mediaThumbnailUrl(props.member.photo) || props.memb
 
 <template>
     <article
-        class="rounded-xl bg-white p-7 text-center shadow-[0_3px_14px_rgba(11,31,85,0.07)] transition hover:-translate-y-1 hover:shadow-[0_16px_34px_rgba(11,31,85,0.12)]"
+        class="surface-card p-5 text-center transition-colors hover:border-slate-300 sm:p-6 dark:hover:border-slate-600"
     >
-        <div class="mx-auto mb-5 size-28 overflow-hidden rounded-full ring-4 ring-soft">
+        <div class="mx-auto mb-4 size-24 overflow-hidden rounded-full ring-2 ring-soft sm:size-28">
             <MediaPlaceholder
                 :image-url="image"
                 :alt="member.photo?.alt_text || fullName"

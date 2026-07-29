@@ -29,15 +29,15 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
 </script>
 
 <template>
-    <section id="actualites" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section id="actualites" :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                 <div :class="alignment === 'center' ? 'mx-auto max-w-3xl text-center sm:mx-0 sm:text-left' : 'text-left'">
-                    <p class="text-xs font-bold uppercase tracking-[0.13em] sm:text-sm" :class="dark ? 'text-gold' : 'text-edsp-green'">
+                    <p class="section-eyebrow" :class="dark ? 'text-gold' : 'text-edsp-green'">
                         {{ eyebrow }}
                     </p>
-                    <h2 class="mt-2 text-balance text-3xl font-bold sm:text-4xl" :class="dark ? 'text-white' : 'text-navy'">{{ title }}</h2>
-                    <p class="mt-3 max-w-2xl text-pretty leading-7" :class="dark ? 'text-[#C9D4EE]' : 'text-slate-600'">{{ content }}</p>
+                    <h2 class="section-title mt-2" :class="dark ? 'text-white' : 'text-navy'">{{ title }}</h2>
+                    <p class="section-description" :class="dark ? 'text-[#C9D4EE]' : 'text-slate-600'">{{ content }}</p>
                 </div>
                 <SmartLink :href="section?.button_url || '/actualites'" class="button-outline w-fit" :class="dark ? 'border-white text-white hover:bg-white hover:text-navy' : ''">
                     {{ section?.button_text || tr('Voir toutes les actualités', 'View all news') }}
@@ -45,7 +45,7 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
                 </SmartLink>
             </div>
 
-            <div v-if="news.length" class="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div v-if="news.length" class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 <NewsCard v-for="article in news" :key="article.id" :article="article" />
             </div>
             <EmptyState v-else class="mt-9" :message="tr('Les prochaines actualités seront publiées ici.', 'New updates will be published here.')" />

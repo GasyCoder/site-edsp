@@ -26,7 +26,7 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
 </script>
 
 <template>
-    <section id="equipe" :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section id="equipe" :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <SectionHeading
                 :eyebrow="section?.subtitle || tr(`L'équipe`, 'Our team')"
@@ -35,7 +35,7 @@ const dark = computed(() => isDarkSection(props.section, 'light'));
                 :align="alignment"
                 :dark="dark"
             />
-            <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <TeamMemberCard v-for="member in members" :key="member.id" :member="member" />
             </div>
             <div v-if="section?.button_text && section?.button_url" class="mt-8 flex" :class="alignment === 'center' ? 'justify-center' : 'justify-start'">

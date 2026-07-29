@@ -25,17 +25,17 @@ const image = computed(
 
 <template>
     <article
-        class="group flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_3px_14px_rgba(11,31,85,0.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(11,31,85,0.14)]"
+        class="group surface-card flex h-full flex-col overflow-hidden transition-colors hover:border-slate-300 dark:hover:border-slate-600"
     >
-        <div class="h-48 overflow-hidden">
+        <div class="h-44 overflow-hidden sm:h-48">
             <MediaPlaceholder
                 :image-url="image"
                 :alt="article.featured_image?.alt_text || article.title"
                 :label="tr(`Illustration de l'actualité : ${article.title}`, `News illustration: ${article.title}`)"
-                class="transition duration-500 group-hover:scale-[1.03]"
+                class="transition duration-300 group-hover:scale-[1.015]"
             />
         </div>
-        <div class="flex flex-1 flex-col p-6">
+        <div class="flex flex-1 flex-col p-5 sm:p-6">
             <div v-if="category || date" class="mb-3 flex flex-wrap items-center gap-3 text-xs">
                 <span
                     v-if="category"
@@ -47,8 +47,8 @@ const image = computed(
                     {{ date }}
                 </time>
             </div>
-            <h3 class="text-xl font-semibold leading-snug text-navy">{{ article.title }}</h3>
-            <p class="mt-3 line-clamp-3 flex-1 leading-6 text-slate-600">{{ article.excerpt }}</p>
+            <h3 class="text-lg font-semibold leading-snug text-navy sm:text-xl">{{ article.title }}</h3>
+            <p class="mt-2.5 line-clamp-3 flex-1 text-[0.95rem] leading-6 text-slate-600">{{ article.excerpt }}</p>
             <Link
                 :href="`/actualites/${article.slug}`"
                 class="mt-5 inline-flex w-fit items-center gap-2 text-sm font-semibold text-edsp-green transition hover:text-institutional"

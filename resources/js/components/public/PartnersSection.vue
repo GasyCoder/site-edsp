@@ -23,7 +23,7 @@ const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_li
 </script>
 
 <template>
-    <section :class="background" class="px-4 py-16 sm:px-6 sm:py-20">
+    <section :class="background" class="public-section">
         <div :class="container" class="mx-auto">
             <SectionHeading
                 :eyebrow="section.subtitle"
@@ -33,8 +33,8 @@ const partnerLinkText = computed(() => sectionSetting(props.section, 'partner_li
                 :dark="dark"
             />
 
-            <div v-if="partners.length" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                <article v-for="partner in partners" :key="partner.id" class="rounded-xl bg-white p-6 shadow-sm">
+            <div v-if="partners.length" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <article v-for="partner in partners" :key="partner.id" class="surface-card p-5">
                     <div class="h-24 overflow-hidden rounded-lg border border-slate-100">
                         <MediaPlaceholder
                             :image-url="mediaThumbnailUrl(partner.logo) || partner.logo_url"

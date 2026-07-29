@@ -32,14 +32,14 @@ const icon = computed(() => {
 
 <template>
     <article
-        class="group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-7 shadow-[0_3px_12px_rgba(11,31,85,0.04)] transition hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(11,31,85,0.1)] sm:p-9"
+        class="group surface-card flex h-full flex-col p-5 transition-colors hover:border-edsp-green/35 sm:p-7"
     >
-        <span class="mb-5 grid size-14 place-items-center rounded-xl bg-institutional/10 text-institutional">
-            <component :is="icon" :size="28" :stroke-width="1.8" aria-hidden="true" />
+        <span class="mb-4 grid size-11 place-items-center rounded-lg bg-institutional/10 text-institutional">
+            <component :is="icon" :size="23" :stroke-width="1.8" aria-hidden="true" />
         </span>
         <p class="text-sm font-bold uppercase tracking-wide text-edsp-green">{{ levelLabel }}</p>
-        <h3 class="mt-2 text-2xl font-bold text-navy">{{ program.title }}</h3>
-        <p class="mt-4 flex-1 leading-7 text-slate-600">{{ program.description }}</p>
+        <h3 class="mt-2 text-xl font-bold text-navy sm:text-[1.35rem]">{{ program.title }}</h3>
+        <p class="mt-3 flex-1 text-[0.95rem] leading-7 text-slate-600">{{ program.description }}</p>
         <dl v-if="program.duration || mentionLabel" class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <div v-if="program.duration">
                 <dt class="sr-only">{{ tr('Durée', 'Duration') }}</dt>

@@ -104,12 +104,9 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
     />
 
     <PublicLayout>
-        <header class="relative isolate overflow-hidden bg-soft">
-            <div class="absolute inset-y-0 right-0 -z-10 hidden w-[32%] bg-navy lg:block" aria-hidden="true" />
-            <div class="absolute -left-24 -top-32 -z-10 size-80 rounded-full bg-edsp-green/10 blur-3xl" aria-hidden="true" />
-
-            <div class="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:py-20">
-                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-8">
+        <header class="public-page-hero bg-soft">
+            <div class="mx-auto max-w-7xl">
+                <nav :aria-label="tr('Fil d’Ariane', 'Breadcrumb')" class="mb-6">
                     <ol class="flex items-center gap-2 text-sm text-slate-500">
                         <li><Link href="/" class="transition hover:text-edsp-green">{{ tr('Accueil', 'Home') }}</Link></li>
                         <li aria-hidden="true"><ChevronRight :size="15" /></li>
@@ -118,20 +115,20 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
                 </nav>
 
                 <div class="max-w-3xl">
-                    <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-edsp-green">
+                    <p class="section-eyebrow mb-3">
                         {{ tr('Centre de ressources', 'Resource centre') }}
                     </p>
-                    <h1 class="text-3xl font-extrabold leading-tight text-navy sm:text-4xl lg:text-5xl">
+                    <h1 class="page-title text-navy">
                         {{ tr('Documents et publications', 'Documents and publications') }}
                     </h1>
-                    <p class="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+                    <p class="section-description max-w-2xl">
                         {{ tr('Retrouvez dans un même espace les formulaires, règlements, brochures et ressources officiellement publiés par l’EDSP.', 'Find forms, regulations, brochures and resources officially published by EDSP in one place.') }}
                     </p>
                 </div>
             </div>
         </header>
 
-        <section class="bg-white px-4 py-14 sm:px-6 sm:py-18" aria-labelledby="public-documents-title">
+        <section class="bg-white px-4 py-12 sm:px-6 sm:py-16" aria-labelledby="public-documents-title">
             <div class="mx-auto max-w-7xl">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -165,7 +162,7 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
                 <div v-if="categories.length" class="mt-7 flex flex-wrap gap-2" :aria-label="tr('Filtrer par catégorie', 'Filter by category')">
                     <button
                         type="button"
-                        class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+                        class="rounded-md border px-4 py-2 text-sm font-semibold transition"
                         :class="category === '' ? 'border-edsp-green bg-edsp-green text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green'"
                         @click="selectCategory('')"
                     >
@@ -175,7 +172,7 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
                         v-for="item in categories"
                         :key="item"
                         type="button"
-                        class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+                        class="rounded-md border px-4 py-2 text-sm font-semibold transition"
                         :class="category === item ? 'border-edsp-green bg-edsp-green text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-edsp-green hover:text-edsp-green'"
                         @click="selectCategory(item)"
                     >
@@ -187,7 +184,7 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
                     <article
                         v-for="document in documents.data"
                         :key="document.id"
-                        class="group flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:border-edsp-green/40 hover:shadow-[0_12px_30px_rgba(11,31,85,0.08)] sm:p-6"
+                        class="group flex min-w-0 flex-col rounded-lg border border-slate-200 bg-white p-5 transition hover:border-edsp-green/50"
                     >
                         <div class="flex min-w-0 items-start gap-4">
                             <span class="grid size-12 flex-none place-items-center rounded-xl bg-navy/5 text-navy ring-1 ring-navy/5">
@@ -220,8 +217,8 @@ const previewUrl = (document: PublicDocument): string | null => safePublicUrl(do
                     </article>
                 </div>
 
-                <div v-else class="mt-9 rounded-2xl border border-dashed border-slate-300 bg-soft px-6 py-14 text-center">
-                    <span class="mx-auto grid size-14 place-items-center rounded-full bg-white text-edsp-green shadow-sm">
+                <div v-else class="mt-9 rounded-lg border border-dashed border-slate-300 bg-soft px-6 py-12 text-center">
+                    <span class="mx-auto grid size-12 place-items-center rounded-lg border border-slate-200 bg-white text-edsp-green">
                         <LibraryBig :size="26" aria-hidden="true" />
                     </span>
                     <h3 class="mt-5 text-lg font-bold text-navy">{{ tr('Aucun document trouvé', 'No documents found') }}</h3>

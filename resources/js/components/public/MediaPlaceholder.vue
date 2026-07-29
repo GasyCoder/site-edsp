@@ -51,11 +51,11 @@ watch(
     />
     <div
         v-else
-        class="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-200 px-4 text-center text-sm text-slate-500 dark:from-slate-800 dark:to-slate-900 dark:text-slate-300"
+        class="flex h-full w-full flex-col items-center justify-center gap-3 bg-slate-100 px-4 text-center text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-300"
         role="img"
         :aria-label="label"
     >
-        <span class="grid size-12 place-items-center rounded-full bg-white/80 text-institutional shadow-sm">
+        <span class="grid size-11 place-items-center rounded-lg border border-slate-200 bg-white text-institutional dark:border-slate-700 dark:bg-slate-800">
             <ImageIcon :size="22" aria-hidden="true" />
         </span>
         <span>{{ label }}</span>
