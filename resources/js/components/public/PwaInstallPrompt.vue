@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Download, Share2, Smartphone, X } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { COOKIE_NOTICE_CLOSED_EVENT, COOKIE_NOTICE_OPEN_EVENT } from '../../lib/cookie-notice';
 import { useI18n } from '../../lib/i18n';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -55,12 +56,32 @@ function wasRecentlyDismissed(): boolean {
 }
 
 function scheduleDisplay(): void {
-    if (installed.value || wasRecentlyDismissed() || !canOfferInstallation.value || displayTimer) return;
+    if (
+        installed.value
+        || wasRecentlyDismissed()
+        || !canOfferInstallation.value
+        || displayTimer
+        || document.documentElement.hasAttribute('data-cookie-notice-open')
+    ) return;
 
     displayTimer = setTimeout(() => {
+        if (document.documentElement.hasAttribute('data-cookie-notice-open')) {
+            displayTimer = null;
+            return;
+        }
+
         visible.value = true;
         displayTimer = null;
     }, DISPLAY_DELAY);
+}
+
+function handleCookieNoticeOpen(): void {
+    visible.value = false;
+
+    if (displayTimer) {
+        clearTimeout(displayTimer);
+        displayTimer = null;
+    }
 }
 
 function handleBeforeInstallPrompt(event: Event): void {
@@ -121,6 +142,8 @@ onMounted(() => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleInstalled);
+    window.addEventListener(COOKIE_NOTICE_OPEN_EVENT, handleCookieNoticeOpen);
+    window.addEventListener(COOKIE_NOTICE_CLOSED_EVENT, scheduleDisplay);
 
     if (isIos.value) scheduleDisplay();
 });
@@ -129,6 +152,8 @@ onBeforeUnmount(() => {
     if (displayTimer) clearTimeout(displayTimer);
     window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.removeEventListener('appinstalled', handleInstalled);
+    window.removeEventListener(COOKIE_NOTICE_OPEN_EVENT, handleCookieNoticeOpen);
+    window.removeEventListener(COOKIE_NOTICE_CLOSED_EVENT, scheduleDisplay);
 });
 </script>
 

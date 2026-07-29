@@ -72,6 +72,10 @@ const submitNewsletter = (): void => {
         onSuccess: () => newsletterForm.reset(),
     });
 };
+
+const openCookieSettings = (): void => {
+    window.dispatchEvent(new CustomEvent('edsp:open-cookie-settings'));
+};
 </script>
 
 <template>
@@ -270,6 +274,10 @@ const submitNewsletter = (): void => {
                     <Link href="/politique-de-confidentialite" class="transition hover:text-white">
                         {{ tr('Confidentialité', 'Privacy') }}
                     </Link>
+                    <span class="text-white/25" aria-hidden="true">•</span>
+                    <button type="button" class="transition hover:text-white" @click="openCookieSettings">
+                        {{ tr('Gérer les cookies', 'Cookie settings') }}
+                    </button>
                 </nav>
             </div>
         </div>

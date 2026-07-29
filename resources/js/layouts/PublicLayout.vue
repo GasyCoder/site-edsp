@@ -4,6 +4,7 @@ import { CheckCircle2, X } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { SharedPageProps, SiteSettings } from '../types';
 import BackToTopButton from '../components/public/BackToTopButton.vue';
+import CookieNotice from '../components/public/CookieNotice.vue';
 import MainHeader from '../components/public/MainHeader.vue';
 import InstitutionalReferenceBar from '../components/public/InstitutionalReferenceBar.vue';
 import PageLoadingSkeleton from '../components/public/PageLoadingSkeleton.vue';
@@ -131,6 +132,7 @@ onBeforeUnmount(() => {
             :can-edit="canEditSettings"
         />
         <PublicFooter :settings="resolvedSettings" />
+        <CookieNotice />
         <PwaInstallPrompt />
         <BackToTopButton />
     </div>
