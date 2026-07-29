@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import {
-    ArrowRight,
     CheckCircle2,
     Clock3,
     LoaderCircle,
@@ -203,8 +202,6 @@ const submitNewsletter = (): void => {
                         <li><Link href="/documents" class="footer-link">{{ tr('Documents publics', 'Public documents') }}</Link></li>
                         <li><Link href="/galerie" class="footer-link">{{ tr('Galerie', 'Gallery') }}</Link></li>
                         <li><Link href="/contact" class="footer-link">Contact</Link></li>
-                        <li><Link href="/mentions-legales" class="footer-link">{{ tr('Mentions légales', 'Legal notice') }}</Link></li>
-                        <li><Link href="/politique-de-confidentialite" class="footer-link">{{ tr('Confidentialité', 'Privacy') }}</Link></li>
                     </ul>
                 </nav>
 
@@ -241,11 +238,18 @@ const submitNewsletter = (): void => {
 
             <div class="flex flex-col gap-2 border-t border-white/10 pt-4 pb-[calc(4.75rem+env(safe-area-inset-bottom))] text-[11px] text-[#8295BD] sm:flex-row sm:items-center sm:justify-between sm:text-xs min-[1280px]:pb-4">
                 <p>© {{ currentYear }} {{ tr('École de Droit et Science Politique.', 'School of Law and Political Science.') }}</p>
-                <p class="inline-flex items-center gap-1.5">
-                    {{ tr('Tous droits réservés', 'All rights reserved') }}
-                    <ArrowRight :size="12" aria-hidden="true" />
-                    Mahajanga
-                </p>
+                <nav
+                    :aria-label="tr('Informations légales', 'Legal information')"
+                    class="flex flex-wrap items-center gap-x-2.5 gap-y-1"
+                >
+                    <Link href="/mentions-legales" class="transition hover:text-white">
+                        {{ tr('Mentions légales', 'Legal notice') }}
+                    </Link>
+                    <span class="text-white/25" aria-hidden="true">•</span>
+                    <Link href="/politique-de-confidentialite" class="transition hover:text-white">
+                        {{ tr('Confidentialité', 'Privacy') }}
+                    </Link>
+                </nav>
             </div>
         </div>
     </footer>
